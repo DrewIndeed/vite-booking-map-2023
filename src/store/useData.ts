@@ -1,7 +1,7 @@
 import { create } from "zustand";
 
 interface useDataStore {
-  data: object;
+  data: any;
   saveData: (newData: any) => void;
 }
 
