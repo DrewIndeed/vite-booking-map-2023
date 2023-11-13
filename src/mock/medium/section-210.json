@@ -1,0 +1,1798 @@
+{
+  "status": 1,
+  "message": "Success",
+  "data": {
+    "result": {
+      "id": 210,
+      "seatMapId": 21,
+      "name": "220k",
+      "isReservingSeat": true,
+      "isStage": false,
+      "capacity": 185,
+      "ticketTypeId": 2630,
+      "status": 1,
+      "rows": [
+        {
+          "id": 1863,
+          "name": "A",
+          "sectionId": 210,
+          "status": 1,
+          "seats": [
+            {
+              "id": 38604,
+              "name": "18",
+              "rowId": 1863,
+              "status": 4,
+              "position": 0,
+              "x": 397.48,
+              "y": 176
+            },
+            {
+              "id": 38605,
+              "name": "17",
+              "rowId": 1863,
+              "status": 4,
+              "position": 1,
+              "x": 385.48,
+              "y": 176
+            },
+            {
+              "id": 38606,
+              "name": "16",
+              "rowId": 1863,
+              "status": 4,
+              "position": 2,
+              "x": 373.48,
+              "y": 176
+            },
+            {
+              "id": 38607,
+              "name": "15",
+              "rowId": 1863,
+              "status": 1,
+              "position": 3,
+              "x": 361.48,
+              "y": 176
+            },
+            {
+              "id": 38608,
+              "name": "14",
+              "rowId": 1863,
+              "status": 1,
+              "position": 4,
+              "x": 349.48,
+              "y": 176
+            },
+            {
+              "id": 38609,
+              "name": "13",
+              "rowId": 1863,
+              "status": 4,
+              "position": 5,
+              "x": 337.48,
+              "y": 176
+            },
+            {
+              "id": 38610,
+              "name": "12",
+              "rowId": 1863,
+              "status": 4,
+              "position": 6,
+              "x": 325.48,
+              "y": 176
+            },
+            {
+              "id": 38611,
+              "name": "11",
+              "rowId": 1863,
+              "status": 1,
+              "position": 7,
+              "x": 313.48,
+              "y": 176
+            },
+            {
+              "id": 38612,
+              "name": "10",
+              "rowId": 1863,
+              "status": 1,
+              "position": 8,
+              "x": 301.48,
+              "y": 176
+            },
+            {
+              "id": 38613,
+              "name": "9",
+              "rowId": 1863,
+              "status": 1,
+              "position": 9,
+              "x": 289.48,
+              "y": 176
+            },
+            {
+              "id": 38614,
+              "name": "8",
+              "rowId": 1863,
+              "status": 4,
+              "position": 10,
+              "x": 277.48,
+              "y": 176
+            },
+            {
+              "id": 38615,
+              "name": "7",
+              "rowId": 1863,
+              "status": 4,
+              "position": 11,
+              "x": 265.48,
+              "y": 176
+            },
+            {
+              "id": 38616,
+              "name": "6",
+              "rowId": 1863,
+              "status": 4,
+              "position": 12,
+              "x": 253.48,
+              "y": 176
+            },
+            {
+              "id": 38617,
+              "name": "5",
+              "rowId": 1863,
+              "status": 4,
+              "position": 13,
+              "x": 241.48,
+              "y": 176
+            }
+          ]
+        },
+        {
+          "id": 1864,
+          "name": "B",
+          "sectionId": 210,
+          "status": 1,
+          "seats": [
+            {
+              "id": 38618,
+              "name": "19",
+              "rowId": 1864,
+              "status": 1,
+              "position": 0,
+              "x": 392,
+              "y": 192
+            },
+            {
+              "id": 38619,
+              "name": "18",
+              "rowId": 1864,
+              "status": 1,
+              "position": 1,
+              "x": 380,
+              "y": 192
+            },
+            {
+              "id": 38620,
+              "name": "17",
+              "rowId": 1864,
+              "status": 1,
+              "position": 2,
+              "x": 368,
+              "y": 192
+            },
+            {
+              "id": 38621,
+              "name": "16",
+              "rowId": 1864,
+              "status": 1,
+              "position": 3,
+              "x": 356,
+              "y": 192
+            },
+            {
+              "id": 38622,
+              "name": "15",
+              "rowId": 1864,
+              "status": 1,
+              "position": 4,
+              "x": 344,
+              "y": 192
+            },
+            {
+              "id": 38623,
+              "name": "14",
+              "rowId": 1864,
+              "status": 1,
+              "position": 5,
+              "x": 332,
+              "y": 192
+            },
+            {
+              "id": 38624,
+              "name": "13",
+              "rowId": 1864,
+              "status": 1,
+              "position": 6,
+              "x": 320,
+              "y": 192
+            },
+            {
+              "id": 38625,
+              "name": "12",
+              "rowId": 1864,
+              "status": 1,
+              "position": 7,
+              "x": 308,
+              "y": 192
+            },
+            {
+              "id": 38626,
+              "name": "11",
+              "rowId": 1864,
+              "status": 1,
+              "position": 8,
+              "x": 296,
+              "y": 192
+            },
+            {
+              "id": 38627,
+              "name": "10",
+              "rowId": 1864,
+              "status": 1,
+              "position": 9,
+              "x": 284,
+              "y": 192
+            },
+            {
+              "id": 38628,
+              "name": "9",
+              "rowId": 1864,
+              "status": 1,
+              "position": 10,
+              "x": 272,
+              "y": 192
+            },
+            {
+              "id": 38629,
+              "name": "8",
+              "rowId": 1864,
+              "status": 1,
+              "position": 11,
+              "x": 260,
+              "y": 192
+            },
+            {
+              "id": 38630,
+              "name": "7",
+              "rowId": 1864,
+              "status": 1,
+              "position": 12,
+              "x": 248,
+              "y": 192
+            },
+            {
+              "id": 38631,
+              "name": "6",
+              "rowId": 1864,
+              "status": 1,
+              "position": 13,
+              "x": 236,
+              "y": 192
+            }
+          ]
+        },
+        {
+          "id": 1865,
+          "name": "C",
+          "sectionId": 210,
+          "status": 1,
+          "seats": [
+            {
+              "id": 38632,
+              "name": "19",
+              "rowId": 1865,
+              "status": 1,
+              "position": 0,
+              "x": 396,
+              "y": 208
+            },
+            {
+              "id": 38633,
+              "name": "18",
+              "rowId": 1865,
+              "status": 1,
+              "position": 1,
+              "x": 384,
+              "y": 208
+            },
+            {
+              "id": 38634,
+              "name": "17",
+              "rowId": 1865,
+              "status": 1,
+              "position": 2,
+              "x": 372,
+              "y": 208
+            },
+            {
+              "id": 38635,
+              "name": "16",
+              "rowId": 1865,
+              "status": 1,
+              "position": 3,
+              "x": 360,
+              "y": 208
+            },
+            {
+              "id": 38636,
+              "name": "15",
+              "rowId": 1865,
+              "status": 1,
+              "position": 4,
+              "x": 348,
+              "y": 208
+            },
+            {
+              "id": 38637,
+              "name": "14",
+              "rowId": 1865,
+              "status": 1,
+              "position": 5,
+              "x": 336,
+              "y": 208
+            },
+            {
+              "id": 38638,
+              "name": "13",
+              "rowId": 1865,
+              "status": 1,
+              "position": 6,
+              "x": 324,
+              "y": 208
+            },
+            {
+              "id": 38639,
+              "name": "12",
+              "rowId": 1865,
+              "status": 1,
+              "position": 7,
+              "x": 312,
+              "y": 208
+            },
+            {
+              "id": 38640,
+              "name": "11",
+              "rowId": 1865,
+              "status": 1,
+              "position": 8,
+              "x": 300,
+              "y": 208
+            },
+            {
+              "id": 38641,
+              "name": "10",
+              "rowId": 1865,
+              "status": 1,
+              "position": 9,
+              "x": 288,
+              "y": 208
+            },
+            {
+              "id": 38642,
+              "name": "9",
+              "rowId": 1865,
+              "status": 1,
+              "position": 10,
+              "x": 276,
+              "y": 208
+            },
+            {
+              "id": 38643,
+              "name": "8",
+              "rowId": 1865,
+              "status": 1,
+              "position": 11,
+              "x": 264,
+              "y": 208
+            },
+            {
+              "id": 38644,
+              "name": "7",
+              "rowId": 1865,
+              "status": 1,
+              "position": 12,
+              "x": 252,
+              "y": 208
+            },
+            {
+              "id": 38645,
+              "name": "6",
+              "rowId": 1865,
+              "status": 1,
+              "position": 13,
+              "x": 240,
+              "y": 208
+            }
+          ]
+        },
+        {
+          "id": 1866,
+          "name": "D",
+          "sectionId": 210,
+          "status": 1,
+          "seats": [
+            {
+              "id": 38646,
+              "name": "20",
+              "rowId": 1866,
+              "status": 1,
+              "position": 0,
+              "x": 405.48,
+              "y": 224
+            },
+            {
+              "id": 38647,
+              "name": "19",
+              "rowId": 1866,
+              "status": 1,
+              "position": 1,
+              "x": 393.48,
+              "y": 224
+            },
+            {
+              "id": 38648,
+              "name": "18",
+              "rowId": 1866,
+              "status": 1,
+              "position": 2,
+              "x": 381.48,
+              "y": 224
+            },
+            {
+              "id": 38649,
+              "name": "17",
+              "rowId": 1866,
+              "status": 1,
+              "position": 3,
+              "x": 369.48,
+              "y": 224
+            },
+            {
+              "id": 38650,
+              "name": "16",
+              "rowId": 1866,
+              "status": 1,
+              "position": 4,
+              "x": 357.48,
+              "y": 224
+            },
+            {
+              "id": 38651,
+              "name": "15",
+              "rowId": 1866,
+              "status": 1,
+              "position": 5,
+              "x": 345.48,
+              "y": 224
+            },
+            {
+              "id": 38652,
+              "name": "14",
+              "rowId": 1866,
+              "status": 1,
+              "position": 6,
+              "x": 333.48,
+              "y": 224
+            },
+            {
+              "id": 38653,
+              "name": "13",
+              "rowId": 1866,
+              "status": 1,
+              "position": 7,
+              "x": 321.48,
+              "y": 224
+            },
+            {
+              "id": 38654,
+              "name": "12",
+              "rowId": 1866,
+              "status": 1,
+              "position": 8,
+              "x": 309.48,
+              "y": 224
+            },
+            {
+              "id": 38655,
+              "name": "11",
+              "rowId": 1866,
+              "status": 1,
+              "position": 9,
+              "x": 297.48,
+              "y": 224
+            },
+            {
+              "id": 38656,
+              "name": "10",
+              "rowId": 1866,
+              "status": 1,
+              "position": 10,
+              "x": 285.48,
+              "y": 224
+            },
+            {
+              "id": 38657,
+              "name": "9",
+              "rowId": 1866,
+              "status": 1,
+              "position": 11,
+              "x": 273.48,
+              "y": 224
+            },
+            {
+              "id": 38658,
+              "name": "8",
+              "rowId": 1866,
+              "status": 1,
+              "position": 12,
+              "x": 261.48,
+              "y": 224
+            },
+            {
+              "id": 38659,
+              "name": "7",
+              "rowId": 1866,
+              "status": 1,
+              "position": 13,
+              "x": 249.48,
+              "y": 224
+            },
+            {
+              "id": 38660,
+              "name": "6",
+              "rowId": 1866,
+              "status": 1,
+              "position": 14,
+              "x": 237.48,
+              "y": 224
+            }
+          ]
+        },
+        {
+          "id": 1867,
+          "name": "E",
+          "sectionId": 210,
+          "status": 1,
+          "seats": [
+            {
+              "id": 38661,
+              "name": "21",
+              "rowId": 1867,
+              "status": 1,
+              "position": 0,
+              "x": 412,
+              "y": 240
+            },
+            {
+              "id": 38662,
+              "name": "20",
+              "rowId": 1867,
+              "status": 1,
+              "position": 1,
+              "x": 400,
+              "y": 240
+            },
+            {
+              "id": 38663,
+              "name": "19",
+              "rowId": 1867,
+              "status": 1,
+              "position": 2,
+              "x": 388,
+              "y": 240
+            },
+            {
+              "id": 38664,
+              "name": "18",
+              "rowId": 1867,
+              "status": 1,
+              "position": 3,
+              "x": 376,
+              "y": 240
+            },
+            {
+              "id": 38665,
+              "name": "17",
+              "rowId": 1867,
+              "status": 1,
+              "position": 4,
+              "x": 364,
+              "y": 240
+            },
+            {
+              "id": 38666,
+              "name": "16",
+              "rowId": 1867,
+              "status": 1,
+              "position": 5,
+              "x": 352,
+              "y": 240
+            },
+            {
+              "id": 38667,
+              "name": "15",
+              "rowId": 1867,
+              "status": 1,
+              "position": 6,
+              "x": 340,
+              "y": 240
+            },
+            {
+              "id": 38668,
+              "name": "14",
+              "rowId": 1867,
+              "status": 1,
+              "position": 7,
+              "x": 328,
+              "y": 240
+            },
+            {
+              "id": 38669,
+              "name": "13",
+              "rowId": 1867,
+              "status": 1,
+              "position": 8,
+              "x": 316,
+              "y": 240
+            },
+            {
+              "id": 38670,
+              "name": "12",
+              "rowId": 1867,
+              "status": 1,
+              "position": 9,
+              "x": 304,
+              "y": 240
+            },
+            {
+              "id": 38671,
+              "name": "11",
+              "rowId": 1867,
+              "status": 1,
+              "position": 10,
+              "x": 292,
+              "y": 240
+            },
+            {
+              "id": 38672,
+              "name": "10",
+              "rowId": 1867,
+              "status": 1,
+              "position": 11,
+              "x": 280,
+              "y": 240
+            },
+            {
+              "id": 38673,
+              "name": "9",
+              "rowId": 1867,
+              "status": 1,
+              "position": 12,
+              "x": 268,
+              "y": 240
+            },
+            {
+              "id": 38674,
+              "name": "8",
+              "rowId": 1867,
+              "status": 1,
+              "position": 13,
+              "x": 256,
+              "y": 240
+            },
+            {
+              "id": 38675,
+              "name": "7",
+              "rowId": 1867,
+              "status": 1,
+              "position": 14,
+              "x": 244,
+              "y": 240
+            },
+            {
+              "id": 38676,
+              "name": "6",
+              "rowId": 1867,
+              "status": 1,
+              "position": 15,
+              "x": 232,
+              "y": 240
+            }
+          ]
+        },
+        {
+          "id": 1868,
+          "name": "F",
+          "sectionId": 210,
+          "status": 1,
+          "seats": [
+            {
+              "id": 38677,
+              "name": "22",
+              "rowId": 1868,
+              "status": 1,
+              "position": 0,
+              "x": 408,
+              "y": 256
+            },
+            {
+              "id": 38678,
+              "name": "21",
+              "rowId": 1868,
+              "status": 1,
+              "position": 1,
+              "x": 396,
+              "y": 256
+            },
+            {
+              "id": 38679,
+              "name": "20",
+              "rowId": 1868,
+              "status": 1,
+              "position": 2,
+              "x": 384,
+              "y": 256
+            },
+            {
+              "id": 38680,
+              "name": "19",
+              "rowId": 1868,
+              "status": 1,
+              "position": 3,
+              "x": 372,
+              "y": 256
+            },
+            {
+              "id": 38681,
+              "name": "18",
+              "rowId": 1868,
+              "status": 1,
+              "position": 4,
+              "x": 360,
+              "y": 256
+            },
+            {
+              "id": 38682,
+              "name": "17",
+              "rowId": 1868,
+              "status": 1,
+              "position": 5,
+              "x": 348,
+              "y": 256
+            },
+            {
+              "id": 38683,
+              "name": "16",
+              "rowId": 1868,
+              "status": 1,
+              "position": 6,
+              "x": 336,
+              "y": 256
+            },
+            {
+              "id": 38684,
+              "name": "15",
+              "rowId": 1868,
+              "status": 1,
+              "position": 7,
+              "x": 324,
+              "y": 256
+            },
+            {
+              "id": 38685,
+              "name": "14",
+              "rowId": 1868,
+              "status": 1,
+              "position": 8,
+              "x": 312,
+              "y": 256
+            },
+            {
+              "id": 38686,
+              "name": "13",
+              "rowId": 1868,
+              "status": 1,
+              "position": 9,
+              "x": 300,
+              "y": 256
+            },
+            {
+              "id": 38687,
+              "name": "12",
+              "rowId": 1868,
+              "status": 1,
+              "position": 10,
+              "x": 288,
+              "y": 256
+            },
+            {
+              "id": 38688,
+              "name": "11",
+              "rowId": 1868,
+              "status": 1,
+              "position": 11,
+              "x": 276,
+              "y": 256
+            },
+            {
+              "id": 38689,
+              "name": "10",
+              "rowId": 1868,
+              "status": 1,
+              "position": 12,
+              "x": 264,
+              "y": 256
+            },
+            {
+              "id": 38690,
+              "name": "9",
+              "rowId": 1868,
+              "status": 1,
+              "position": 13,
+              "x": 252,
+              "y": 256
+            },
+            {
+              "id": 38691,
+              "name": "8",
+              "rowId": 1868,
+              "status": 1,
+              "position": 14,
+              "x": 240,
+              "y": 256
+            },
+            {
+              "id": 38692,
+              "name": "7",
+              "rowId": 1868,
+              "status": 1,
+              "position": 15,
+              "x": 228,
+              "y": 256
+            }
+          ]
+        },
+        {
+          "id": 1869,
+          "name": "G",
+          "sectionId": 210,
+          "status": 1,
+          "seats": [
+            {
+              "id": 38693,
+              "name": "22",
+              "rowId": 1869,
+              "status": 1,
+              "position": 0,
+              "x": 412,
+              "y": 272
+            },
+            {
+              "id": 38694,
+              "name": "21",
+              "rowId": 1869,
+              "status": 1,
+              "position": 1,
+              "x": 400,
+              "y": 272
+            },
+            {
+              "id": 38695,
+              "name": "20",
+              "rowId": 1869,
+              "status": 1,
+              "position": 2,
+              "x": 388,
+              "y": 272
+            },
+            {
+              "id": 38696,
+              "name": "19",
+              "rowId": 1869,
+              "status": 1,
+              "position": 3,
+              "x": 376,
+              "y": 272
+            },
+            {
+              "id": 38697,
+              "name": "18",
+              "rowId": 1869,
+              "status": 1,
+              "position": 4,
+              "x": 364,
+              "y": 272
+            },
+            {
+              "id": 38698,
+              "name": "17",
+              "rowId": 1869,
+              "status": 1,
+              "position": 5,
+              "x": 352,
+              "y": 272
+            },
+            {
+              "id": 38699,
+              "name": "16",
+              "rowId": 1869,
+              "status": 1,
+              "position": 6,
+              "x": 340,
+              "y": 272
+            },
+            {
+              "id": 38700,
+              "name": "15",
+              "rowId": 1869,
+              "status": 1,
+              "position": 7,
+              "x": 328,
+              "y": 272
+            },
+            {
+              "id": 38701,
+              "name": "14",
+              "rowId": 1869,
+              "status": 1,
+              "position": 8,
+              "x": 316,
+              "y": 272
+            },
+            {
+              "id": 38702,
+              "name": "13",
+              "rowId": 1869,
+              "status": 1,
+              "position": 9,
+              "x": 304,
+              "y": 272
+            },
+            {
+              "id": 38703,
+              "name": "12",
+              "rowId": 1869,
+              "status": 1,
+              "position": 10,
+              "x": 292,
+              "y": 272
+            },
+            {
+              "id": 38704,
+              "name": "11",
+              "rowId": 1869,
+              "status": 1,
+              "position": 11,
+              "x": 280,
+              "y": 272
+            },
+            {
+              "id": 38705,
+              "name": "10",
+              "rowId": 1869,
+              "status": 1,
+              "position": 12,
+              "x": 268,
+              "y": 272
+            },
+            {
+              "id": 38706,
+              "name": "9",
+              "rowId": 1869,
+              "status": 1,
+              "position": 13,
+              "x": 256,
+              "y": 272
+            },
+            {
+              "id": 38707,
+              "name": "8",
+              "rowId": 1869,
+              "status": 1,
+              "position": 14,
+              "x": 244,
+              "y": 272
+            },
+            {
+              "id": 38708,
+              "name": "7",
+              "rowId": 1869,
+              "status": 1,
+              "position": 15,
+              "x": 232,
+              "y": 272
+            }
+          ]
+        },
+        {
+          "id": 1870,
+          "name": "H",
+          "sectionId": 210,
+          "status": 1,
+          "seats": [
+            {
+              "id": 38709,
+              "name": "23",
+              "rowId": 1870,
+              "status": 2,
+              "position": 0,
+              "x": 408,
+              "y": 288
+            },
+            {
+              "id": 38710,
+              "name": "22",
+              "rowId": 1870,
+              "status": 2,
+              "position": 1,
+              "x": 396,
+              "y": 288
+            },
+            {
+              "id": 38711,
+              "name": "21",
+              "rowId": 1870,
+              "status": 2,
+              "position": 2,
+              "x": 384,
+              "y": 288
+            },
+            {
+              "id": 38712,
+              "name": "20",
+              "rowId": 1870,
+              "status": 2,
+              "position": 3,
+              "x": 372,
+              "y": 288
+            },
+            {
+              "id": 38713,
+              "name": "19",
+              "rowId": 1870,
+              "status": 2,
+              "position": 4,
+              "x": 360,
+              "y": 288
+            },
+            {
+              "id": 38714,
+              "name": "18",
+              "rowId": 1870,
+              "status": 2,
+              "position": 5,
+              "x": 348,
+              "y": 288
+            },
+            {
+              "id": 38715,
+              "name": "17",
+              "rowId": 1870,
+              "status": 2,
+              "position": 6,
+              "x": 336,
+              "y": 288
+            },
+            {
+              "id": 38716,
+              "name": "16",
+              "rowId": 1870,
+              "status": 2,
+              "position": 7,
+              "x": 324,
+              "y": 288
+            },
+            {
+              "id": 38717,
+              "name": "15",
+              "rowId": 1870,
+              "status": 2,
+              "position": 8,
+              "x": 312,
+              "y": 288
+            },
+            {
+              "id": 38718,
+              "name": "14",
+              "rowId": 1870,
+              "status": 2,
+              "position": 9,
+              "x": 300,
+              "y": 288
+            },
+            {
+              "id": 38719,
+              "name": "13",
+              "rowId": 1870,
+              "status": 2,
+              "position": 10,
+              "x": 288,
+              "y": 288
+            },
+            {
+              "id": 38720,
+              "name": "12",
+              "rowId": 1870,
+              "status": 2,
+              "position": 11,
+              "x": 276,
+              "y": 288
+            },
+            {
+              "id": 38721,
+              "name": "11",
+              "rowId": 1870,
+              "status": 2,
+              "position": 12,
+              "x": 264,
+              "y": 288
+            },
+            {
+              "id": 38722,
+              "name": "10",
+              "rowId": 1870,
+              "status": 2,
+              "position": 13,
+              "x": 252,
+              "y": 288
+            },
+            {
+              "id": 38723,
+              "name": "9",
+              "rowId": 1870,
+              "status": 2,
+              "position": 14,
+              "x": 240,
+              "y": 288
+            },
+            {
+              "id": 38724,
+              "name": "8",
+              "rowId": 1870,
+              "status": 2,
+              "position": 15,
+              "x": 228,
+              "y": 288
+            }
+          ]
+        },
+        {
+          "id": 1871,
+          "name": "I",
+          "sectionId": 210,
+          "status": 1,
+          "seats": [
+            {
+              "id": 38725,
+              "name": "23",
+              "rowId": 1871,
+              "status": 2,
+              "position": 0,
+              "x": 412,
+              "y": 304
+            },
+            {
+              "id": 38726,
+              "name": "22",
+              "rowId": 1871,
+              "status": 2,
+              "position": 1,
+              "x": 400,
+              "y": 304
+            },
+            {
+              "id": 38727,
+              "name": "21",
+              "rowId": 1871,
+              "status": 2,
+              "position": 2,
+              "x": 388,
+              "y": 304
+            },
+            {
+              "id": 38728,
+              "name": "20",
+              "rowId": 1871,
+              "status": 2,
+              "position": 3,
+              "x": 376,
+              "y": 304
+            },
+            {
+              "id": 38729,
+              "name": "19",
+              "rowId": 1871,
+              "status": 2,
+              "position": 4,
+              "x": 364,
+              "y": 304
+            },
+            {
+              "id": 38730,
+              "name": "18",
+              "rowId": 1871,
+              "status": 2,
+              "position": 5,
+              "x": 352,
+              "y": 304
+            },
+            {
+              "id": 38731,
+              "name": "17",
+              "rowId": 1871,
+              "status": 2,
+              "position": 6,
+              "x": 340,
+              "y": 304
+            },
+            {
+              "id": 38732,
+              "name": "16",
+              "rowId": 1871,
+              "status": 2,
+              "position": 7,
+              "x": 328,
+              "y": 304
+            },
+            {
+              "id": 38733,
+              "name": "15",
+              "rowId": 1871,
+              "status": 2,
+              "position": 8,
+              "x": 316,
+              "y": 304
+            },
+            {
+              "id": 38734,
+              "name": "14",
+              "rowId": 1871,
+              "status": 2,
+              "position": 9,
+              "x": 304,
+              "y": 304
+            },
+            {
+              "id": 38735,
+              "name": "13",
+              "rowId": 1871,
+              "status": 2,
+              "position": 10,
+              "x": 292,
+              "y": 304
+            },
+            {
+              "id": 38736,
+              "name": "12",
+              "rowId": 1871,
+              "status": 2,
+              "position": 11,
+              "x": 280,
+              "y": 304
+            },
+            {
+              "id": 38737,
+              "name": "11",
+              "rowId": 1871,
+              "status": 2,
+              "position": 12,
+              "x": 268,
+              "y": 304
+            },
+            {
+              "id": 38738,
+              "name": "10",
+              "rowId": 1871,
+              "status": 2,
+              "position": 13,
+              "x": 256,
+              "y": 304
+            },
+            {
+              "id": 38739,
+              "name": "9",
+              "rowId": 1871,
+              "status": 2,
+              "position": 14,
+              "x": 244,
+              "y": 304
+            },
+            {
+              "id": 38740,
+              "name": "8",
+              "rowId": 1871,
+              "status": 2,
+              "position": 15,
+              "x": 232,
+              "y": 304
+            }
+          ]
+        },
+        {
+          "id": 1872,
+          "name": "J",
+          "sectionId": 210,
+          "status": 1,
+          "seats": [
+            {
+              "id": 38741,
+              "name": "23",
+              "rowId": 1872,
+              "status": 1,
+              "position": 0,
+              "x": 408,
+              "y": 320
+            },
+            {
+              "id": 38742,
+              "name": "22",
+              "rowId": 1872,
+              "status": 1,
+              "position": 1,
+              "x": 396,
+              "y": 320
+            },
+            {
+              "id": 38743,
+              "name": "21",
+              "rowId": 1872,
+              "status": 1,
+              "position": 2,
+              "x": 384,
+              "y": 320
+            },
+            {
+              "id": 38744,
+              "name": "20",
+              "rowId": 1872,
+              "status": 1,
+              "position": 3,
+              "x": 372,
+              "y": 320
+            },
+            {
+              "id": 38745,
+              "name": "19",
+              "rowId": 1872,
+              "status": 1,
+              "position": 4,
+              "x": 360,
+              "y": 320
+            },
+            {
+              "id": 38746,
+              "name": "18",
+              "rowId": 1872,
+              "status": 1,
+              "position": 5,
+              "x": 348,
+              "y": 320
+            },
+            {
+              "id": 38747,
+              "name": "17",
+              "rowId": 1872,
+              "status": 1,
+              "position": 6,
+              "x": 336,
+              "y": 320
+            },
+            {
+              "id": 38748,
+              "name": "16",
+              "rowId": 1872,
+              "status": 1,
+              "position": 7,
+              "x": 324,
+              "y": 320
+            },
+            {
+              "id": 38749,
+              "name": "15",
+              "rowId": 1872,
+              "status": 4,
+              "position": 8,
+              "x": 312,
+              "y": 320
+            },
+            {
+              "id": 38750,
+              "name": "14",
+              "rowId": 1872,
+              "status": 4,
+              "position": 9,
+              "x": 300,
+              "y": 320
+            },
+            {
+              "id": 38751,
+              "name": "13",
+              "rowId": 1872,
+              "status": 4,
+              "position": 10,
+              "x": 288,
+              "y": 320
+            },
+            {
+              "id": 38752,
+              "name": "12",
+              "rowId": 1872,
+              "status": 1,
+              "position": 11,
+              "x": 276,
+              "y": 320
+            },
+            {
+              "id": 38753,
+              "name": "11",
+              "rowId": 1872,
+              "status": 1,
+              "position": 12,
+              "x": 264,
+              "y": 320
+            },
+            {
+              "id": 38754,
+              "name": "10",
+              "rowId": 1872,
+              "status": 1,
+              "position": 13,
+              "x": 252,
+              "y": 320
+            },
+            {
+              "id": 38755,
+              "name": "9",
+              "rowId": 1872,
+              "status": 1,
+              "position": 14,
+              "x": 240,
+              "y": 320
+            },
+            {
+              "id": 38756,
+              "name": "8",
+              "rowId": 1872,
+              "status": 1,
+              "position": 15,
+              "x": 228,
+              "y": 320
+            }
+          ]
+        },
+        {
+          "id": 1873,
+          "name": "K",
+          "sectionId": 210,
+          "status": 1,
+          "seats": [
+            {
+              "id": 38757,
+              "name": "23",
+              "rowId": 1873,
+              "status": 1,
+              "position": 0,
+              "x": 412,
+              "y": 336
+            },
+            {
+              "id": 38758,
+              "name": "22",
+              "rowId": 1873,
+              "status": 1,
+              "position": 1,
+              "x": 400,
+              "y": 336
+            },
+            {
+              "id": 38759,
+              "name": "21",
+              "rowId": 1873,
+              "status": 1,
+              "position": 2,
+              "x": 388,
+              "y": 336
+            },
+            {
+              "id": 38760,
+              "name": "20",
+              "rowId": 1873,
+              "status": 4,
+              "position": 3,
+              "x": 376,
+              "y": 336
+            },
+            {
+              "id": 38761,
+              "name": "19",
+              "rowId": 1873,
+              "status": 4,
+              "position": 4,
+              "x": 364,
+              "y": 336
+            },
+            {
+              "id": 38762,
+              "name": "18",
+              "rowId": 1873,
+              "status": 4,
+              "position": 5,
+              "x": 352,
+              "y": 336
+            },
+            {
+              "id": 38763,
+              "name": "17",
+              "rowId": 1873,
+              "status": 1,
+              "position": 6,
+              "x": 340,
+              "y": 336
+            },
+            {
+              "id": 38764,
+              "name": "16",
+              "rowId": 1873,
+              "status": 1,
+              "position": 7,
+              "x": 328,
+              "y": 336
+            },
+            {
+              "id": 38765,
+              "name": "15",
+              "rowId": 1873,
+              "status": 1,
+              "position": 8,
+              "x": 316,
+              "y": 336
+            },
+            {
+              "id": 38766,
+              "name": "14",
+              "rowId": 1873,
+              "status": 1,
+              "position": 9,
+              "x": 304,
+              "y": 336
+            },
+            {
+              "id": 38767,
+              "name": "13",
+              "rowId": 1873,
+              "status": 1,
+              "position": 10,
+              "x": 292,
+              "y": 336
+            },
+            {
+              "id": 38768,
+              "name": "12",
+              "rowId": 1873,
+              "status": 1,
+              "position": 11,
+              "x": 280,
+              "y": 336
+            },
+            {
+              "id": 38769,
+              "name": "11",
+              "rowId": 1873,
+              "status": 1,
+              "position": 12,
+              "x": 268,
+              "y": 336
+            },
+            {
+              "id": 38770,
+              "name": "10",
+              "rowId": 1873,
+              "status": 1,
+              "position": 13,
+              "x": 256,
+              "y": 336
+            },
+            {
+              "id": 38771,
+              "name": "9",
+              "rowId": 1873,
+              "status": 1,
+              "position": 14,
+              "x": 244,
+              "y": 336
+            },
+            {
+              "id": 38772,
+              "name": "8",
+              "rowId": 1873,
+              "status": 1,
+              "position": 15,
+              "x": 232,
+              "y": 336
+            }
+          ]
+        },
+        {
+          "id": 1874,
+          "name": "L",
+          "sectionId": 210,
+          "status": 1,
+          "seats": [
+            {
+              "id": 38773,
+              "name": "23",
+              "rowId": 1874,
+              "status": 1,
+              "position": 0,
+              "x": 408,
+              "y": 352
+            },
+            {
+              "id": 38774,
+              "name": "22",
+              "rowId": 1874,
+              "status": 1,
+              "position": 1,
+              "x": 396,
+              "y": 352
+            },
+            {
+              "id": 38775,
+              "name": "21",
+              "rowId": 1874,
+              "status": 1,
+              "position": 2,
+              "x": 384,
+              "y": 352
+            },
+            {
+              "id": 38776,
+              "name": "20",
+              "rowId": 1874,
+              "status": 1,
+              "position": 3,
+              "x": 372,
+              "y": 352
+            },
+            {
+              "id": 38777,
+              "name": "19",
+              "rowId": 1874,
+              "status": 1,
+              "position": 4,
+              "x": 360,
+              "y": 352
+            },
+            {
+              "id": 38778,
+              "name": "18",
+              "rowId": 1874,
+              "status": 1,
+              "position": 5,
+              "x": 348,
+              "y": 352
+            },
+            {
+              "id": 38779,
+              "name": "17",
+              "rowId": 1874,
+              "status": 1,
+              "position": 6,
+              "x": 336,
+              "y": 352
+            },
+            {
+              "id": 38780,
+              "name": "16",
+              "rowId": 1874,
+              "status": 1,
+              "position": 7,
+              "x": 324,
+              "y": 352
+            },
+            {
+              "id": 38781,
+              "name": "15",
+              "rowId": 1874,
+              "status": 1,
+              "position": 8,
+              "x": 312,
+              "y": 352
+            },
+            {
+              "id": 38782,
+              "name": "14",
+              "rowId": 1874,
+              "status": 1,
+              "position": 9,
+              "x": 300,
+              "y": 352
+            },
+            {
+              "id": 38783,
+              "name": "13",
+              "rowId": 1874,
+              "status": 1,
+              "position": 10,
+              "x": 288,
+              "y": 352
+            },
+            {
+              "id": 38784,
+              "name": "12",
+              "rowId": 1874,
+              "status": 1,
+              "position": 11,
+              "x": 276,
+              "y": 352
+            },
+            {
+              "id": 38785,
+              "name": "11",
+              "rowId": 1874,
+              "status": 1,
+              "position": 12,
+              "x": 264,
+              "y": 352
+            },
+            {
+              "id": 38786,
+              "name": "10",
+              "rowId": 1874,
+              "status": 1,
+              "position": 13,
+              "x": 252,
+              "y": 352
+            },
+            {
+              "id": 38787,
+              "name": "9",
+              "rowId": 1874,
+              "status": 1,
+              "position": 14,
+              "x": 240,
+              "y": 352
+            },
+            {
+              "id": 38788,
+              "name": "8",
+              "rowId": 1874,
+              "status": 1,
+              "position": 15,
+              "x": 228,
+              "y": 352
+            }
+          ]
+        }
+      ],
+      "ticketType": {
+        "id": 2630,
+        "name": "Vé 20K",
+        "description": "",
+        "color": "#6666FF",
+        "isFree": false,
+        "price": 20000,
+        "originalPrice": 20000,
+        "maxQtyPerOrder": 10,
+        "minQtyPerOrder": 1,
+        "startTime": "2023-09-04T17:00:00Z",
+        "endTime": "2023-11-30T17:00:00Z",
+        "position": 3,
+        "status": "book_now",
+        "statusName": "Book now",
+        "imageUrl": ""
+      }
+    }
+  },
+  "code": 0,
+  "traceId": "d5ddbb7cd29c7aa6d6abd6b7dbec54c3"
+}

@@ -1,0 +1,824 @@
+{
+  "status": 1,
+  "message": "Success",
+  "data": {
+    "result": {
+      "id": 21,
+      "name": "SM_HoangThaiThanh.svg",
+      "status": 0,
+      "sections": [
+        {
+          "id": 204,
+          "seatMapId": 21,
+          "name": "stage",
+          "isReservingSeat": false,
+          "isStage": true,
+          "capacity": 0,
+          "status": 1,
+          "elements": [
+            {
+              "type": "path",
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "fill": "rgb(230, 235, 245)",
+              "data": "M443.48,112h-244a18,18,0,0,1-18-18V54a18,18,0,0,1,18-18h244a18,18,0,0,1,18,18V94A18,18,0,0,1,443.48,112Z",
+              "display": 1
+            },
+            {
+              "type": "path",
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "fill": "rgb(0, 0, 0)",
+              "data": "M270.23,76.64a3.62,3.62,0,0,0,2.55,1c.71,0,1.14-.3,1.14-.68s-.51-.64-1.37-.81c-1.31-.27-3.16-.6-3.16-2.5,0-1.34,1.14-2.51,3.19-2.51a4.89,4.89,0,0,1,3.25,1.12l-1.13,1.47a3.72,3.72,0,0,0-2.25-.82c-.69,0-.95.27-.95.62s.49.56,1.38.73c1.32.28,3.14.66,3.14,2.47,0,1.61-1.19,2.68-3.33,2.68a4.92,4.92,0,0,1-3.55-1.27Z",
+              "display": 1
+            },
+            {
+              "type": "path",
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "fill": "rgb(0, 0, 0)",
+              "data": "M278.72,73.11h-2.24v-1.8H283v1.8h-2.23v6.2h-2.07Z",
+              "display": 1
+            },
+            {
+              "type": "path",
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "fill": "rgb(0, 0, 0)",
+              "data": "M288.38,78.1h-3.32l-.41,1.21h-2.24l3-8H288l3,8h-2.24Zm-2.78-1.74h2.24l-1.13-3.25Z",
+              "display": 1
+            },
+            {
+              "type": "path",
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "fill": "rgb(0, 0, 0)",
+              "data": "M295.16,71.18A3.78,3.78,0,0,1,298.58,73l-1.73.91a2,2,0,0,0-1.69-1,2.32,2.32,0,0,0,0,4.63,2.43,2.43,0,0,0,1.51-.48v-.67h-1.83V74.77h3.86V77.9a4.61,4.61,0,0,1-3.54,1.56,4.14,4.14,0,1,1,0-8.28Z",
+              "display": 1
+            },
+            {
+              "type": "path",
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "fill": "rgb(0, 0, 0)",
+              "data": "M299.92,71.31h5.86v1.74H302v1.33h3.72v1.76H302v1.43h3.8v1.74h-5.86Z",
+              "display": 1
+            },
+            {
+              "type": "path",
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "fill": "rgb(0, 0, 0)",
+              "data": "M309.11,71.07h1.3l-2.84,8.48h-1.31Z",
+              "display": 1
+            },
+            {
+              "type": "path",
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "fill": "rgb(0, 0, 0)",
+              "data": "M314.72,76.64a3.66,3.66,0,0,0,2.56,1c.71,0,1.14-.3,1.14-.68s-.52-.64-1.37-.81c-1.32-.27-3.17-.6-3.17-2.5,0-1.34,1.14-2.51,3.19-2.51a4.88,4.88,0,0,1,3.25,1.12l-1.12,1.47a3.74,3.74,0,0,0-2.26-.82c-.68,0-.95.27-.95.62s.5.56,1.38.73c1.32.28,3.15.66,3.15,2.47,0,1.61-1.19,2.68-3.34,2.68a4.93,4.93,0,0,1-3.55-1.27Z",
+              "display": 1
+            },
+            {
+              "type": "path",
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "fill": "rgb(0, 0, 0)",
+              "data": "M326.55,78.1h-3.32l-.41,1.21h-2.24l3-8h2.59l3,8H327Zm-1.66-8.43-.8,1H323l1.08-1.73h1.62l1.12,1.73h-1.11Zm-1.12,6.69H326l-1.12-3.25Z",
+              "display": 1
+            },
+            {
+              "type": "path",
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "fill": "rgb(0, 0, 0)",
+              "data": "M331.86,74.48v4.83H329.8v-8h2.12l3.24,4.61V71.31h2.07v8h-2Z",
+              "display": 1
+            },
+            {
+              "type": "path",
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "fill": "rgb(0, 0, 0)",
+              "data": "M344.35,76.3l-.54.67v2.34h-2.06v-8h2.06V74.6l2.46-3.29h2.54l-3.1,3.75L349,79.31h-2.53Z",
+              "display": 1
+            },
+            {
+              "type": "path",
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "fill": "rgb(0, 0, 0)",
+              "data": "M355,76.1h-3.32v3.21H349.6v-8h2.06v3H355v-3H357v8H355Z",
+              "display": 1
+            },
+            {
+              "type": "path",
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "fill": "rgb(0, 0, 0)",
+              "data": "M363.61,78.1h-3.32l-.41,1.21h-2.24l3-8h2.59l3,8H364Zm-1.67-8.17-.79.71h-1.09l1-1.29h1.7l1.08,1.29h-1.1Zm-1.11,6.43h2.24l-1.13-3.25Zm2.68-6.62,1.41-1.29h1.75l-1.79,1.29Z",
+              "display": 1
+            },
+            {
+              "type": "path",
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "fill": "rgb(0, 0, 0)",
+              "data": "M366.41,71.31h2.1V76a1.61,1.61,0,1,0,3.22,0V71.31h2.1v4.75c0,2-1.14,3.4-3.71,3.4s-3.71-1.42-3.71-3.39Z",
+              "display": 1
+            }
+          ],
+          "attribute": {
+            "x": 272.22,
+            "y": 54,
+            "width": 420,
+            "height": 114,
+            "scaleX": 0,
+            "scaleY": 0,
+            "rotate": 0
+          }
+        },
+        {
+          "id": 205,
+          "seatMapId": 21,
+          "name": "190k_Right",
+          "isReservingSeat": true,
+          "isStage": false,
+          "capacity": 21,
+          "ticketTypeId": 2625,
+          "status": 2,
+          "ticketType": {
+            "id": 2625,
+            "name": "Vé 4K",
+            "description": "",
+            "color": "#CC99FF",
+            "isFree": false,
+            "price": 4000,
+            "originalPrice": 4000,
+            "maxQtyPerOrder": 15,
+            "minQtyPerOrder": 1,
+            "startTime": "2023-09-30T17:00:00Z",
+            "endTime": "2023-11-30T17:00:00Z",
+            "position": 8,
+            "status": "sold_out",
+            "statusName": "Sold out",
+            "imageUrl": ""
+          },
+          "elements": [
+            {
+              "type": "path",
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "fill": "rgb(253, 224, 152)",
+              "data": "M39.17,377.68c-1.8,49.41,8.12,96.36,50.31,115,34,15,69.76,22.78,106.52,26.87V396.44C116.37,391.71,65.79,383.29,39.17,377.68Z",
+              "display": 1
+            }
+          ],
+          "attribute": {
+            "x": 58.457,
+            "y": 566.52,
+            "width": 235.543,
+            "height": 212.61928,
+            "scaleX": 0,
+            "scaleY": 0,
+            "rotate": 0
+          }
+        },
+        {
+          "id": 206,
+          "seatMapId": 21,
+          "name": "190k_Left",
+          "isReservingSeat": true,
+          "isStage": false,
+          "capacity": 21,
+          "ticketTypeId": 2626,
+          "status": 2,
+          "ticketType": {
+            "id": 2626,
+            "name": "Vé 3K",
+            "description": "Vé test stock",
+            "color": "#FF9900",
+            "isFree": false,
+            "price": 3000,
+            "originalPrice": 3000,
+            "maxQtyPerOrder": 2,
+            "minQtyPerOrder": 1,
+            "startTime": "2023-09-12T17:00:00Z",
+            "endTime": "2023-10-30T17:00:00Z",
+            "position": 7,
+            "status": "sale_closed",
+            "statusName": "Online booking closed",
+            "imageUrl": ""
+          },
+          "elements": [
+            {
+              "type": "path",
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "fill": "rgb(253, 224, 152)",
+              "data": "M452,396.44V518.93c35-4.23,69.09-12,101.48-26.28,41.9-18.48,52-64.91,50.35-113.95C576.09,384.28,526.9,392,452,396.44Z",
+              "display": 1
+            }
+          ],
+          "attribute": {
+            "x": 678,
+            "y": 568.05,
+            "width": 227.99535,
+            "height": 210.345,
+            "scaleX": 0,
+            "scaleY": 0,
+            "rotate": 0
+          }
+        },
+        {
+          "id": 207,
+          "seatMapId": 21,
+          "name": "200k_Right",
+          "isReservingSeat": true,
+          "isStage": false,
+          "capacity": 78,
+          "ticketTypeId": 2627,
+          "status": 1,
+          "ticketType": {
+            "id": 2627,
+            "name": "Vé Free",
+            "description": "Vé Free nèkkkkkk",
+            "color": "",
+            "isFree": true,
+            "price": 0,
+            "originalPrice": 0,
+            "maxQtyPerOrder": 10,
+            "minQtyPerOrder": 1,
+            "startTime": "2023-09-11T17:00:00Z",
+            "endTime": "2023-11-30T17:00:00Z",
+            "position": 6,
+            "status": "register_now",
+            "statusName": "Book now",
+            "imageUrl": ""
+          },
+          "elements": [
+            {
+              "type": "path",
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "fill": "rgb(171, 231, 200)",
+              "data": "M603.83,378.7c-1.48-44.59-12.63-91.34-18.35-121.21-12-62.7-40-121.49-120-121.49H452V396.44C526.9,392,576.09,384.28,603.83,378.7Z",
+              "display": 1
+            }
+          ],
+          "attribute": {
+            "x": 678,
+            "y": 204,
+            "width": 227.745,
+            "height": 390.66,
+            "scaleX": 0,
+            "scaleY": 0,
+            "rotate": 0
+          }
+        },
+        {
+          "id": 208,
+          "seatMapId": 21,
+          "name": "200k_Left",
+          "isReservingSeat": true,
+          "isStage": false,
+          "capacity": 78,
+          "ticketTypeId": 2628,
+          "status": 1,
+          "ticketType": {
+            "id": 2628,
+            "name": "Vé 2K",
+            "description": "Vé rẻ nhưng mà mua thì phải mua 10 vé / lần cơ",
+            "color": "#FF6600",
+            "isFree": false,
+            "price": 2000,
+            "originalPrice": 2000,
+            "maxQtyPerOrder": 100,
+            "minQtyPerOrder": 10,
+            "startTime": "2023-09-04T17:00:00Z",
+            "endTime": "2023-11-30T17:00:00Z",
+            "position": 5,
+            "status": "book_now",
+            "statusName": "Book now",
+            "imageUrl": ""
+          },
+          "elements": [
+            {
+              "type": "path",
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "fill": "rgb(171, 231, 200)",
+              "data": "M196,136H177.48c-80,0-108,58.79-120,121.49-5.67,29.64-16.69,75.9-18.31,120.19,26.62,5.61,77.2,14,156.83,18.76Z",
+              "display": 1
+            }
+          ],
+          "attribute": {
+            "x": 58.755,
+            "y": 204,
+            "width": 235.245,
+            "height": 390.44418,
+            "scaleX": 0,
+            "scaleY": 0,
+            "rotate": 0
+          }
+        },
+        {
+          "id": 209,
+          "seatMapId": 21,
+          "name": "200k_Middle",
+          "isReservingSeat": true,
+          "isStage": false,
+          "capacity": 31,
+          "ticketTypeId": 2631,
+          "status": 2,
+          "ticketType": {
+            "id": 2631,
+            "name": "Vé 10K",
+            "description": "",
+            "color": "#00CC00",
+            "isFree": false,
+            "price": 10000,
+            "originalPrice": 10000,
+            "maxQtyPerOrder": 2,
+            "minQtyPerOrder": 1,
+            "startTime": "2023-09-04T17:00:00Z",
+            "endTime": "2023-10-31T17:00:00Z",
+            "position": 2,
+            "status": "sale_closed",
+            "statusName": "Online booking closed",
+            "imageUrl": ""
+          },
+          "elements": [
+            {
+              "type": "path",
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "fill": "rgb(171, 231, 200)",
+              "data": "M324,400c-49.08,0-91.57-1.4-128-3.56V519.52c41,4.57,83.28,4.48,125.48,4.48,43.93,0,87.9.09,130.52-5.07V396.44C415.57,398.6,373.08,400,324,400Z",
+              "display": 1
+            },
+            {
+              "type": "path",
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "fill": "rgb(0, 0, 0)",
+              "data": "M212,426.6l-2,5.4H209l-2-5.4V432h-2.06v-8h2.87l1.66,4.53,1.68-4.53H214v8H212Z",
+              "display": 1
+            },
+            {
+              "type": "path",
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "fill": "rgb(0, 0, 0)",
+              "data": "M207.83,443.17V448h-2.07v-8h2.13l3.23,4.61V440h2.08v8h-2Z",
+              "display": 1
+            },
+            {
+              "type": "path",
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "fill": "rgb(0, 0, 0)",
+              "data": "M209.48,455.87A4.14,4.14,0,1,1,205.2,460,4.06,4.06,0,0,1,209.48,455.87Zm0,1.82a2.32,2.32,0,1,0,2.17,2.32A2.16,2.16,0,0,0,209.48,457.69Z",
+              "display": 1
+            },
+            {
+              "type": "path",
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "fill": "rgb(0, 0, 0)",
+              "data": "M206.35,472h4a2.65,2.65,0,1,1,0,5.29h-1.94V480h-2.06Zm3.73,1.74h-1.67v1.8h1.67a.89.89,0,0,0,1-.89A.9.9,0,0,0,210.08,473.74Z",
+              "display": 1
+            },
+            {
+              "type": "path",
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "fill": "rgb(0, 0, 0)",
+              "data": "M439.18,426.6l-2,5.4h-.91l-2-5.4V432h-2.07v-8H435l1.67,4.53,1.68-4.53h2.86v8h-2.06Z",
+              "display": 1
+            },
+            {
+              "type": "path",
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "fill": "rgb(0, 0, 0)",
+              "data": "M435.05,443.17V448H433v-8h2.12l3.24,4.61V440h2.07v8h-2Z",
+              "display": 1
+            },
+            {
+              "type": "path",
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "fill": "rgb(0, 0, 0)",
+              "data": "M436.7,455.87a4.14,4.14,0,1,1-4.28,4.14A4.06,4.06,0,0,1,436.7,455.87Zm0,1.82a2.32,2.32,0,1,0,2.17,2.32A2.16,2.16,0,0,0,436.7,457.69Z",
+              "display": 1
+            },
+            {
+              "type": "path",
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "fill": "rgb(0, 0, 0)",
+              "data": "M433.57,472h4a2.65,2.65,0,1,1,0,5.29h-1.94V480h-2.06Zm3.73,1.74h-1.67v1.8h1.67a.89.89,0,0,0,1-.89A.9.9,0,0,0,437.3,473.74Z",
+              "display": 1
+            }
+          ],
+          "attribute": {
+            "x": 294,
+            "y": 594.66,
+            "width": 384,
+            "height": 191.3402,
+            "scaleX": 0,
+            "scaleY": 0,
+            "rotate": 0
+          }
+        },
+        {
+          "id": 210,
+          "seatMapId": 21,
+          "name": "220k",
+          "isReservingSeat": true,
+          "isStage": false,
+          "capacity": 185,
+          "ticketTypeId": 2630,
+          "status": 1,
+          "ticketType": {
+            "id": 2630,
+            "name": "Vé 20K",
+            "description": "",
+            "color": "#6666FF",
+            "isFree": false,
+            "price": 20000,
+            "originalPrice": 20000,
+            "maxQtyPerOrder": 10,
+            "minQtyPerOrder": 1,
+            "startTime": "2023-09-04T17:00:00Z",
+            "endTime": "2023-11-30T17:00:00Z",
+            "position": 3,
+            "status": "book_now",
+            "statusName": "Book now",
+            "imageUrl": ""
+          },
+          "elements": [
+            {
+              "type": "path",
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "fill": "rgb(178, 185, 244)",
+              "data": "M324,400c49.08,0,91.57-1.4,128-3.56V136H196V396.44C232.43,398.6,274.92,400,324,400Z",
+              "display": 1
+            },
+            {
+              "type": "path",
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "fill": "rgb(0, 0, 0)",
+              "data": "M211.14,178.79h-3.32l-.41,1.21h-2.24l3-8h2.59l3,8h-2.24Zm-2.78-1.74h2.24l-1.12-3.25Z",
+              "display": 1
+            },
+            {
+              "type": "path",
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "fill": "rgb(0, 0, 0)",
+              "data": "M206.12,188h4.54a2.1,2.1,0,0,1,2.34,2,1.79,1.79,0,0,1-1.37,1.83,1.92,1.92,0,0,1,1.52,2A2.13,2.13,0,0,1,210.8,196h-4.68Zm4.07,3.09a.68.68,0,0,0,.71-.69.66.66,0,0,0-.71-.68h-2v1.37Zm.07,3.2a.72.72,0,0,0,.79-.74.74.74,0,0,0-.79-.75h-2.07v1.49Z",
+              "display": 1
+            },
+            {
+              "type": "path",
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "fill": "rgb(0, 0, 0)",
+              "data": "M205.64,208a4.07,4.07,0,0,1,4.27-4.14,3.71,3.71,0,0,1,3.55,2.15l-1.77.83a2,2,0,0,0-1.78-1.16,2.32,2.32,0,0,0,0,4.63,2,2,0,0,0,1.78-1.16l1.77.84a3.74,3.74,0,0,1-3.55,2.14A4.07,4.07,0,0,1,205.64,208Z",
+              "display": 1
+            },
+            {
+              "type": "path",
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "fill": "rgb(0, 0, 0)",
+              "data": "M205.84,220h3.36c2.52,0,4.33,1.51,4.33,4s-1.81,4-4.32,4h-3.37Zm3.36,6.2a2.13,2.13,0,0,0,2.22-2.21,2.05,2.05,0,0,0-2.21-2.19H207.9v4.4Z",
+              "display": 1
+            },
+            {
+              "type": "path",
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "fill": "rgb(0, 0, 0)",
+              "data": "M206.67,236h5.86v1.74h-3.8v1.33h3.72v1.75h-3.72v1.44h3.8V244h-5.86Z",
+              "display": 1
+            },
+            {
+              "type": "path",
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "fill": "rgb(0, 0, 0)",
+              "data": "M206.71,252h5.87v1.74h-3.81v1.33h3.72v1.75h-3.72V260h-2.06Z",
+              "display": 1
+            },
+            {
+              "type": "path",
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "fill": "rgb(0, 0, 0)",
+              "data": "M209.79,267.87a3.76,3.76,0,0,1,3.42,1.86l-1.73.91a2,2,0,0,0-1.69-.95,2.32,2.32,0,0,0,0,4.63,2.54,2.54,0,0,0,1.51-.48v-.67h-1.84v-1.72h3.87v3.13a4.63,4.63,0,0,1-3.54,1.56,4.14,4.14,0,1,1,0-8.27Z",
+              "display": 1
+            },
+            {
+              "type": "path",
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "fill": "rgb(0, 0, 0)",
+              "data": "M211.14,288.79h-3.32V292h-2.06v-8h2.06v3h3.32v-3h2.07v8h-2.07Z",
+              "display": 1
+            },
+            {
+              "type": "path",
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "fill": "rgb(0, 0, 0)",
+              "data": "M208.45,300h2.06v8h-2.06Z",
+              "display": 1
+            },
+            {
+              "type": "path",
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "fill": "rgb(0, 0, 0)",
+              "data": "M207.43,321.85a1.8,1.8,0,0,0,1.15.47,1,1,0,0,0,1.07-1.09V316h2.06v5.25a2.65,2.65,0,0,1-3,2.89,3.24,3.24,0,0,1-2.19-.72Z",
+              "display": 1
+            },
+            {
+              "type": "path",
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "fill": "rgb(0, 0, 0)",
+              "data": "M208.88,337l-.54.67V340h-2.06v-8h2.06v3.29L210.8,332h2.54l-3.1,3.74,3.27,4.26H211Z",
+              "display": 1
+            },
+            {
+              "type": "path",
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "fill": "rgb(0, 0, 0)",
+              "data": "M207,348h2.06v6.2h3.22V356H207Z",
+              "display": 1
+            },
+            {
+              "type": "path",
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "fill": "rgb(0, 0, 0)",
+              "data": "M203.86,364h2.06v6.2h3.21V372h-5.27Z",
+              "display": 1
+            },
+            {
+              "type": "path",
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "fill": "rgb(0, 0, 0)",
+              "data": "M210.2,364h2.07v6.2h3.21V372H210.2Z",
+              "display": 1
+            },
+            {
+              "type": "path",
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "fill": "rgb(0, 0, 0)",
+              "data": "M438.37,178.79H435l-.4,1.21h-2.25l3-8H438l3,8h-2.25Zm-2.79-1.74h2.25l-1.13-3.25Z",
+              "display": 1
+            },
+            {
+              "type": "path",
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "fill": "rgb(0, 0, 0)",
+              "data": "M433.35,188h4.53a2.1,2.1,0,0,1,2.34,2,1.78,1.78,0,0,1-1.37,1.83,1.92,1.92,0,0,1,1.52,2A2.13,2.13,0,0,1,438,196h-4.67Zm4.06,3.09a.68.68,0,0,0,.71-.69.66.66,0,0,0-.71-.68h-2v1.37Zm.07,3.2a.72.72,0,0,0,.8-.74.74.74,0,0,0-.8-.75h-2.07v1.49Z",
+              "display": 1
+            },
+            {
+              "type": "path",
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "fill": "rgb(0, 0, 0)",
+              "data": "M432.87,208a4.07,4.07,0,0,1,4.27-4.14,3.72,3.72,0,0,1,3.55,2.15l-1.78.83a1.94,1.94,0,0,0-1.77-1.16,2.32,2.32,0,0,0,0,4.63,1.94,1.94,0,0,0,1.77-1.16l1.78.84a3.75,3.75,0,0,1-3.55,2.14A4.07,4.07,0,0,1,432.87,208Z",
+              "display": 1
+            },
+            {
+              "type": "path",
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "fill": "rgb(0, 0, 0)",
+              "data": "M433.06,220h3.36c2.52,0,4.33,1.51,4.33,4s-1.81,4-4.32,4h-3.37Zm3.36,6.2a2.12,2.12,0,0,0,2.22-2.21,2,2,0,0,0-2.21-2.19h-1.3v4.4Z",
+              "display": 1
+            },
+            {
+              "type": "path",
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "fill": "rgb(0, 0, 0)",
+              "data": "M433.89,236h5.87v1.74H436v1.33h3.72v1.75H436v1.44h3.81V244h-5.87Z",
+              "display": 1
+            },
+            {
+              "type": "path",
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "fill": "rgb(0, 0, 0)",
+              "data": "M433.93,252h5.87v1.74H436v1.33h3.72v1.75H436V260h-2.07Z",
+              "display": 1
+            },
+            {
+              "type": "path",
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "fill": "rgb(0, 0, 0)",
+              "data": "M437,267.87a3.76,3.76,0,0,1,3.42,1.86l-1.73.91a2,2,0,0,0-1.69-.95,2.32,2.32,0,0,0,0,4.63,2.51,2.51,0,0,0,1.51-.48v-.67h-1.83v-1.72h3.86v3.13a4.63,4.63,0,0,1-3.54,1.56,4.14,4.14,0,1,1,0-8.27Z",
+              "display": 1
+            },
+            {
+              "type": "path",
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "fill": "rgb(0, 0, 0)",
+              "data": "M438.37,288.79H435V292H433v-8H435v3h3.33v-3h2.06v8h-2.06Z",
+              "display": 1
+            },
+            {
+              "type": "path",
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "fill": "rgb(0, 0, 0)",
+              "data": "M435.67,300h2.07v8h-2.07Z",
+              "display": 1
+            },
+            {
+              "type": "path",
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "fill": "rgb(0, 0, 0)",
+              "data": "M434.65,321.85a1.83,1.83,0,0,0,1.16.47,1,1,0,0,0,1.06-1.09V316h2.07v5.25a2.65,2.65,0,0,1-2.95,2.89,3.25,3.25,0,0,1-2.2-.72Z",
+              "display": 1
+            },
+            {
+              "type": "path",
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "fill": "rgb(0, 0, 0)",
+              "data": "M436.1,337l-.54.67V340H433.5v-8h2.06v3.29L438,332h2.55l-3.11,3.74,3.27,4.26H438.2Z",
+              "display": 1
+            },
+            {
+              "type": "path",
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "fill": "rgb(0, 0, 0)",
+              "data": "M434.25,348h2.06v6.2h3.22V356h-5.28Z",
+              "display": 1
+            },
+            {
+              "type": "path",
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "fill": "rgb(0, 0, 0)",
+              "data": "M431.08,364h2.06v6.2h3.22V372h-5.28Z",
+              "display": 1
+            },
+            {
+              "type": "path",
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "fill": "rgb(0, 0, 0)",
+              "data": "M437.43,364h2.06v6.2h3.21V372h-5.27Z",
+              "display": 1
+            }
+          ],
+          "attribute": {
+            "x": 294,
+            "y": 204,
+            "width": 384,
+            "height": 396,
+            "scaleX": 0,
+            "scaleY": 0,
+            "rotate": 0
+          }
+        }
+      ],
+      "viewbox": "0 0 648 568"
+    }
+  },
+  "code": 0,
+  "traceId": "355dcac757a8445e51425ae4cda8f002"
+}

@@ -11,7 +11,9 @@
     "rootDir": "src",
     "paths": {
       "@components/*": ["./components/*"],
-      "@store/*": ["./store/*"]
+      "@store/*": ["./store/*"],
+      "@lib/*": ["./lib/*"],
+      "@style/*": ["./style/*"]
     },
 
     /* Bundler mode */

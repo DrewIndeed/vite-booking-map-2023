@@ -11,6 +11,8 @@ export default defineConfig({
     alias: {
       "@components": path.resolve(__dirname, "./src/components"),
       "@store": path.resolve(__dirname, "./src/store"),
+      "@lib": path.resolve(__dirname, "./src/lib"),
+      "@style": path.resolve(__dirname, "./src/style"),
     },
   },
   server: {
@@ -24,9 +26,6 @@ export default defineConfig({
     terser(),
     chunkSplitPlugin({
       strategy: "unbundle",
-      customSplitting: {
-        app: [/src\/components\/App/],
-      },
     }),
     viteCompression({
       algorithm: "brotliCompress",

@@ -1,0 +1,250 @@
+{
+  "status": 1,
+  "message": "Success",
+  "data": {
+    "result": {
+      "id": 206,
+      "seatMapId": 21,
+      "name": "190k_Left",
+      "isReservingSeat": true,
+      "isStage": false,
+      "capacity": 21,
+      "ticketTypeId": 2626,
+      "status": 2,
+      "rows": [
+        {
+          "id": 1830,
+          "name": "M",
+          "sectionId": 206,
+          "status": 1,
+          "seats": [
+            {
+              "id": 38396,
+              "name": "17",
+              "rowId": 1830,
+              "status": 4,
+              "position": 0,
+              "x": 560,
+              "y": 428
+            },
+            {
+              "id": 38397,
+              "name": "16",
+              "rowId": 1830,
+              "status": 4,
+              "position": 1,
+              "x": 548,
+              "y": 428
+            },
+            {
+              "id": 38398,
+              "name": "15",
+              "rowId": 1830,
+              "status": 4,
+              "position": 2,
+              "x": 536,
+              "y": 428
+            },
+            {
+              "id": 38399,
+              "name": "14",
+              "rowId": 1830,
+              "status": 4,
+              "position": 3,
+              "x": 524,
+              "y": 428
+            },
+            {
+              "id": 38400,
+              "name": "13",
+              "rowId": 1830,
+              "status": 4,
+              "position": 4,
+              "x": 512,
+              "y": 428
+            }
+          ]
+        },
+        {
+          "id": 1831,
+          "name": "N",
+          "sectionId": 206,
+          "status": 1,
+          "seats": [
+            {
+              "id": 38401,
+              "name": "21",
+              "rowId": 1831,
+              "status": 4,
+              "position": 0,
+              "x": 560,
+              "y": 444
+            },
+            {
+              "id": 38402,
+              "name": "20",
+              "rowId": 1831,
+              "status": 4,
+              "position": 1,
+              "x": 548,
+              "y": 444
+            },
+            {
+              "id": 38403,
+              "name": "19",
+              "rowId": 1831,
+              "status": 4,
+              "position": 2,
+              "x": 536,
+              "y": 444
+            },
+            {
+              "id": 38404,
+              "name": "18",
+              "rowId": 1831,
+              "status": 4,
+              "position": 3,
+              "x": 524,
+              "y": 444
+            },
+            {
+              "id": 38405,
+              "name": "17",
+              "rowId": 1831,
+              "status": 4,
+              "position": 4,
+              "x": 488,
+              "y": 444
+            },
+            {
+              "id": 38406,
+              "name": "16",
+              "rowId": 1831,
+              "status": 4,
+              "position": 5,
+              "x": 476,
+              "y": 444
+            },
+            {
+              "id": 38407,
+              "name": "15",
+              "rowId": 1831,
+              "status": 4,
+              "position": 6,
+              "x": 464,
+              "y": 444
+            }
+          ]
+        },
+        {
+          "id": 1832,
+          "name": "O",
+          "sectionId": 206,
+          "status": 1,
+          "seats": [
+            {
+              "id": 38408,
+              "name": "25",
+              "rowId": 1832,
+              "status": 4,
+              "position": 0,
+              "x": 560,
+              "y": 460
+            },
+            {
+              "id": 38409,
+              "name": "24",
+              "rowId": 1832,
+              "status": 4,
+              "position": 1,
+              "x": 548,
+              "y": 460
+            },
+            {
+              "id": 38410,
+              "name": "23",
+              "rowId": 1832,
+              "status": 4,
+              "position": 2,
+              "x": 536,
+              "y": 460
+            },
+            {
+              "id": 38411,
+              "name": "22",
+              "rowId": 1832,
+              "status": 4,
+              "position": 3,
+              "x": 524,
+              "y": 460
+            },
+            {
+              "id": 38412,
+              "name": "21",
+              "rowId": 1832,
+              "status": 4,
+              "position": 4,
+              "x": 512,
+              "y": 460
+            },
+            {
+              "id": 38413,
+              "name": "20",
+              "rowId": 1832,
+              "status": 4,
+              "position": 5,
+              "x": 500,
+              "y": 460
+            },
+            {
+              "id": 38414,
+              "name": "19",
+              "rowId": 1832,
+              "status": 4,
+              "position": 6,
+              "x": 488,
+              "y": 460
+            },
+            {
+              "id": 38415,
+              "name": "18",
+              "rowId": 1832,
+              "status": 4,
+              "position": 7,
+              "x": 476,
+              "y": 460
+            },
+            {
+              "id": 38416,
+              "name": "17",
+              "rowId": 1832,
+              "status": 4,
+              "position": 8,
+              "x": 464,
+              "y": 460
+            }
+          ]
+        }
+      ],
+      "ticketType": {
+        "id": 2626,
+        "name": "Vé 3K",
+        "description": "Vé test stock",
+        "color": "#FF9900",
+        "isFree": false,
+        "price": 3000,
+        "originalPrice": 3000,
+        "maxQtyPerOrder": 2,
+        "minQtyPerOrder": 1,
+        "startTime": "2023-09-12T17:00:00Z",
+        "endTime": "2023-10-30T17:00:00Z",
+        "position": 7,
+        "status": "sale_closed",
+        "statusName": "Online booking closed",
+        "imageUrl": ""
+      }
+    }
+  },
+  "code": 0,
+  "traceId": "7c5e9d9a239ea3fed452073f22f4ec8f"
+}

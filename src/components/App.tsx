@@ -1,37 +1,51 @@
-import { useData } from "@store/useData";
+import "@style/App.css";
 import { useEffect } from "react";
-import fetcher from "../fetcher";
 
-async function getMap(showingId: number): Promise<any> {
-  const url = `https://api-v2.ticketbox.dev/event/api/v1/events/showings/${showingId}/seatmap`;
-  const showMap = await fetcher<any>(url);
-  return showMap;
-}
-
-async function getSections(showingId: number, sectionId: number): Promise<any> {
-  const url = `https://api-v2.ticketbox.dev/event/api/v1/events/showings/${showingId}/sections/${sectionId}`;
-  const showSection = await fetcher<any>(url);
-  return showSection;
-}
+import { fetchLocalJSON } from "@lib/fetching";
+import { useData } from "@store/useData";
 
 const App = () => {
-  const saveData = useData((state) => state.saveData);
+  // zustand
+  const data = useData(({ data }) => data);
+  const saveData = useData(({ saveData }) => saveData);
+
+  // useEffect(() => {
+  //   // self called func to fetch remote data
+  //   (async () => {
+  //     const mapData = await getMap(940);
+  //     const sectionData = await getSections(940, 210);
+  //     const demoData = {
+  //       mapData,
+  //       sectionData,
+  //       sections: mapData?.data?.result?.sections,
+  //     };
+  //     saveData(demoData);
+  //   })();
+  // }, [saveData]);
+
   useEffect(() => {
-    async function getData() {
-      const mapData = await getMap(940);
-      const sectionData = await getSections(940, 210);
+    // self called func to fetch local data
+    (async () => {
+      const mapData = await fetchLocalJSON(
+        "/src/mock/medium/seatmap-940-event.json"
+      );
+      const sectionData = await fetchLocalJSON(
+        "/src/mock/medium/section-210.json"
+      );
       const demoData = {
         mapData,
         sectionData,
         sections: mapData?.data?.result?.sections,
       };
-      // console.log({ demoData });
       saveData(demoData);
-    }
-    getData();
+    })();
   }, [saveData]);
 
-  return <div>App</div>;
+  useEffect(() => {
+    console.log({ data });
+  }, [data]);
+
+  return <div>Booking App 2023</div>;
 };
 
 export default App;
