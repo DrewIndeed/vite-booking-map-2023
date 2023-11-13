@@ -1,8 +1,7 @@
-import { getOS } from "@lib/utils";
-import "@style/App.css";
-import { useRef } from "react";
-
+import { useEffect, useRef, useState } from "react";
 import { Group, Layer, Path, Stage } from "react-konva";
+
+import { getOS, getViewBoxRect } from "@lib/utils";
 
 interface Element {
   data: string;
@@ -15,9 +14,8 @@ export default function MainMap({
   height = 500,
   draggable = true,
   fallbackColor = "#fff",
-
+  sectionsViewbox = "0 0 0 0",
   sections = [],
-  chosenSection = {},
 }: any) {
   // refs
   const stageRef = useRef<any>();
@@ -25,6 +23,10 @@ export default function MainMap({
   const groupRefs = useRef<any[]>([]);
   const os = getOS();
 
+  // states
+  const [mounted, setMounted] = useState(false);
+
+  // methods
   const onWheel = (e: any) => {
     e.evt.preventDefault();
     if (stageRef.current) {
@@ -50,7 +52,6 @@ export default function MainMap({
       stageRef.current.clearCache();
     }
   };
-
   const renderSections = (section: any) => {
     if (!section) return null;
     const { elements, ticketType, isStage } = section; //  isStage, attribute, id, display
@@ -107,27 +108,58 @@ export default function MainMap({
     });
   };
 
-  if (sections && sections.length === 0) return <div>No data.</div>;
+  // check for hydration just to be sure
+  useEffect(() => {
+    if (!mounted) setMounted(true);
+  }, [mounted]);
+
+  // auto center the all sections map
+  useEffect(() => {
+    const stage = stageRef.current;
+    const layer = layerRef.current;
+    if (stage && layer) {
+      // stage dimensions
+      const stageW = stage.getWidth();
+      const stageH = stage.getHeight();
+
+      // all sections group dimensions
+      const sectionsRect = getViewBoxRect(sectionsViewbox);
+
+      // calculate new scale
+      const newWidth = Math.min(stageW, sectionsRect.width);
+      const newScale = newWidth / sectionsRect.width;
+
+      // stage center point
+      const stageCenterX = Math.floor(stageW / 2);
+      const stageCenterY = Math.floor(stageH / 2);
+
+      // all sections group center point
+      const sectionsCenterX = Math.floor((sectionsRect.width / 2) * newScale);
+      const sectionsCenterY = Math.floor((sectionsRect.height / 2) * newScale);
+
+      // offsets between 2 centers
+      const offsetX = stageCenterX - sectionsCenterX;
+      const offsetY = stageCenterY - sectionsCenterY;
+
+      // reflect changes on stage
+      stage.position({ x: offsetX, y: offsetY });
+      stage.scale({ x: newScale, y: newScale });
+    }
+  }, [sectionsViewbox]);
+
+  // if not hydrated and no sections
+  if (!mounted && sections?.length === 0) return <div>No data.</div>;
+
+  // main render
   return (
-    <div
-      style={{
-        width,
-        height,
-        overflow: "hidden",
-        backgroundColor: "#000",
-        // border: "1px solid red",
-        // margin: "3rem auto auto auto",
-      }}
+    <Stage
+      ref={stageRef}
+      onWheel={onWheel}
+      width={width}
+      height={height}
+      draggable={draggable}
     >
-      <Stage
-        ref={stageRef}
-        onWheel={onWheel}
-        width={width}
-        height={height}
-        draggable={draggable}
-      >
-        <Layer ref={layerRef}>{sections?.map(renderSections)}</Layer>
-      </Stage>
-    </div>
+      <Layer ref={layerRef}>{sections?.map(renderSections)}</Layer>
+    </Stage>
   );
 }

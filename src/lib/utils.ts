@@ -60,3 +60,13 @@ export const getSeatStatusStr = (status: number = 1) =>
 
 export const getSeatParsedStyles = (statusStr: string = "available") =>
   SEAT_STYLES_PARSED[statusStr];
+
+export const getViewBoxRect = (viewBox: string) => {
+  const values = viewBox?.split(" ");
+  return {
+    width: parseInt(values[2]),
+    height: parseInt(values[3]),
+    x: 0,
+    y: 0,
+  };
+};

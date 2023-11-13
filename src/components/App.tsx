@@ -24,20 +24,31 @@ const App = () => {
         mapData,
         sectionData,
         sections: mapData?.data?.result?.sections,
+        viewbox: mapData?.data?.result?.viewbox,
       };
-      // console.log({ demoData });
       saveData(demoData);
     })();
-  }, [saveData]);
+  }, [data?.mapData?.data?.result?.viewbox, saveData]);
 
+  if (!data?.mapData) return <div>No data.</div>;
   return (
-    <MainMap
-      width={725}
-      height={675}
-      sections={data?.sections}
-      chosenSection={data?.sectionData}
-      fallbackColor="#e3e3e3"
-    />
+    <div
+      style={{
+        width: 725,
+        height: 675,
+        overflow: "hidden",
+        backgroundColor: "#000",
+      }}
+    >
+      <MainMap
+        width={725}
+        height={675}
+        fallbackColor="#e3e3e3"
+        sections={data?.sections}
+        sectionsViewbox={data?.viewbox}
+        chosenSection={data?.sectionData}
+      />
+    </div>
   );
 };
 
