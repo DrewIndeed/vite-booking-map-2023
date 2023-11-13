@@ -2,7 +2,7 @@ import { getOS } from "@lib/utils";
 import "@style/App.css";
 import { useRef } from "react";
 
-import { Layer, Path, Stage } from "react-konva";
+import { Group, Layer, Path, Stage } from "react-konva";
 
 interface Element {
   data: string;
@@ -11,8 +11,8 @@ interface Element {
 }
 
 export default function MainMap({
-  width = 800,
-  height = 650,
+  width = 500,
+  height = 500,
   draggable = true,
   fallbackColor = "#fff",
 
@@ -21,6 +21,8 @@ export default function MainMap({
 }: any) {
   // refs
   const stageRef = useRef<any>();
+  const layerRef = useRef<any>();
+  const groupRefs = useRef<any[]>([]);
   const os = getOS();
 
   const onWheel = (e: any) => {
@@ -49,48 +51,58 @@ export default function MainMap({
     }
   };
 
-  /*
+  const renderSections = (section: any) => {
+    if (!section) return null;
+    const { elements, ticketType, isStage } = section; //  isStage, attribute, id, display
+
     const _onMouseEnter = (e: any) => {
-    const container = e.target?.getStage()?.container();
-    const cursorType = !ticketType ? "not-allowed" : "pointer";
+      const container = e.target?.getStage()?.container();
+      const cursorType = !ticketType ? "not-allowed" : "pointer";
       if (container) container.style.cursor = cursorType;
     };
     const _onMouseLeave = (e: any) => {
       const container = e.target?.getStage()?.container();
       if (container) container.style.cursor = "";
     };
-  */
 
-  const renderElements = (section: any) => {
-    if (!section) return null;
-    const { elements, ticketType, isStage } = section; //  isStage, attribute, id, display
     return elements?.map(({ data, display, fill }: Element, key: number) => {
       if (display !== 1) return null;
-      const isSectionBg = key === 0;
+      const isBg = key === 0;
 
       // HANDLE FILL COLOR
-      let fillDecision = "";
+      let finalFillColor = "";
       // if it is the color of the bg and there is ticket type
-      if (isSectionBg && ticketType) {
+      if (isBg && ticketType) {
         // handle the color code
         const hasHashSymbol = ticketType?.color?.includes("#");
-        fillDecision = ticketType?.color
+        finalFillColor = ticketType?.color
           ? `${hasHashSymbol ? "" : "#"}${ticketType?.color}`
           : fallbackColor;
       }
       // if it is a stage
-      if (isStage) fillDecision = fill;
+      if (isStage) finalFillColor = fill;
       // if fill color is ""
-      if (!fillDecision) fillDecision = fallbackColor;
+      if (!finalFillColor && !isStage) finalFillColor = fallbackColor;
+
+      // final colors render
+      const isNormalBg = isBg && !isStage;
+      const finalColors = {
+        fill: finalFillColor,
+        stroke: isNormalBg ? fallbackColor : "",
+        strokeWidth: isNormalBg ? 1.5 : 0.5,
+      };
 
       return (
-        <Path
-          key={key}
-          data={data}
-          fill={fillDecision}
-          stroke={isSectionBg && !isStage ? fallbackColor : ""}
-          strokeWidth={isSectionBg ? 1.5 : 0.5}
-        />
+        <Group
+          ref={(e) => {
+            groupRefs!.current[key] = e;
+          }}
+          key={`sections-${key}`}
+          onMouseEnter={_onMouseEnter}
+          onMouseLeave={_onMouseLeave}
+        >
+          <Path key={key} data={data} {...finalColors} />
+        </Group>
       );
     });
   };
@@ -99,13 +111,12 @@ export default function MainMap({
   return (
     <div
       style={{
-        width: 800,
-        height: 650,
+        width,
+        height,
         overflow: "hidden",
-        border: "1px solid red",
         backgroundColor: "#000",
-        margin: "auto",
-        marginTop: "3rem",
+        // border: "1px solid red",
+        // margin: "3rem auto auto auto",
       }}
     >
       <Stage
@@ -115,7 +126,7 @@ export default function MainMap({
         height={height}
         draggable={draggable}
       >
-        <Layer>{sections?.map(renderElements)}</Layer>
+        <Layer ref={layerRef}>{sections?.map(renderSections)}</Layer>
       </Stage>
     </div>
   );

@@ -32,6 +32,8 @@ const App = () => {
 
   return (
     <MainMap
+      width={725}
+      height={675}
       sections={data?.sections}
       chosenSection={data?.sectionData}
       fallbackColor="#e3e3e3"
