@@ -6,3 +6,9 @@ body,
   margin: 0;
   box-sizing: border-box;
 }
+
+.map-wrapper {
+  overflow: hidden;
+  background-color: #000;
+  margin: auto;
+}

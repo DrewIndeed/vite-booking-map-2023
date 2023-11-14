@@ -1,9 +1,10 @@
-import "@style/App.css";
 import { useEffect } from "react";
 
 import { fetchLocalJSON } from "@lib/fetching";
 import { useData } from "@store/useData";
 import MainMap from "./MainMap";
+
+import "@style/App.css";
 
 const App = () => {
   // zustand
@@ -30,19 +31,18 @@ const App = () => {
     })();
   }, [data?.mapData?.data?.result?.viewbox, saveData]);
 
-  if (!data?.mapData) return <div>No data.</div>;
   return (
     <div
+      className="map-wrapper"
       style={{
-        width: 725,
-        height: 675,
-        overflow: "hidden",
-        backgroundColor: "#000",
+        width: 375,
+        height: 635,
       }}
     >
       <MainMap
-        width={725}
-        height={675}
+        width={375} // 725, 375
+        height={635} // 675, 635
+        role="mobile"
         fallbackColor="#e3e3e3"
         sections={data?.sections}
         sectionsViewbox={data?.viewbox}
