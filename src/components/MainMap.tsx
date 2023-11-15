@@ -172,36 +172,54 @@ export default function MainMap({
 
       // Calculate scale based on the change in distance
       const scaleFactor = newDist / lastDist.current;
-      const newScale = stage.scaleX() * scaleFactor;
+      const oldScale = stage.scaleX();
+      let newScale = oldScale * scaleFactor;
+      let reachedLimits = false;
 
-      // Calculate the position of the new center point on the stage before scaling
-      const stageCenterBefore = {
-        x: newCenter.x - stage.x(),
-        y: newCenter.y - stage.y(),
-      };
+      // apply min and max values for scaling
+      const minOffset = ZOOM_MIN_OFFSET[role as Role];
+      const maxOffset = ZOOM_MAX_OFFSET[role as Role];
+      if (newScale <= oldScale && newScale <= initScale * minOffset) {
+        newScale = initScale * minOffset;
+        reachedLimits = true;
+      } else if (newScale >= oldScale && newScale >= initScale * maxOffset) {
+        newScale = initScale * maxOffset;
+        reachedLimits = true;
+      }
 
-      // Calculate the scaled position of the center point
-      const stageCenterAfter = {
-        x: stageCenterBefore.x * scaleFactor,
-        y: stageCenterBefore.y * scaleFactor,
-      };
+      // if not reached limits
+      if (!reachedLimits) {
+        // Calculate the position of the new center point on the stage before scaling
+        const stageCenterBefore = {
+          x: newCenter.x - stage.x(),
+          y: newCenter.y - stage.y(),
+        };
 
-      // Calculate the difference in the center position as a result of scaling
-      const stageCenterDiff = {
-        x: stageCenterAfter.x - stageCenterBefore.x,
-        y: stageCenterAfter.y - stageCenterBefore.y,
-      };
+        // Calculate the scaled position of the center point
+        const stageCenterAfter = {
+          x: stageCenterBefore.x * scaleFactor,
+          y: stageCenterBefore.y * scaleFactor,
+        };
 
-      // Adjust the stage position with the difference so the center point remains stationary
-      const newPos = {
-        x: stage.x() - stageCenterDiff.x,
-        y: stage.y() - stageCenterDiff.y,
-      };
+        // Calculate the difference in the center position as a result of scaling
+        const stageCenterDiff = {
+          x: stageCenterAfter.x - stageCenterBefore.x,
+          y: stageCenterAfter.y - stageCenterBefore.y,
+        };
 
-      // Apply the new scale and position
-      stage.scaleX(newScale);
-      stage.scaleY(newScale);
-      stage.position(newPos);
+        // Adjust the stage position with the difference so the center point remains stationary
+        const newPos = {
+          x: stage.x() - stageCenterDiff.x,
+          y: stage.y() - stageCenterDiff.y,
+        };
+
+        // Apply the new scale and postion
+        stage.scaleX(newScale);
+        stage.scaleY(newScale);
+        stage.position(newPos);
+      }
+
+      // reflect changes
       stage.batchDraw();
       stage.clearCache();
 
