@@ -81,6 +81,19 @@ export default function MainMap({
       setInitScale(newScale);
     }
   }, [sectionsViewbox]);
+  // [COMMON] handle zoom limits
+  const limitedNewScale = (newScale: number, oldScale: number) => {
+    // apply min and max values for scaling
+    const minOffset = ZOOM_MIN_OFFSET[role as Role];
+    const maxOffset = ZOOM_MAX_OFFSET[role as Role];
+    if (newScale <= oldScale && newScale <= initScale * minOffset) {
+      return { value: initScale * minOffset, reached: true };
+    }
+    if (newScale >= oldScale && newScale >= initScale * maxOffset) {
+      return { value: initScale * maxOffset, reached: true };
+    }
+    return { value: newScale, reached: false };
+  };
   // [DESKTOP] event methods
   const onWheel = (e: any) => {
     e.evt.preventDefault();
@@ -101,25 +114,19 @@ export default function MainMap({
       if (os === "Windows") direction = -direction;
 
       // calculate new scale and new position for stage
-      let newScale =
+      const newScale: number =
         direction > 0 ? oldScale * ZOOM_SPEED : oldScale / ZOOM_SPEED;
-
-      // apply min and max values for scaling
-      const minOffset = ZOOM_MIN_OFFSET[role as Role];
-      const maxOffset = ZOOM_MAX_OFFSET[role as Role];
-      if (newScale <= oldScale && newScale <= initScale * minOffset)
-        newScale = initScale * minOffset;
-      else if (newScale >= oldScale && newScale >= initScale * maxOffset)
-        newScale = initScale * maxOffset;
+      // apply scale limits
+      const adjustedNewScale = limitedNewScale(newScale, oldScale);
 
       // calculate new pos based on newScale
       const newPos = {
-        x: (pointer?.x || 0) - mousePointTo.x * newScale,
-        y: (pointer?.y || 0) - mousePointTo.y * newScale,
+        x: (pointer?.x || 0) - mousePointTo.x * adjustedNewScale.value,
+        y: (pointer?.y || 0) - mousePointTo.y * adjustedNewScale.value,
       };
 
       // reflect changes
-      stage.scale({ x: newScale, y: newScale });
+      stage.scale({ x: adjustedNewScale.value, y: adjustedNewScale.value });
       stage.position(newPos);
       stage.clearCache();
     }
@@ -173,22 +180,12 @@ export default function MainMap({
       // Calculate scale based on the change in distance
       const scaleFactor = newDist / lastDist.current;
       const oldScale = stage.scaleX();
-      let newScale = oldScale * scaleFactor;
-      let reachedLimits = false;
-
-      // apply min and max values for scaling
-      const minOffset = ZOOM_MIN_OFFSET[role as Role];
-      const maxOffset = ZOOM_MAX_OFFSET[role as Role];
-      if (newScale <= oldScale && newScale <= initScale * minOffset) {
-        newScale = initScale * minOffset;
-        reachedLimits = true;
-      } else if (newScale >= oldScale && newScale >= initScale * maxOffset) {
-        newScale = initScale * maxOffset;
-        reachedLimits = true;
-      }
+      const newScale: number = oldScale * scaleFactor;
+      // apply scale limits
+      const adjustedNewScale = limitedNewScale(newScale, oldScale);
 
       // if not reached limits
-      if (!reachedLimits) {
+      if (!adjustedNewScale.reached) {
         // Calculate the position of the new center point on the stage before scaling
         const stageCenterBefore = {
           x: newCenter.x - stage.x(),
@@ -214,8 +211,8 @@ export default function MainMap({
         };
 
         // Apply the new scale and postion
-        stage.scaleX(newScale);
-        stage.scaleY(newScale);
+        stage.scaleX(adjustedNewScale.value);
+        stage.scaleY(adjustedNewScale.value);
         stage.position(newPos);
       }
 
@@ -240,24 +237,18 @@ export default function MainMap({
       const yCenter = stage.height() / 2 / oldScale - stage.y() / oldScale;
 
       // calculate new scale based on the factor
-      let newScale = oldScale * factor;
-
-      // apply min and max values for scaling
-      const minOffset = ZOOM_MIN_OFFSET[role as Role];
-      const maxOffset = ZOOM_MAX_OFFSET[role as Role];
-      if (newScale <= oldScale && newScale <= initScale * minOffset)
-        newScale = initScale * minOffset;
-      else if (newScale >= oldScale && newScale >= initScale * maxOffset)
-        newScale = initScale * maxOffset;
+      const newScale: number = oldScale * factor;
+      // apply scale limits
+      const adjustedNewScale = limitedNewScale(newScale, oldScale);
 
       // calculate new position to keep the stage centered
       const newPos = {
-        x: -xCenter * newScale + stage.width() / 2,
-        y: -yCenter * newScale + stage.height() / 2,
+        x: -xCenter * adjustedNewScale.value + stage.width() / 2,
+        y: -yCenter * adjustedNewScale.value + stage.height() / 2,
       };
 
       // apply the new scale and position
-      stage.scale({ x: newScale, y: newScale });
+      stage.scale({ x: adjustedNewScale.value, y: adjustedNewScale.value });
       stage.position(newPos);
       stage.batchDraw(); // or stage.clearCache() depending on use-case
     }
