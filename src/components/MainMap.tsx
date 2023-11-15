@@ -16,7 +16,6 @@ import Button from "./Button";
 export default function MainMap({
   width = 500,
   height = 500,
-  sectionId = 0,
   draggable = true,
 
   role = "web",
@@ -314,8 +313,10 @@ export default function MainMap({
         // if it is minimap
         if (isMinimap) {
           // if it is normal sections
-          if (!isStage && sectionId !== 0) finalFillColor = fallbackColor;
-          if (sectionId === renderId) finalFillColor = extractedColor;
+          if (!isStage && chosenSection?.id && chosenSection?.id !== 0)
+            finalFillColor = fallbackColor;
+          if (chosenSection?.id && chosenSection?.id === renderId)
+            finalFillColor = extractedColor;
         }
 
         // final colors render
@@ -374,7 +375,9 @@ export default function MainMap({
         overflow: "hidden",
         zIndex: 1,
         filter:
-          isMinimap && sectionId === 0 ? "brightness(50%)" : "brightness(100%)",
+          isMinimap && !chosenSection?.id
+            ? "brightness(50%)"
+            : "brightness(100%)",
       }}
     >
       <div

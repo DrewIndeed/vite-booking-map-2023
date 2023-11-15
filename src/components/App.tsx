@@ -25,21 +25,21 @@ const App = () => {
         "/src/mock/large/section-168.json"
       );
       const demoData = {
-        mapData,
-        sectionData,
+        sectionData: sectionData?.data?.result,
         sections: mapData?.data?.result?.sections,
         viewbox: mapData?.data?.result?.viewbox,
       };
+      // console.log({ demoData });
       saveData(demoData);
     })();
-  }, [data?.mapData?.data?.result?.viewbox, saveData]);
+  }, [saveData]);
 
   return (
     <div style={{ position: "relative" }}>
       <MainMap
-        width={375} // 725, 375
-        height={635} // 675, 635
-        role="mobile"
+        width={725} // 725, 375
+        height={675} // 675, 635
+        role="web"
         fallbackColor="#e3e3e3"
         sections={data?.sections}
         sectionsViewbox={data?.viewbox}
@@ -56,7 +56,6 @@ const App = () => {
               sectionsViewbox={data?.viewbox}
               // Progress: section related
               isMinimap
-              sectionId={168}
               chosenSection={data?.sectionData}
             />
           ) : null
