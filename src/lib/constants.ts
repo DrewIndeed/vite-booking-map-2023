@@ -51,3 +51,17 @@ export const buttons = {
   eyeOpen: { key: "eyeOpen", icon: EyeOpenIcon, defaultContent: "Ẩn/Hiện" },
   eyeClose: { key: "eyeClose", icon: EyeCloseIcon, defaultContent: "Ẩn/Hiện" },
 };
+
+export type Role = "mobile" | "web" | "admin";
+export const ZOOM_SPEED = 1.15;
+export const ZOOM_MAX_OFFSET: Record<Role, number> = {
+  mobile: 8,
+  web: 5,
+  admin: 5,
+};
+export const ZOOM_MIN_OFFSET: Record<Role, number> = Object.entries(
+  ZOOM_MAX_OFFSET
+).reduce((prev: any, [k, value]) => {
+  prev[k] = value / 10;
+  return prev;
+}, {});

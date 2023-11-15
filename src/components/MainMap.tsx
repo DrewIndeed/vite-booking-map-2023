@@ -2,16 +2,22 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Group, Layer, Path, Stage } from "react-konva";
 import { Tooltip } from "react-tooltip";
 
+import {
+  ZOOM_MAX_OFFSET,
+  ZOOM_MIN_OFFSET,
+  ZOOM_SPEED,
+  buttons,
+  type Role,
+} from "@lib/constants";
 import { getCenter, getDistance, getOS, getViewBoxRect } from "@lib/utils";
-import { buttons } from "@lib/constants";
 
 import Button from "./Button";
 
-interface Element {
+type Element = {
   data: string;
   fill: string;
   display: number;
-}
+};
 
 export default function MainMap({
   width = 500,
@@ -38,7 +44,9 @@ export default function MainMap({
 
   // states
   const [mounted, setMounted] = useState(false);
+  const [initScale, setInitScale] = useState(1);
 
+  // INTERACTIONS RELATED METHODS
   // [COMMON] handle reset
   const reset = useCallback(() => {
     const stage = stageRef.current;
@@ -70,6 +78,7 @@ export default function MainMap({
       // reflect changes on stage
       stage.position({ x: offsetX, y: offsetY });
       stage.scale({ x: newScale, y: newScale });
+      setInitScale(newScale);
     }
   }, [sectionsViewbox]);
   // [DESKTOP] event methods
@@ -92,7 +101,18 @@ export default function MainMap({
       if (os === "Windows") direction = -direction;
 
       // calculate new scale and new position for stage
-      const newScale = direction > 0 ? oldScale * 1.15 : oldScale / 1.15;
+      let newScale =
+        direction > 0 ? oldScale * ZOOM_SPEED : oldScale / ZOOM_SPEED;
+
+      // apply min and max values for scaling
+      const minOffset = ZOOM_MIN_OFFSET[role as Role];
+      const maxOffset = ZOOM_MAX_OFFSET[role as Role];
+      if (newScale <= oldScale && newScale <= initScale * minOffset)
+        newScale = initScale * minOffset;
+      else if (newScale >= oldScale && newScale >= initScale * maxOffset)
+        newScale = initScale * maxOffset;
+
+      // calculate new pos based on newScale
       const newPos = {
         x: (pointer?.x || 0) - mousePointTo.x * newScale,
         y: (pointer?.y || 0) - mousePointTo.y * newScale,
@@ -190,7 +210,43 @@ export default function MainMap({
       lastCenter.current = newCenter;
     }
   };
-  // [COMMON] render methods
+  // [COMMON] handle zoom by button
+  const zoomByFactor = (factor: number) => {
+    const stage = stageRef.current;
+    if (stage) {
+      // get current scale
+      const oldScale = stage.scaleX();
+
+      // calculate center point between the stage dimensions
+      const xCenter = stage.width() / 2 / oldScale - stage.x() / oldScale;
+      const yCenter = stage.height() / 2 / oldScale - stage.y() / oldScale;
+
+      // calculate new scale based on the factor
+      let newScale = oldScale * factor;
+
+      // apply min and max values for scaling
+      const minOffset = ZOOM_MIN_OFFSET[role as Role];
+      const maxOffset = ZOOM_MAX_OFFSET[role as Role];
+      if (newScale <= oldScale && newScale <= initScale * minOffset)
+        newScale = initScale * minOffset;
+      else if (newScale >= oldScale && newScale >= initScale * maxOffset)
+        newScale = initScale * maxOffset;
+
+      // calculate new position to keep the stage centered
+      const newPos = {
+        x: -xCenter * newScale + stage.width() / 2,
+        y: -yCenter * newScale + stage.height() / 2,
+      };
+
+      // apply the new scale and position
+      stage.scale({ x: newScale, y: newScale });
+      stage.position(newPos);
+      stage.batchDraw(); // or stage.clearCache() depending on use-case
+    }
+  };
+
+  // UI RELATED METHODS
+  // [COMMON] render sections
   const renderSection = (section: any) => {
     if (!section) return null;
     const { elements, ticketType, isStage } = section; //  isStage, attribute, id, display
@@ -248,34 +304,6 @@ export default function MainMap({
       );
     });
   };
-  // [COMMON] handle zoom by button
-  const zoomByFactor = (factor: number) => {
-    const stage = stageRef.current;
-    if (stage) {
-      // get current scale
-      const oldScale = stage.scaleX();
-
-      // calculate center point between the stage dimensions
-      const xCenter = stage.width() / 2 / oldScale - stage.x() / oldScale;
-      const yCenter = stage.height() / 2 / oldScale - stage.y() / oldScale;
-
-      // calculate new scale based on the factor
-      const newScale = oldScale * factor;
-
-      // calculate new position to keep the stage centered
-      const newPos = {
-        x: -xCenter * newScale + stage.width() / 2,
-        y: -yCenter * newScale + stage.height() / 2,
-      };
-
-      // apply the new scale and position
-      stage.scale({ x: newScale, y: newScale });
-      stage.position(newPos);
-      stage.batchDraw(); // or stage.clearCache() depending on use-case
-    }
-  };
-  const zoomIn = () => zoomByFactor(1.15); // zoom in by 15%
-  const zoomOut = () => zoomByFactor(1 / 1.15); // zoom out by ~13.04%, which is the inverse of zooming in by 15%
 
   // [COMMON] check for hydration just to be sure
   useEffect(() => {
@@ -332,10 +360,10 @@ export default function MainMap({
               onClick={() => {
                 switch (key) {
                   case "plus":
-                    zoomIn();
+                    zoomByFactor(ZOOM_SPEED);
                     break;
                   case "minus":
-                    zoomOut();
+                    zoomByFactor(1 / ZOOM_SPEED);
                     break;
                   default:
                     reset();
