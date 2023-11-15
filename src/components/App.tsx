@@ -33,9 +33,9 @@ const App = () => {
 
   return (
     <MainMap
-      width={725} // 725, 375
+      width={375} // 725, 375
       height={635} // 675, 635
-      role="web"
+      role="mobile"
       fallbackColor="#e3e3e3"
       sections={data?.sections}
       sectionsViewbox={data?.viewbox}

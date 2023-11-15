@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Group, Layer, Path, Stage } from "react-konva";
 import { Tooltip } from "react-tooltip";
 
@@ -39,6 +39,39 @@ export default function MainMap({
   // states
   const [mounted, setMounted] = useState(false);
 
+  // [COMMON] handle reset
+  const reset = useCallback(() => {
+    const stage = stageRef.current;
+    const layer = layerRef.current;
+    if (stage && layer) {
+      // stage dimensions
+      const stageW = stage.getWidth();
+      const stageH = stage.getHeight();
+
+      // all sections group dimensions
+      const sectionsRect = getViewBoxRect(sectionsViewbox);
+
+      // calculate new scale
+      const newWidth = Math.min(stageW, sectionsRect.width);
+      const newScale = newWidth / sectionsRect.width;
+
+      // stage center point
+      const stageCenterX = Math.floor(stageW / 2);
+      const stageCenterY = Math.floor(stageH / 2);
+
+      // all sections group center point
+      const sectionsCenterX = Math.floor((sectionsRect.width / 2) * newScale);
+      const sectionsCenterY = Math.floor((sectionsRect.height / 2) * newScale);
+
+      // offsets between 2 centers
+      const offsetX = stageCenterX - sectionsCenterX;
+      const offsetY = stageCenterY - sectionsCenterY;
+
+      // reflect changes on stage
+      stage.position({ x: offsetX, y: offsetY });
+      stage.scale({ x: newScale, y: newScale });
+    }
+  }, [sectionsViewbox]);
   // [DESKTOP] event methods
   const onWheel = (e: any) => {
     e.evt.preventDefault();
@@ -215,44 +248,41 @@ export default function MainMap({
       );
     });
   };
+  // [COMMON] handle zoom by button
+  const zoomByFactor = (factor: number) => {
+    const stage = stageRef.current;
+    if (stage) {
+      // get current scale
+      const oldScale = stage.scaleX();
+
+      // calculate center point between the stage dimensions
+      const xCenter = stage.width() / 2 / oldScale - stage.x() / oldScale;
+      const yCenter = stage.height() / 2 / oldScale - stage.y() / oldScale;
+
+      // calculate new scale based on the factor
+      const newScale = oldScale * factor;
+
+      // calculate new position to keep the stage centered
+      const newPos = {
+        x: -xCenter * newScale + stage.width() / 2,
+        y: -yCenter * newScale + stage.height() / 2,
+      };
+
+      // apply the new scale and position
+      stage.scale({ x: newScale, y: newScale });
+      stage.position(newPos);
+      stage.batchDraw(); // or stage.clearCache() depending on use-case
+    }
+  };
+  const zoomIn = () => zoomByFactor(1.15); // zoom in by 15%
+  const zoomOut = () => zoomByFactor(1 / 1.15); // zoom out by ~13.04%, which is the inverse of zooming in by 15%
 
   // [COMMON] check for hydration just to be sure
   useEffect(() => {
     if (!mounted) setMounted(true);
   }, [mounted]);
   // [COMMON] auto scale and center the all sections map
-  useEffect(() => {
-    const stage = stageRef.current;
-    const layer = layerRef.current;
-    if (stage && layer) {
-      // stage dimensions
-      const stageW = stage.getWidth();
-      const stageH = stage.getHeight();
-
-      // all sections group dimensions
-      const sectionsRect = getViewBoxRect(sectionsViewbox);
-
-      // calculate new scale
-      const newWidth = Math.min(stageW, sectionsRect.width);
-      const newScale = newWidth / sectionsRect.width;
-
-      // stage center point
-      const stageCenterX = Math.floor(stageW / 2);
-      const stageCenterY = Math.floor(stageH / 2);
-
-      // all sections group center point
-      const sectionsCenterX = Math.floor((sectionsRect.width / 2) * newScale);
-      const sectionsCenterY = Math.floor((sectionsRect.height / 2) * newScale);
-
-      // offsets between 2 centers
-      const offsetX = stageCenterX - sectionsCenterX;
-      const offsetY = stageCenterY - sectionsCenterY;
-
-      // reflect changes on stage
-      stage.position({ x: offsetX, y: offsetY });
-      stage.scale({ x: newScale, y: newScale });
-    }
-  }, [sectionsViewbox]);
+  useEffect(() => reset(), [reset]);
   // [MOBILE] force prevent default
   useEffect(() => {
     // function to prevent default behavior for touchmove events
@@ -272,6 +302,7 @@ export default function MainMap({
   return (
     <div
       className="map-wrapper"
+      // DO NOT TOUCH
       style={{
         width,
         height,
@@ -281,6 +312,7 @@ export default function MainMap({
     >
       <div
         className="btn-wrapper"
+        // DO NOT TOUCH
         style={{
           display: "flex",
           flexDirection: "column",
@@ -297,6 +329,19 @@ export default function MainMap({
                 content: tooltip?.[key]?.content || defaultContent,
                 place: tooltip?.[key]?.place || "",
               }}
+              onClick={() => {
+                switch (key) {
+                  case "plus":
+                    zoomIn();
+                    break;
+                  case "minus":
+                    zoomOut();
+                    break;
+                  default:
+                    reset();
+                    break;
+                }
+              }}
             />
           );
         })}
@@ -310,7 +355,7 @@ export default function MainMap({
           }}
           isToggle
         />
-        <Tooltip id="btn-tooltip" opacity={1} />
+        {role !== "mobile" && <Tooltip id="btn-tooltip" opacity={1} />}
       </div>
       <Stage
         ref={stageRef}
