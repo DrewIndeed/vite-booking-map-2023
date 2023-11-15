@@ -46,3 +46,10 @@ body,
   stroke-width: 2px;
   stroke: #2dc275;
 }
+
+#btn-tooltip {
+  color: #000;
+  background-color: #fff;
+  font-family: inherit;
+  z-index: 100;
+}

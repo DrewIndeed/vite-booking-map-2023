@@ -1,3 +1,9 @@
+import PlusIcon from "@icons/plus.svg?react";
+import MinusIcon from "@icons/minus.svg?react";
+import ResetIcon from "@icons/reset.svg?react";
+import EyeOpenIcon from "@icons/eye-open.svg?react";
+import EyeCloseIcon from "@icons/eye-close.svg?react";
+
 const _cssStrToObj = (stylesStr: string) =>
   stylesStr
     .split(";")
@@ -37,3 +43,11 @@ export const SEAT_STYLES_PARSED: Record<string, object> = Object.freeze({
   readOnly: _cssStrToObj(SEAT_STYLES_RAW.readOnly),
   selected: _cssStrToObj(SEAT_STYLES_RAW.selected),
 });
+
+export const buttons = {
+  plus: { key: "plus", icon: PlusIcon, defaultContent: "Phóng to" },
+  reset: { key: "reset", icon: ResetIcon, defaultContent: "Về lại từ đầu" },
+  minus: { key: "minus", icon: MinusIcon, defaultContent: "Thu nhỏ" },
+  eyeOpen: { key: "eyeOpen", icon: EyeOpenIcon, defaultContent: "Ẩn/Hiện" },
+  eyeClose: { key: "eyeClose", icon: EyeCloseIcon, defaultContent: "Ẩn/Hiện" },
+};

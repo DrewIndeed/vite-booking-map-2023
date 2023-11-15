@@ -40,6 +40,7 @@ const App = () => {
       sections={data?.sections}
       sectionsViewbox={data?.viewbox}
       chosenSection={data?.sectionData}
+      // tooltip={{ plus: { content: "Phóng rất to" } }}
     />
   );
 };

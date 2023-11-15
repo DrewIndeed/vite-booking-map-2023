@@ -14,7 +14,7 @@
       "@store/*": ["./store/*"],
       "@lib/*": ["./lib/*"],
       "@style/*": ["./style/*"],
-      "@icons": ["./icons/index.ts"]
+      "@icons/*": ["./icons/*"]
     },
 
     /* Bundler mode */

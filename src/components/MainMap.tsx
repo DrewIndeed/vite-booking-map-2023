@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { Group, Layer, Path, Stage } from "react-konva";
+import { Tooltip } from "react-tooltip";
 
 import { getCenter, getDistance, getOS, getViewBoxRect } from "@lib/utils";
-import icons from "@icons";
+import { buttons } from "@lib/constants";
+
 import Button from "./Button";
 
 interface Element {
@@ -20,6 +22,7 @@ export default function MainMap({
   fallbackColor = "#fff",
   sectionsViewbox = "0 0 0 0",
   sections = [],
+  tooltip = {},
 }: any) {
   // utils
   const os = getOS();
@@ -284,15 +287,30 @@ export default function MainMap({
           position: "absolute",
         }}
       >
-        {Object.entries(icons).map(
-          ([, { title, icon }]) =>
-            !title.includes("eye") && <Button key={title} icon={icon} />
-        )}
+        {Object.entries(buttons).map(([, { key, icon, defaultContent }]) => {
+          if (key.includes("eye")) return null;
+          return (
+            <Button
+              key={key}
+              icon={icon}
+              tooltip={{
+                content: tooltip?.[key]?.content || defaultContent,
+                place: tooltip?.[key]?.place || "",
+              }}
+            />
+          );
+        })}
         <Button
-          icon={icons.eyeOpen.icon}
-          secondIcon={icons.eyeClose.icon}
+          icon={buttons.eyeOpen.icon}
+          secondIcon={buttons.eyeClose.icon}
+          tooltip={{
+            content:
+              tooltip?.["eye"]?.content || buttons.eyeOpen.defaultContent,
+            place: tooltip?.["eye"]?.place || "",
+          }}
           isToggle
         />
+        <Tooltip id="btn-tooltip" opacity={1} />
       </div>
       <Stage
         ref={stageRef}

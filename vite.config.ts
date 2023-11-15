@@ -14,7 +14,7 @@ export default defineConfig({
       "@store": path.resolve(__dirname, "./src/store"),
       "@lib": path.resolve(__dirname, "./src/lib"),
       "@style": path.resolve(__dirname, "./src/style"),
-      "@icons": path.resolve(__dirname, "./src/icons/index.ts"),
+      "@icons": path.resolve(__dirname, "./src/icons"),
     },
   },
   server: {
