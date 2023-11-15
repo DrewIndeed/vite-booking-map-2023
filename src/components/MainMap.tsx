@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { Group, Layer, Path, Stage } from "react-konva";
 
 import { getCenter, getDistance, getOS, getViewBoxRect } from "@lib/utils";
+import icons from "@icons";
+import Button from "./Button";
 
 interface Element {
   data: string;
@@ -215,7 +217,7 @@ export default function MainMap({
   useEffect(() => {
     if (!mounted) setMounted(true);
   }, [mounted]);
-  // [COMMON] auto center the all sections map
+  // [COMMON] auto scale and center the all sections map
   useEffect(() => {
     const stage = stageRef.current;
     const layer = layerRef.current;
@@ -250,7 +252,6 @@ export default function MainMap({
   }, [sectionsViewbox]);
   // [MOBILE] force prevent default
   useEffect(() => {
-    if (role !== "mobile") return;
     // function to prevent default behavior for touchmove events
     const preventDefault = (e: any) => {
       // check if it's a one-finger touch event
@@ -260,23 +261,51 @@ export default function MainMap({
     document.addEventListener("touchmove", preventDefault, { passive: false });
     // cleanup the event listener when the component unmounts
     return () => document.removeEventListener("touchmove", preventDefault);
-  }, [role]);
+  }, []);
 
   // if not hydrated and no sections
   if (!mounted && sections?.length === 0) return <div>No data.</div>;
   // main render
   return (
-    <Stage
-      ref={stageRef}
-      width={width}
-      height={height}
-      draggable={draggable}
-      onWheel={onWheel}
-      onTouchStart={onTouchStart}
-      onTouchMove={onTouchMove}
+    <div
+      className="map-wrapper"
+      style={{
+        width,
+        height,
+        overflow: "hidden",
+        position: "relative",
+      }}
     >
-      <Layer ref={layerRef}>{sections?.map(renderSection)}</Layer>
-    </Stage>
+      <div
+        className="btn-wrapper"
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          position: "absolute",
+        }}
+      >
+        {Object.entries(icons).map(
+          ([, { title, icon }]) =>
+            !title.includes("eye") && <Button key={title} icon={icon} />
+        )}
+        <Button
+          icon={icons.eyeOpen.icon}
+          secondIcon={icons.eyeClose.icon}
+          isToggle
+        />
+      </div>
+      <Stage
+        ref={stageRef}
+        width={width}
+        height={height}
+        draggable={draggable}
+        onWheel={onWheel}
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+      >
+        <Layer ref={layerRef}>{sections?.map(renderSection)}</Layer>
+      </Stage>
+    </div>
   );
 }
 

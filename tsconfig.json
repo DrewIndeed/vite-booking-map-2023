@@ -13,7 +13,8 @@
       "@components/*": ["./components/*"],
       "@store/*": ["./store/*"],
       "@lib/*": ["./lib/*"],
-      "@style/*": ["./style/*"]
+      "@style/*": ["./style/*"],
+      "@icons": ["./icons/index.ts"]
     },
 
     /* Bundler mode */

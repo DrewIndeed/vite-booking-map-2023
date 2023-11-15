@@ -32,23 +32,15 @@ const App = () => {
   }, [data?.mapData?.data?.result?.viewbox, saveData]);
 
   return (
-    <div
-      className="map-wrapper"
-      style={{
-        width: 375,
-        height: 635,
-      }}
-    >
-      <MainMap
-        width={375} // 725, 375
-        height={635} // 675, 635
-        role="mobile"
-        fallbackColor="#e3e3e3"
-        sections={data?.sections}
-        sectionsViewbox={data?.viewbox}
-        chosenSection={data?.sectionData}
-      />
-    </div>
+    <MainMap
+      width={725} // 725, 375
+      height={635} // 675, 635
+      role="web"
+      fallbackColor="#e3e3e3"
+      sections={data?.sections}
+      sectionsViewbox={data?.viewbox}
+      chosenSection={data?.sectionData}
+    />
   );
 };
 
