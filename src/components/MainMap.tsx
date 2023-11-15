@@ -13,15 +13,10 @@ import { getCenter, getDistance, getOS, getViewBoxRect } from "@lib/utils";
 
 import Button from "./Button";
 
-type Element = {
-  data: string;
-  fill: string;
-  display: number;
-};
-
 export default function MainMap({
   width = 500,
   height = 500,
+  sectionId = 0,
   draggable = true,
 
   role = "web",
@@ -29,6 +24,11 @@ export default function MainMap({
   sectionsViewbox = "0 0 0 0",
   sections = [],
   tooltip = {},
+
+  isMinimap = false,
+  minimap = null,
+  chosenSection = {},
+  onToggleMinimap = () => {},
 }: any) {
   // utils
   const os = getOS();
@@ -97,6 +97,7 @@ export default function MainMap({
   // [DESKTOP] event methods
   const onWheel = (e: any) => {
     e.evt.preventDefault();
+    if (isMinimap) return;
     const stage = stageRef.current;
     if (stage) {
       // get current scale
@@ -258,60 +259,87 @@ export default function MainMap({
   // [COMMON] render sections
   const renderSection = (section: any) => {
     if (!section) return null;
-    const { elements, ticketType, isStage } = section; //  isStage, attribute, id, display
+    const { elements, ticketType, isStage, id: renderId } = section; //  isStage, attribute, id, display
 
     const _onMouseEnter = (e: any) => {
-      if (role === "mobile") return;
+      if (role === "mobile" || isMinimap) return;
       const container = e.target?.getStage()?.container();
       const cursorType = !ticketType ? "auto" : "pointer";
       if (container) container.style.cursor = cursorType;
     };
     const _onMouseLeave = (e: any) => {
-      if (role === "mobile") return;
+      if (role === "mobile" || isMinimap) return;
       const container = e.target?.getStage()?.container();
       if (container) container.style.cursor = "";
     };
 
-    return elements?.map(({ data, display, fill }: Element, key: number) => {
-      if (display !== 1) return null;
-      const isBg = key === 0;
+    return elements?.map(
+      (
+        {
+          data,
+          display,
+          fill,
+        }: {
+          data: string;
+          fill: string;
+          display: number;
+        },
+        key: number
+      ) => {
+        const isBg = key === 0;
 
-      // HANDLE FILL COLOR
-      let finalFillColor = "";
-      // if it is the color of the bg and there is ticket type
-      if (isBg && ticketType) {
+        // if display value from BE
+        if (display !== 1) return null;
+
+        // is not stage and not background in minimap
+        if (!isStage && isMinimap && !isBg) return null;
+
+        // HANDLE FILL COLOR
+        let finalFillColor = "";
         // handle the color code
         const hasHashSymbol = ticketType?.color?.includes("#");
-        finalFillColor = ticketType?.color
+        const extractedColor = ticketType?.color
           ? `${hasHashSymbol ? "" : "#"}${ticketType?.color}`
           : fallbackColor;
+
+        // if it is the color of the bg and there is ticket type
+        if (isBg && ticketType) {
+          finalFillColor = extractedColor;
+        }
+        // if it is a stage
+        if (isStage) finalFillColor = fill;
+        // if fill color is ""
+        if (!finalFillColor && !isStage) finalFillColor = fallbackColor;
+
+        // if it is minimap
+        if (isMinimap) {
+          // if it is normal sections
+          if (!isStage && sectionId !== 0) finalFillColor = fallbackColor;
+          if (sectionId === renderId) finalFillColor = extractedColor;
+        }
+
+        // final colors render
+        const isNormalBg = isBg && !isStage;
+        const finalColors = {
+          fill: finalFillColor,
+          stroke: isNormalBg ? (isMinimap ? "#000" : fallbackColor) : "",
+          strokeWidth: isNormalBg ? 1.5 : 0.5,
+        };
+
+        return (
+          <Group
+            ref={(e) => {
+              groupRefs!.current[key] = e;
+            }}
+            key={`sections-${key}`}
+            onMouseEnter={_onMouseEnter}
+            onMouseLeave={_onMouseLeave}
+          >
+            <Path key={key} data={data} {...finalColors} />
+          </Group>
+        );
       }
-      // if it is a stage
-      if (isStage) finalFillColor = fill;
-      // if fill color is ""
-      if (!finalFillColor && !isStage) finalFillColor = fallbackColor;
-
-      // final colors render
-      const isNormalBg = isBg && !isStage;
-      const finalColors = {
-        fill: finalFillColor,
-        stroke: isNormalBg ? fallbackColor : "",
-        strokeWidth: isNormalBg ? 1.5 : 0.5,
-      };
-
-      return (
-        <Group
-          ref={(e) => {
-            groupRefs!.current[key] = e;
-          }}
-          key={`sections-${key}`}
-          onMouseEnter={_onMouseEnter}
-          onMouseLeave={_onMouseLeave}
-        >
-          <Path key={key} data={data} {...finalColors} />
-        </Group>
-      );
-    });
+    );
   };
 
   // [COMMON] check for hydration just to be sure
@@ -338,20 +366,22 @@ export default function MainMap({
   // main render
   return (
     <div
-      className="map-wrapper"
+      className={`map-wrapper ${isMinimap && "minimap"}`}
       // DO NOT TOUCH
       style={{
         width,
         height,
         overflow: "hidden",
-        position: "relative",
+        zIndex: 1,
+        filter:
+          isMinimap && sectionId === 0 ? "brightness(50%)" : "brightness(100%)",
       }}
     >
       <div
         className="btn-wrapper"
         // DO NOT TOUCH
         style={{
-          display: "flex",
+          display: isMinimap ? "none" : "flex",
           flexDirection: "column",
           position: "absolute",
         }}
@@ -383,6 +413,7 @@ export default function MainMap({
           );
         })}
         <Button
+          isToggle
           icon={buttons.eyeOpen.icon}
           secondIcon={buttons.eyeClose.icon}
           tooltip={{
@@ -390,15 +421,16 @@ export default function MainMap({
               tooltip?.["eye"]?.content || buttons.eyeOpen.defaultContent,
             place: tooltip?.["eye"]?.place || "",
           }}
-          isToggle
+          onClick={() => onToggleMinimap()}
         />
         {role !== "mobile" && <Tooltip id="btn-tooltip" opacity={1} />}
       </div>
+      {minimap}
       <Stage
         ref={stageRef}
         width={width}
         height={height}
-        draggable={draggable}
+        draggable={draggable && !isMinimap}
         onWheel={onWheel}
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}
