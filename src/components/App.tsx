@@ -16,14 +16,15 @@ const App = () => {
   const toggle = useCallback(() => setShowMinimap(!showMinimap), [showMinimap]);
 
   // effects
+  // TODO: get alll seats and try to render all to check performance
   useEffect(() => {
     // self called func to fetch local data
     (async () => {
       const mapData = await fetchLocalJSON(
-        "/src/mock/large/seatmap-2-event.json"
+        "/src/mock/medium/seatmap-940-event.json"
       );
       const sectionData = await fetchLocalJSON(
-        "/src/mock/large/section-168.json"
+        "/src/mock/medium/section-210.json"
       );
       const demoData = {
         sectionData: sectionData?.data?.result,

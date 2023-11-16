@@ -60,6 +60,7 @@ export default function MainMap({
       if (!stage || !viewport || !seatsLayer) return;
       seatsLayer.destroyChildren(); // clear current seats
 
+      // TODO: dynamic values for this
       if (newScale > 1.8) return; // ignore on this scale value
       if (!seatsLayer.clearBeforeDraw()) seatsLayer.clearBeforeDraw(true);
 
@@ -90,7 +91,7 @@ export default function MainMap({
               })
             );
             // seat number
-            if (newScale && newScale < 0.4) {
+            if (newScale && newScale < 0.4) { // TODO: dynamic values for this
               group.add(
                 new Shapes.Text({
                   x: seat.x - (Number(seat.name) < 10 ? 4 : 4.1),
@@ -425,8 +426,8 @@ export default function MainMap({
               groupRefs!.current[key] = e;
             }}
             key={`sections-${key}`}
-            onMouseEnter={_onMouseEnter}
-            onMouseLeave={_onMouseLeave}
+            onMouseEnter={() => {}}
+            onMouseLeave={() => {}}
           >
             <Path key={key} data={data} {...finalColors} />
           </Group>
