@@ -53,7 +53,7 @@ export const buttons = {
 };
 
 export type Role = "mobile" | "web" | "admin";
-export const ZOOM_SPEED = 1.045;
+export const ZOOM_SPEED = 1.055;
 export const ZOOM_MAX_OFFSET: Record<Role, number> = {
   mobile: 60,
   web: 30,

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 
-import { fetchLocalJSON } from "@lib/fetching";
+import { getAdminShowing, getMap, getSections } from "@lib/fetching";
 import { useData } from "@store/useData";
 import MainMap from "./MainMap";
 
@@ -16,17 +16,14 @@ const App = () => {
   const toggle = useCallback(() => setShowMinimap(!showMinimap), [showMinimap]);
 
   // effects
-  // TODO: get alll seats and try to render all to check performance
   useEffect(() => {
     // self called func to fetch local data
     (async () => {
-      const mapData = await fetchLocalJSON(
-        "/src/mock/large/seatmap-2-event.json"
-      );
-      const sectionData = await fetchLocalJSON(
-        "/src/mock/large/section-168.json"
-      );
+      const mapData = await getMap(2);
+      const adminShowData = await getAdminShowing(2);
+      const sectionData = await getSections(2, 168);
       const demoData = {
+        adminSectionsData: adminShowData?.data?.result?.seatMap?.sections,
         sectionData: sectionData?.data?.result,
         sections: mapData?.data?.result?.sections,
         viewbox: mapData?.data?.result?.viewbox,
@@ -40,10 +37,10 @@ const App = () => {
     <div style={{ position: "relative" }}>
       <MainMap
         width={700} // 725, 375
-        height={700} // 675, 635
+        height={480} // 675, 635
         role="web"
-        fallbackColor="#e3e3e3"
-        sections={data?.sections} // MUST
+        // fallbackColor="#9b9a9d"
+        sections={data?.adminSectionsData} // MUST
         sectionsViewbox={data?.viewbox} // MUST
         chosenSection={data?.sectionData}
         onToggleMinimap={() => toggle()}
@@ -52,7 +49,7 @@ const App = () => {
           <MainMap
             width={100}
             height={165}
-            sections={data?.sections} // MUST
+            sections={data?.adminSectionsData} // MUST
             sectionsViewbox={data?.viewbox} // MUST
             // Progress: section related
             isMinimap

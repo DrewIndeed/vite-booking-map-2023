@@ -39,7 +39,6 @@ export default function MainMap({
   const layerRef = useRef<any>();
   const viewPortRef = useRef<any>();
   const seatsLayerRef = useRef<any>();
-  const groupRefs = useRef<any[]>([]);
 
   // [MOBILE] refs
   const lastCenter = useRef({ x: 0, y: 0 });
@@ -74,48 +73,51 @@ export default function MainMap({
       const y2 = viewboxRect.y + viewboxRect.height;
 
       // filter and render available seats by LOOPING
-      // TODO: improve performance by check for section's position as well
-      chosenSection?.rows.forEach((row: any) => {
-        row?.seats.forEach((seat: any) => {
-          if (seat.x >= x1 && seat.x <= x2 && seat.y >= y1 && seat.y <= y2) {
-            const group = new Shapes.Group();
-            // seat circle
-            group.add(
-              new Shapes.Circle({
-                x: seat.x,
-                y: seat.y,
-                radius: 4,
-                fill: "white",
-                stroke: "black",
-                strokeWidth: 0.6,
-              })
-            );
-            // seat number
-            if (newScale && newScale < 0.4) {
-              // TODO: dynamic values for this
+      sections?.map((section: any) => {
+        if (section.isStage) return null;
+        return section?.rows.forEach((row: any) => {
+          row?.seats.forEach((seat: any) => {
+            if (seat.x >= x1 && seat.x <= x2 && seat.y >= y1 && seat.y <= y2) {
+              const group = new Shapes.Group();
+              // seat circle
               group.add(
-                new Shapes.Text({
-                  x: seat.x - (Number(seat.name) < 10 ? 4 : 4.1),
-                  y: seat.y - 2.2,
-                  width: 8,
-                  fontSize: 5,
-                  align: "center",
-                  fontStyle: "bold",
-                  text: seat.name,
+                new Shapes.Circle({
+                  x: seat.x,
+                  y: seat.y,
+                  radius: 4,
+                  fill: "#fff",
+                  stroke: "#9b9a9d",
+                  strokeWidth: 0.6,
                 })
               );
-            }
+              // seat number
+              if (newScale && newScale < 0.4) {
+                // TODO: dynamic values for this
+                group.add(
+                  new Shapes.Text({
+                    x: seat.x - (Number(seat.name) < 10 ? 3.95 : 4),
+                    y: seat.y - 2.1,
+                    width: 8,
+                    fontSize: 5,
+                    align: "center",
+                    verticalAlign: "middle",
+                    fontStyle: "600",
+                    text: seat.name,
+                  })
+                );
+              }
 
-            // console.log(x1, x2, y1, y2, newScale);
-            seatsLayer.add(group); // add to a seat group
-          }
+              // console.log(x1, x2, y1, y2, newScale);
+              seatsLayer.add(group); // add to a seat group
+            }
+          });
         });
       });
 
       // clear cache
       seatsLayer.clearCache();
     },
-    [chosenSection?.rows]
+    [sections]
   );
   // [UTILS] handle calculate real view port
   const calculateViewPort = useCallback(() => {
@@ -354,17 +356,17 @@ export default function MainMap({
     if (!section) return null;
     const { elements, ticketType, isStage, id: renderId } = section; //  isStage, attribute, id, display
 
-    const _onMouseEnter = (e: any) => {
-      if (role === "mobile" || isMinimap) return;
-      const container = e.target?.getStage()?.container();
-      const cursorType = !ticketType ? "auto" : "pointer";
-      if (container) container.style.cursor = cursorType;
-    };
-    const _onMouseLeave = (e: any) => {
-      if (role === "mobile" || isMinimap) return;
-      const container = e.target?.getStage()?.container();
-      if (container) container.style.cursor = "";
-    };
+    // const _onMouseEnter = (e: any) => {
+    //   if (role === "mobile" || isMinimap) return;
+    //   const container = e.target?.getStage()?.container();
+    //   const cursorType = !ticketType ? "auto" : "pointer";
+    //   if (container) container.style.cursor = cursorType;
+    // };
+    // const _onMouseLeave = (e: any) => {
+    //   if (role === "mobile" || isMinimap) return;
+    //   const container = e.target?.getStage()?.container();
+    //   if (container) container.style.cursor = "";
+    // };
 
     return elements?.map(
       (
@@ -423,9 +425,6 @@ export default function MainMap({
 
         return (
           <Group
-            ref={(e) => {
-              groupRefs!.current[key] = e;
-            }}
             key={`sections-${key}`}
             onMouseEnter={() => {}}
             onMouseLeave={() => {}}
