@@ -4,6 +4,8 @@ import { Group, Layer, Path, Rect, Stage } from "react-konva";
 import { Tooltip } from "react-tooltip";
 
 import {
+  RENDER_NUM_SCALE,
+  RENDER_SEAT_SCALE,
   ZOOM_MAX_OFFSET,
   ZOOM_MIN_OFFSET,
   ZOOM_SPEED,
@@ -59,8 +61,7 @@ export default function MainMap({
       if (!stage || !viewport || !seatsLayer) return;
       seatsLayer.destroyChildren(); // clear current seats
 
-      // TODO: dynamic values for this
-      if (newScale > 1.8) return; // ignore on this scale value
+      if (newScale > RENDER_SEAT_SCALE) return; // ignore on this scale value
       if (!seatsLayer.clearBeforeDraw()) seatsLayer.clearBeforeDraw(true);
 
       // calcuclate view box rect
@@ -91,8 +92,7 @@ export default function MainMap({
                 })
               );
               // seat number
-              if (newScale && newScale < 0.4) {
-                // TODO: dynamic values for this
+              if (newScale && newScale < RENDER_NUM_SCALE) {
                 group.add(
                   new Shapes.Text({
                     x: seat.x - (Number(seat.name) < 10 ? 3.95 : 4),
@@ -186,7 +186,7 @@ export default function MainMap({
     }
     return { value: newScale, reached: false };
   };
-  // [DESKTOP] event methods
+  // [DESKTOP] handle wheeling
   const onWheel = (e: any) => {
     e.evt.preventDefault();
     if (isMinimap) return;

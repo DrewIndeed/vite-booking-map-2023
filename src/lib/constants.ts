@@ -54,6 +54,8 @@ export const buttons = {
 
 export type Role = "mobile" | "web" | "admin";
 export const ZOOM_SPEED = 1.055;
+
+// TODO: dynamic values for this
 export const ZOOM_MAX_OFFSET: Record<Role, number> = {
   mobile: 60,
   web: 30,
@@ -65,3 +67,5 @@ export const ZOOM_MIN_OFFSET: Record<Role, number> = Object.entries(
   prev[k] = value / (value + 2);
   return prev;
 }, {});
+export const RENDER_SEAT_SCALE = 1.8;
+export const RENDER_NUM_SCALE = 0.4;
