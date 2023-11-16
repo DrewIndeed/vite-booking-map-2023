@@ -91,13 +91,14 @@ export default function MainMap({
               })
             );
             // seat number
-            if (newScale && newScale < 0.4) { // TODO: dynamic values for this
+            if (newScale && newScale < 0.4) {
+              // TODO: dynamic values for this
               group.add(
                 new Shapes.Text({
                   x: seat.x - (Number(seat.name) < 10 ? 4 : 4.1),
-                  y: seat.y - 2.6,
+                  y: seat.y - 2.2,
                   width: 8,
-                  fontSize: 6,
+                  fontSize: 5,
                   align: "center",
                   fontStyle: "bold",
                   text: seat.name,
@@ -526,10 +527,10 @@ export default function MainMap({
               onClick={() => {
                 switch (key) {
                   case "plus":
-                    zoomByFactor(ZOOM_SPEED);
+                    zoomByFactor(ZOOM_SPEED * 1.2);
                     break;
                   case "minus":
-                    zoomByFactor(1 / ZOOM_SPEED);
+                    zoomByFactor(1 / (ZOOM_SPEED * 1.2));
                     break;
                   default:
                     reset();

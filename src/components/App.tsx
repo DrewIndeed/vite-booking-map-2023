@@ -21,10 +21,10 @@ const App = () => {
     // self called func to fetch local data
     (async () => {
       const mapData = await fetchLocalJSON(
-        "/src/mock/medium/seatmap-940-event.json"
+        "/src/mock/large/seatmap-2-event.json"
       );
       const sectionData = await fetchLocalJSON(
-        "/src/mock/medium/section-210.json"
+        "/src/mock/large/section-168.json"
       );
       const demoData = {
         sectionData: sectionData?.data?.result,
