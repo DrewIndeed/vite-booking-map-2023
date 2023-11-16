@@ -37,8 +37,8 @@ const App = () => {
   return (
     <div style={{ position: "relative" }}>
       <MainMap
-        width={725} // 725, 375
-        height={675} // 675, 635
+        width={888} // 725, 375
+        height={888} // 675, 635
         role="web"
         fallbackColor="#e3e3e3"
         sections={data?.sections}

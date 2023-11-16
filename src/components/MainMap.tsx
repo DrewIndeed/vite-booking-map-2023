@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Group, Layer, Path, Stage } from "react-konva";
+import { Group, Layer, Path, Rect, Stage } from "react-konva";
 import { Tooltip } from "react-tooltip";
 
 import {
@@ -35,6 +35,7 @@ export default function MainMap({
   // refs
   const stageRef = useRef<any>();
   const layerRef = useRef<any>();
+  const viewPortRef = useRef<any>();
   const groupRefs = useRef<any[]>([]);
 
   // [MOBILE] refs
@@ -46,6 +47,20 @@ export default function MainMap({
   const [initScale, setInitScale] = useState(1);
 
   // INTERACTIONS RELATED METHODS
+  // [UTILS] handle calculate real view port
+  const calculateViewPort = () => {
+    const stage = stageRef?.current;
+    const viewport = viewPortRef?.current;
+    if (!stage || !viewport) return;
+
+    const scale = stage.getScaleX();
+    const x = stage.x();
+    const y = stage.y();
+
+    const newScale = 1 / scale;
+    viewport.scale({ x: newScale, y: newScale });
+    viewport.position({ x: -x * newScale, y: -y * newScale });
+  };
   // [COMMON] handle reset
   const reset = useCallback(() => {
     const stage = stageRef.current;
@@ -78,9 +93,10 @@ export default function MainMap({
       stage.position({ x: offsetX, y: offsetY });
       stage.scale({ x: newScale, y: newScale });
       setInitScale(newScale);
+      calculateViewPort();
     }
   }, [sectionsViewbox]);
-  // [COMMON] handle zoom limits
+  // [UTILS] handle zoom limits
   const limitedNewScale = (newScale: number, oldScale: number) => {
     // apply min and max values for scaling
     const minOffset = ZOOM_MIN_OFFSET[role as Role];
@@ -129,6 +145,7 @@ export default function MainMap({
       stage.scale({ x: adjustedNewScale.value, y: adjustedNewScale.value });
       stage.position(newPos);
       stage.clearCache();
+      calculateViewPort();
     }
   };
   // [MOBILE] handle when fingers start to touch
@@ -219,6 +236,7 @@ export default function MainMap({
       // reflect changes
       stage.batchDraw();
       stage.clearCache();
+      calculateViewPort();
 
       // Update last known distance and center point
       lastDist.current = newDist;
@@ -251,6 +269,7 @@ export default function MainMap({
       stage.scale({ x: adjustedNewScale.value, y: adjustedNewScale.value });
       stage.position(newPos);
       stage.batchDraw(); // or stage.clearCache() depending on use-case
+      calculateViewPort();
     }
   };
 
@@ -343,9 +362,35 @@ export default function MainMap({
     );
   };
 
-  // [COMMON] check for hydration just to be sure
+  // [COMMON] check for hydration and calculate viewport initially
   useEffect(() => {
-    if (!mounted) setMounted(true);
+    // set true for hydration
+    if (!mounted) {
+      setMounted(true);
+      return;
+    }
+
+    // initially calculate the real view port
+    const stage = stageRef.current;
+    const layer = layerRef.current;
+    if (!stage || !layer) return;
+
+    const cw = stage.getWidth();
+    const ch = stage.getHeight();
+    const box = layer.getClientRect();
+
+    const newWidth = Math.min(cw, box.width);
+    const newScale = newWidth / box.width;
+
+    let xOffset = 0;
+    let yOffset = 0;
+    if (box.width < cw) {
+      xOffset = (cw - box.width) / 2;
+      yOffset = (ch - box.height) / 2;
+    }
+
+    stage.position({ x: xOffset, y: yOffset });
+    stage.scale({ x: newScale, y: newScale });
   }, [mounted]);
   // [COMMON] auto scale and center the all sections map
   useEffect(() => reset(), [reset]);
@@ -437,8 +482,14 @@ export default function MainMap({
         onWheel={onWheel}
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}
+        onDragMove={() => calculateViewPort()}
       >
         <Layer ref={layerRef}>{sections?.map(renderSection)}</Layer>
+        {!isMinimap && (
+          <Layer ref={viewPortRef} x={0} y={0} listening={false}>
+            <Rect fill="#ffffff90" width={width} height={height} x={0} y={0} />
+          </Layer>
+        )}
       </Stage>
     </div>
   );
