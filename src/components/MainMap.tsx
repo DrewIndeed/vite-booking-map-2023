@@ -1,3 +1,4 @@
+import Shapes from "konva";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Group, Layer, Path, Rect, Stage } from "react-konva";
 import { Tooltip } from "react-tooltip";
@@ -28,6 +29,7 @@ export default function MainMap({
   minimap = null,
   chosenSection = {},
   onToggleMinimap = () => {},
+  styles = {},
 }: any) {
   // utils
   const os = getOS();
@@ -36,6 +38,7 @@ export default function MainMap({
   const stageRef = useRef<any>();
   const layerRef = useRef<any>();
   const viewPortRef = useRef<any>();
+  const seatsLayerRef = useRef<any>();
   const groupRefs = useRef<any[]>([]);
 
   // [MOBILE] refs
@@ -47,20 +50,90 @@ export default function MainMap({
   const [initScale, setInitScale] = useState(1);
 
   // INTERACTIONS RELATED METHODS
+  // [COMMON] render seats
+  const renderSeats = useCallback(
+    (newScale = 1) => {
+      const stage = stageRef?.current;
+      const viewport = viewPortRef?.current;
+      const seatsLayer = seatsLayerRef?.current;
+
+      if (!stage || !viewport || !seatsLayer) return;
+      seatsLayer.destroyChildren(); // clear current seats
+
+      if (newScale > 1.8) return; // ignore on this scale value
+      if (!seatsLayer.clearBeforeDraw()) seatsLayer.clearBeforeDraw(true);
+
+      // calcuclate view box rect
+      const viewboxRect = viewport.getClientRect({
+        relativeTo: stage,
+      });
+      const x1 = viewboxRect.x;
+      const x2 = viewboxRect.x + viewboxRect.width;
+      const y1 = viewboxRect.y;
+      const y2 = viewboxRect.y + viewboxRect.height;
+
+      // filter and render available seats by LOOPING
+      // TODO: improve performance by check for section's position as well
+      chosenSection?.rows.forEach((row: any) => {
+        row?.seats.forEach((seat: any) => {
+          if (seat.x >= x1 && seat.x <= x2 && seat.y >= y1 && seat.y <= y2) {
+            const group = new Shapes.Group();
+            // seat circle
+            group.add(
+              new Shapes.Circle({
+                x: seat.x,
+                y: seat.y,
+                radius: 4,
+                fill: "white",
+                stroke: "black",
+                strokeWidth: 0.6,
+              })
+            );
+            // seat number
+            if (newScale && newScale < 0.4) {
+              group.add(
+                new Shapes.Text({
+                  x: seat.x - (Number(seat.name) < 10 ? 4 : 4.1),
+                  y: seat.y - 2.6,
+                  width: 8,
+                  fontSize: 6,
+                  align: "center",
+                  fontStyle: "bold",
+                  text: seat.name,
+                })
+              );
+            }
+
+            // console.log(x1, x2, y1, y2, newScale);
+            seatsLayer.add(group); // add to a seat group
+          }
+        });
+      });
+
+      // clear cache
+      seatsLayer.clearCache();
+    },
+    [chosenSection?.rows]
+  );
   // [UTILS] handle calculate real view port
-  const calculateViewPort = () => {
+  const calculateViewPort = useCallback(() => {
     const stage = stageRef?.current;
     const viewport = viewPortRef?.current;
     if (!stage || !viewport) return;
 
+    // calculate new scale and position
     const scale = stage.getScaleX();
+    const newScale = 1 / scale;
     const x = stage.x();
     const y = stage.y();
 
-    const newScale = 1 / scale;
+    // reflect changes on view port tracker
     viewport.scale({ x: newScale, y: newScale });
     viewport.position({ x: -x * newScale, y: -y * newScale });
-  };
+    viewport.clearCache();
+
+    renderSeats(newScale);
+  }, [renderSeats]);
   // [COMMON] handle reset
   const reset = useCallback(() => {
     const stage = stageRef.current;
@@ -95,7 +168,7 @@ export default function MainMap({
       setInitScale(newScale);
       calculateViewPort();
     }
-  }, [sectionsViewbox]);
+  }, [calculateViewPort, sectionsViewbox]);
   // [UTILS] handle zoom limits
   const limitedNewScale = (newScale: number, oldScale: number) => {
     // apply min and max values for scaling
@@ -375,13 +448,16 @@ export default function MainMap({
     const layer = layerRef.current;
     if (!stage || !layer) return;
 
+    // get stage and layer dimensions
     const cw = stage.getWidth();
     const ch = stage.getHeight();
     const box = layer.getClientRect();
 
+    // calculate new scale
     const newWidth = Math.min(cw, box.width);
     const newScale = newWidth / box.width;
 
+    // calculate offset to re-position
     let xOffset = 0;
     let yOffset = 0;
     if (box.width < cw) {
@@ -389,6 +465,7 @@ export default function MainMap({
       yOffset = (ch - box.height) / 2;
     }
 
+    // reflect changes on stage
     stage.position({ x: xOffset, y: yOffset });
     stage.scale({ x: newScale, y: newScale });
   }, [mounted]);
@@ -418,11 +495,12 @@ export default function MainMap({
         width,
         height,
         overflow: "hidden",
-        zIndex: 1,
+        zIndex: 5,
         filter:
           isMinimap && !chosenSection?.id
             ? "brightness(50%)"
             : "brightness(100%)",
+        ...styles,
       }}
     >
       <div
@@ -473,7 +551,7 @@ export default function MainMap({
         />
         {role !== "mobile" && <Tooltip id="btn-tooltip" opacity={1} />}
       </div>
-      {minimap}
+      <>{minimap}</>
       <Stage
         ref={stageRef}
         width={width}
@@ -482,14 +560,16 @@ export default function MainMap({
         onWheel={onWheel}
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}
-        onDragMove={() => calculateViewPort()}
+        onTouchEnd={() => calculateViewPort()}
+        onDragEnd={() => calculateViewPort()}
       >
         <Layer ref={layerRef}>{sections?.map(renderSection)}</Layer>
         {!isMinimap && (
           <Layer ref={viewPortRef} x={0} y={0} listening={false}>
-            <Rect fill="#ffffff90" width={width} height={height} x={0} y={0} />
+            <Rect width={width} height={height} x={0} y={0} />
           </Layer>
         )}
+        <Layer ref={seatsLayerRef} listening={false} clearBeforeDraw={false} />
       </Stage>
     </div>
   );

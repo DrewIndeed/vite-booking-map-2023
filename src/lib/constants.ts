@@ -55,13 +55,13 @@ export const buttons = {
 export type Role = "mobile" | "web" | "admin";
 export const ZOOM_SPEED = 1.15;
 export const ZOOM_MAX_OFFSET: Record<Role, number> = {
-  mobile: 8,
-  web: 5,
-  admin: 5,
+  mobile: 60,
+  web: 30,
+  admin: 30,
 };
 export const ZOOM_MIN_OFFSET: Record<Role, number> = Object.entries(
   ZOOM_MAX_OFFSET
 ).reduce((prev: any, [k, value]) => {
-  prev[k] = value / 10;
+  prev[k] = value / (value + 2);
   return prev;
 }, {});

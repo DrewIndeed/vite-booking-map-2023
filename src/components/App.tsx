@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { fetchLocalJSON } from "@lib/fetching";
 import { useData } from "@store/useData";
@@ -13,6 +13,7 @@ const App = () => {
 
   // states
   const [showMinimap, setShowMinimap] = useState(true);
+  const toggle = useCallback(() => setShowMinimap(!showMinimap), [showMinimap]);
 
   // effects
   useEffect(() => {
@@ -37,28 +38,28 @@ const App = () => {
   return (
     <div style={{ position: "relative" }}>
       <MainMap
-        width={888} // 725, 375
-        height={888} // 675, 635
+        width={700} // 725, 375
+        height={700} // 675, 635
         role="web"
         fallbackColor="#e3e3e3"
-        sections={data?.sections}
-        sectionsViewbox={data?.viewbox}
+        sections={data?.sections} // MUST
+        sectionsViewbox={data?.viewbox} // MUST
         chosenSection={data?.sectionData}
-        onToggleMinimap={() => setShowMinimap(!showMinimap)}
+        onToggleMinimap={() => toggle()}
         // Progress: minimap related
         minimap={
-          showMinimap ? (
-            <MainMap
-              width={100}
-              height={165}
-              fallbackColor="#e3e3e3"
-              sections={data?.sections}
-              sectionsViewbox={data?.viewbox}
-              // Progress: section related
-              isMinimap
-              chosenSection={data?.sectionData}
-            />
-          ) : null
+          <MainMap
+            width={100}
+            height={165}
+            sections={data?.sections} // MUST
+            sectionsViewbox={data?.viewbox} // MUST
+            // Progress: section related
+            isMinimap
+            chosenSection={data?.sectionData}
+            styles={{
+              display: showMinimap ? "block" : "none",
+            }}
+          />
         }
       />
     </div>
