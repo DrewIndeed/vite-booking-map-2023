@@ -37,8 +37,8 @@ const App = () => {
   return (
     <div style={{ position: "relative" }}>
       <MainMap
-        width={375} // 725, 375
-        height={635} // 675, 635
+        width={700} // 725, 375
+        height={600} // 675, 635
         zoomSpeed={1.1}
         role="web"
         sections={data?.adminSectionsData} // MUST

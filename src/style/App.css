@@ -20,7 +20,7 @@ body,
   background-color: #00000090;
 
   filter: brightness(100%);
-  -webkit-filter: brightness(100%);
+  -webkit-filter: brightness(100%) !important;
 
   backdrop-filter: blur(0.25rem);
   -webkit-backdrop-filter: blur(0.25rem);
@@ -28,7 +28,7 @@ body,
 
 .filter-darker {
   filter: brightness(50%);
-  -webkit-filter: brightness(50%);
+  -webkit-filter: brightness(50%) !important;
 }
 
 .btn-wrapper {

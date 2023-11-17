@@ -103,7 +103,13 @@ export default function MainMap({
               if (newScale && newScale < RENDER_NUM_SCALE) {
                 seatText = new Shapes.Text({
                   x: seat.x - (Number(seat.name) < 10 ? 3.95 : 4.055),
-                  y: seat.y - (Number(seat.name) < 10 ? 2.1 : 2),
+                  y:
+                    seat.y -
+                    (Number(seat.name) < 10
+                      ? 2.1
+                      : role === "mobile"
+                      ? 1.7
+                      : 2),
                   width: 8,
                   fontSize: Number(seat.name) < 10 ? 5 : 4.7,
                   align: "center",
@@ -116,14 +122,16 @@ export default function MainMap({
               // --- CREATE SEAT UI ---
 
               // --- HANDLE SEAT EVENTS ---
-              seatGroup.on("mouseenter", () => {
-                seatCircle.getStage()!.container().style.cursor =
-                  !section.ticketType ? "not-allowed" : "pointer";
-              });
-              seatGroup.on("mouseleave", () => {
-                seatCircle.getStage()!.container().style.cursor = "auto";
-              });
-              seatGroup.on("click", () => {
+              if (role !== "mobile") {
+                seatGroup.on("mouseenter", () => {
+                  seatCircle.getStage()!.container().style.cursor =
+                    !section.ticketType ? "not-allowed" : "pointer";
+                });
+                seatGroup.on("mouseleave", () => {
+                  seatCircle.getStage()!.container().style.cursor = "auto";
+                });
+              }
+              const _handleSeatClicked = () => {
                 const checkExisted = chosenSeatsRef.current.some(
                   (chosen: any) => chosen.id === seat.id
                 );
@@ -170,7 +178,11 @@ export default function MainMap({
                 }
 
                 onSelectSeat(chosenSeatsRef.current);
-              });
+              };
+              seatGroup.on(
+                role === "mobile" ? "touchend" : "click",
+                _handleSeatClicked
+              );
               // --- HANDLE SEAT EVENTS ---
 
               // console.log(x1, x2, y1, y2, newScale);
@@ -183,7 +195,7 @@ export default function MainMap({
       // clear cache
       seatsLayer.clearCache();
     },
-    [sections, onSelectSeat]
+    [sections, role, onSelectSeat]
   );
   // [UTILS] handle calculate real view port
   const calculateViewPort = useCallback(() => {
@@ -261,10 +273,10 @@ export default function MainMap({
     }
     if (
       newScale >= oldScale &&
-      newScale >= initScale * maxDynamic[maxDynamic.length - 1]
+      newScale >= initScale * maxDynamicFinal * (role === "mobile" ? 2 : 1)
     ) {
       return {
-        value: initScale * maxDynamic[maxDynamic.length - 1],
+        value: initScale * maxDynamicFinal * (role === "mobile" ? 2 : 1),
         reached: true,
       };
     }
