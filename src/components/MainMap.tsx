@@ -23,15 +23,16 @@ export default function MainMap({
 
   role = "web",
   fallbackColor = "#fff",
-  sectionsViewbox = "0 0 0 0",
-  sections = [],
-  tooltip = {},
+  sections = [], // MUST
+  sectionsViewbox = "0 0 0 0", // MUST
 
   isMinimap = false,
   minimap = null,
   chosenSection = {},
-  onToggleMinimap = () => {},
+  tooltip = {},
   styles = {},
+  onToggleMinimap = () => {},
+  onSelectSeat = () => {},
 }: any) {
   // utils
   const os = getOS();
@@ -50,6 +51,7 @@ export default function MainMap({
   // states
   const [mounted, setMounted] = useState(false);
   const [initScale, setInitScale] = useState(1);
+  const [changedSection, setChangedSection] = useState(false);
 
   // INTERACTIONS RELATED METHODS
   // [COMMON] render seats
@@ -125,19 +127,49 @@ export default function MainMap({
                 const checkExisted = chosenSeatsRef.current.some(
                   (chosen: any) => chosen.id === seat.id
                 );
+
                 // if the seat has NOT been selected
                 if (!checkExisted) {
-                  chosenSeatsRef.current = [...chosenSeatsRef.current, seat];
+                  if (chosenSeatsRef.current.length > 0) {
+                    const diffSection =
+                      section.id !== chosenSeatsRef.current[0].section.id;
+                    if (diffSection) {
+                      chosenSeatsRef.current = [];
+                      setChangedSection(true);
+                    }
+                  }
+
+                  // change data
+                  chosenSeatsRef.current = [
+                    ...chosenSeatsRef.current,
+                    {
+                      ...seat,
+                      rowId: undefined,
+                      section: {
+                        ...section,
+                        elements: undefined,
+                        rows: undefined,
+                      },
+                      row: { ...row, seats: undefined },
+                    },
+                  ];
+
+                  // changes styles
                   seatCircle.fill("#2dc275");
                   seatCircle.stroke("#2dc275");
                 } else {
                   // if the seat has been selected
+                  // change data
                   chosenSeatsRef.current = chosenSeatsRef.current.filter(
                     (chosen: any) => chosen.id !== seat.id
                   );
+
+                  // change styles
                   seatCircle.fill("#fff");
                   seatCircle.stroke("#9b9a9d");
                 }
+
+                onSelectSeat(chosenSeatsRef.current);
               });
               // --- HANDLE SEAT EVENTS ---
 
@@ -151,7 +183,7 @@ export default function MainMap({
       // clear cache
       seatsLayer.clearCache();
     },
-    [sections]
+    [sections, onSelectSeat]
   );
   // [UTILS] handle calculate real view port
   const calculateViewPort = useCallback(() => {
@@ -536,6 +568,13 @@ export default function MainMap({
     // cleanup the event listener when the component unmounts
     return () => document.removeEventListener("touchmove", preventDefault);
   }, []);
+  // [COMMON] detect if different seats from different section has been selected
+  useEffect(() => {
+    if (changedSection) {
+      calculateViewPort();
+      setChangedSection(false);
+    }
+  }, [changedSection, calculateViewPort]);
 
   // if not hydrated and no sections
   if (!mounted && sections?.length === 0) return <div>No data.</div>;
@@ -602,7 +641,6 @@ export default function MainMap({
           }}
           onClick={() => {
             onToggleMinimap();
-            console.log({ chosenSeats: chosenSeatsRef.current });
           }}
         />
         {role !== "mobile" && <Tooltip id="btn-tooltip" opacity={1} />}
