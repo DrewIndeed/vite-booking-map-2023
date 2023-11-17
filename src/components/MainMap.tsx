@@ -6,19 +6,19 @@ import { Tooltip } from "react-tooltip";
 import {
   RENDER_NUM_SCALE,
   RENDER_SEAT_SCALE,
-  ZOOM_MAX_OFFSET,
-  ZOOM_MIN_OFFSET,
   ZOOM_SPEED,
   buttons,
-  type Role,
 } from "@lib/constants";
 import { getCenter, getDistance, getOS, getViewBoxRect } from "@lib/utils";
 
 import Button from "./Button";
 
+const maxDynamic: any = [1];
+
 export default function MainMap({
   width = 500,
   height = 500,
+  zoomSpeed = ZOOM_SPEED,
   draggable = true,
 
   role = "web",
@@ -135,7 +135,6 @@ export default function MainMap({
     viewport.scale({ x: newScale, y: newScale });
     viewport.position({ x: -x * newScale, y: -y * newScale });
     viewport.clearCache();
-
     renderSeats(newScale);
   }, [renderSeats]);
   // [COMMON] handle reset
@@ -169,20 +168,39 @@ export default function MainMap({
       // reflect changes on stage
       stage.position({ x: offsetX, y: offsetY });
       stage.scale({ x: newScale, y: newScale });
-      setInitScale(newScale);
+      if (newScale && 1 / newScale > 1) {
+        if (1 / newScale > maxDynamic[maxDynamic.length - 1]) {
+          // console.log({ scaleInverse: 1 / newScale, maxDynamic });
+          maxDynamic.push(1 / newScale);
+        }
+        setInitScale(newScale);
+      }
       calculateViewPort();
     }
   }, [calculateViewPort, sectionsViewbox]);
   // [UTILS] handle zoom limits
   const limitedNewScale = (newScale: number, oldScale: number) => {
+    const maxDynamicFinal = maxDynamic[maxDynamic.length - 1];
     // apply min and max values for scaling
-    const minOffset = ZOOM_MIN_OFFSET[role as Role];
-    const maxOffset = ZOOM_MAX_OFFSET[role as Role];
-    if (newScale <= oldScale && newScale <= initScale * minOffset) {
-      return { value: initScale * minOffset, reached: true };
+    // const minOffset = ZOOM_MIN_OFFSET[role as Role];
+    // const maxOffset = ZOOM_MAX_OFFSET[role as Role];
+    if (
+      newScale <= oldScale &&
+      newScale <= initScale * (maxDynamicFinal / (maxDynamicFinal + 2))
+    ) {
+      return {
+        value: initScale * (maxDynamicFinal / (maxDynamicFinal + 2)),
+        reached: true,
+      };
     }
-    if (newScale >= oldScale && newScale >= initScale * maxOffset) {
-      return { value: initScale * maxOffset, reached: true };
+    if (
+      newScale >= oldScale &&
+      newScale >= initScale * maxDynamic[maxDynamic.length - 1]
+    ) {
+      return {
+        value: initScale * maxDynamic[maxDynamic.length - 1],
+        reached: true,
+      };
     }
     return { value: newScale, reached: false };
   };
@@ -208,7 +226,7 @@ export default function MainMap({
 
       // calculate new scale and new position for stage
       const newScale: number =
-        direction > 0 ? oldScale * ZOOM_SPEED : oldScale / ZOOM_SPEED;
+        direction > 0 ? oldScale * zoomSpeed : oldScale / zoomSpeed;
       // apply scale limits
       const adjustedNewScale = limitedNewScale(newScale, oldScale);
 
@@ -526,10 +544,10 @@ export default function MainMap({
               onClick={() => {
                 switch (key) {
                   case "plus":
-                    zoomByFactor(ZOOM_SPEED * 1.2);
+                    zoomByFactor(zoomSpeed * 1.2);
                     break;
                   case "minus":
-                    zoomByFactor(1 / (ZOOM_SPEED * 1.2));
+                    zoomByFactor(1 / (zoomSpeed * 1.2));
                     break;
                   default:
                     reset();

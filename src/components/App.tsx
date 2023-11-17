@@ -19,9 +19,9 @@ const App = () => {
   useEffect(() => {
     // self called func to fetch local data
     (async () => {
-      const mapData = await getMap(940);
-      const adminShowData = await getAdminShowing(940);
-      const sectionData = await getSections(940, 210);
+      const mapData = await getMap(2);
+      const adminShowData = await getAdminShowing(2);
+      const sectionData = await getSections(2, 168);
       const demoData = {
         adminSectionsData: adminShowData?.data?.result?.seatMap?.sections,
         sectionData: sectionData?.data?.result,
@@ -38,6 +38,7 @@ const App = () => {
       <MainMap
         width={700} // 725, 375
         height={600} // 675, 635
+        zoomSpeed={1.1}
         role="web"
         // fallbackColor="#9b9a9d"
         sections={data?.adminSectionsData} // MUST
