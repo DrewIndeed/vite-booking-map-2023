@@ -18,6 +18,11 @@ const App = () => {
   // effects
   useEffect(() => {
     // self called func to fetch local data
+    // for beta domain
+    // 2 -> 168, 170, 176, 178
+    // 544 -> 137, 138, 140
+    // 837 -> 185, 186, 187
+    // 940 -> 210, 206, 205, 208
     (async () => {
       const mapData = await getMap(2);
       const adminShowData = await getAdminShowing(2);

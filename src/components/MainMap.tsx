@@ -45,6 +45,7 @@ export default function MainMap({
   // [MOBILE] refs
   const lastCenter = useRef({ x: 0, y: 0 });
   const lastDist = useRef(0);
+  const chosenSeatsRef = useRef<any>([]);
 
   // states
   const [mounted, setMounted] = useState(false);
@@ -58,7 +59,7 @@ export default function MainMap({
       const viewport = viewPortRef?.current;
       const seatsLayer = seatsLayerRef?.current;
 
-      if (!stage || !viewport || !seatsLayer) return;
+      if (!stage || !viewport || !seatsLayer || !chosenSeatsRef.current) return;
       seatsLayer.destroyChildren(); // clear current seats
 
       if (newScale > RENDER_SEAT_SCALE) return; // ignore on this scale value
@@ -74,41 +75,74 @@ export default function MainMap({
       const y2 = viewboxRect.y + viewboxRect.height;
 
       // filter and render available seats by LOOPING
+      // TODO STUCK: filter section if it is in viewport or not
       sections?.map((section: any) => {
         if (section.isStage) return null;
         return section?.rows.forEach((row: any) => {
           row?.seats.forEach((seat: any) => {
+            const initExisted = chosenSeatsRef.current.some(
+              (chosen: any) => chosen.id === seat.id
+            );
             if (seat.x >= x1 && seat.x <= x2 && seat.y >= y1 && seat.y <= y2) {
-              const group = new Shapes.Group();
+              // --- CREATE SEAT UI ---
+              const seatGroup = new Shapes.Group();
               // seat circle
-              group.add(
-                new Shapes.Circle({
-                  x: seat.x,
-                  y: seat.y,
-                  radius: 4,
-                  fill: "#fff",
-                  stroke: "#9b9a9d",
-                  strokeWidth: 0.6,
-                })
-              );
+              const seatCircle = new Shapes.Circle({
+                x: seat.x,
+                y: seat.y,
+                radius: 4,
+                fill: initExisted ? "#2dc275" : "#fff",
+                stroke: initExisted ? "#2dc275" : "#9b9a9d",
+                strokeWidth: 0.6,
+              });
+              let seatText = null;
+              seatGroup.add(seatCircle);
               // seat number
               if (newScale && newScale < RENDER_NUM_SCALE) {
-                group.add(
-                  new Shapes.Text({
-                    x: seat.x - (Number(seat.name) < 10 ? 3.95 : 4),
-                    y: seat.y - 2.1,
-                    width: 8,
-                    fontSize: 5,
-                    align: "center",
-                    verticalAlign: "middle",
-                    fontStyle: "600",
-                    text: seat.name,
-                  })
-                );
+                seatText = new Shapes.Text({
+                  x: seat.x - (Number(seat.name) < 10 ? 3.95 : 4),
+                  y: seat.y - 2.1,
+                  width: 8,
+                  fontSize: 5,
+                  align: "center",
+                  verticalAlign: "middle",
+                  fontStyle: "600",
+                  text: seat.name,
+                });
+                seatGroup.add(seatText);
               }
+              // --- CREATE SEAT UI ---
+
+              // --- HANDLE SEAT EVENTS ---
+              seatGroup.on("mouseenter", () => {
+                seatCircle.getStage()!.container().style.cursor =
+                  !section.ticketType ? "not-allowed" : "pointer";
+              });
+              seatGroup.on("mouseleave", () => {
+                seatCircle.getStage()!.container().style.cursor = "auto";
+              });
+              seatGroup.on("click", () => {
+                const checkExisted = chosenSeatsRef.current.some(
+                  (chosen: any) => chosen.id === seat.id
+                );
+                // if the seat has NOT been selected
+                if (!checkExisted) {
+                  chosenSeatsRef.current = [...chosenSeatsRef.current, seat];
+                  seatCircle.fill("#2dc275");
+                  seatCircle.stroke("#2dc275");
+                } else {
+                  // if the seat has been selected
+                  chosenSeatsRef.current = chosenSeatsRef.current.filter(
+                    (chosen: any) => chosen.id !== seat.id
+                  );
+                  seatCircle.fill("#fff");
+                  seatCircle.stroke("#9b9a9d");
+                }
+              });
+              // --- HANDLE SEAT EVENTS ---
 
               // console.log(x1, x2, y1, y2, newScale);
-              seatsLayer.add(group); // add to a seat group
+              seatsLayer.add(seatGroup); // add a seat group to seats layer
             }
           });
         });
@@ -566,7 +600,10 @@ export default function MainMap({
               tooltip?.["eye"]?.content || buttons.eyeOpen.defaultContent,
             place: tooltip?.["eye"]?.place || "",
           }}
-          onClick={() => onToggleMinimap()}
+          onClick={() => {
+            onToggleMinimap();
+            console.log({ chosenSeats: chosenSeatsRef.current });
+          }}
         />
         {role !== "mobile" && <Tooltip id="btn-tooltip" opacity={1} />}
       </div>
@@ -582,13 +619,13 @@ export default function MainMap({
         onTouchEnd={() => calculateViewPort()}
         onDragEnd={() => calculateViewPort()}
       >
-        <Layer ref={layerRef}>{sections?.map(renderSection)}</Layer>
         {!isMinimap && (
           <Layer ref={viewPortRef} x={0} y={0} listening={false}>
             <Rect width={width} height={height} x={0} y={0} />
           </Layer>
         )}
-        <Layer ref={seatsLayerRef} listening={false} clearBeforeDraw={false} />
+        <Layer ref={layerRef}>{sections?.map(renderSection)}</Layer>
+        <Layer ref={seatsLayerRef} clearBeforeDraw={false} />
       </Stage>
     </div>
   );
