@@ -29,9 +29,8 @@ export default function MainMap({
   isMinimap = false,
   minimap = null,
   chosenSection = {},
-  tooltip = {},
+  tooltip = {}, //plus,reset,minus,eyeOpen,eyeClose
   styles = {},
-  onToggleMinimap = () => {},
   onSelectSeat = () => {},
 }: any) {
   // utils
@@ -52,6 +51,7 @@ export default function MainMap({
   const [mounted, setMounted] = useState(false);
   const [initScale, setInitScale] = useState(1);
   const [changedSection, setChangedSection] = useState(false);
+  const [showMinimap, setMinimap] = useState(true);
 
   // INTERACTIONS RELATED METHODS
   // [COMMON] render seats
@@ -67,7 +67,7 @@ export default function MainMap({
       if (newScale > RENDER_SEAT_SCALE) return; // ignore on this scale value
       if (!seatsLayer.clearBeforeDraw()) seatsLayer.clearBeforeDraw(true);
 
-      // calcuclate view box rect
+      // calculate view box rect
       const viewboxRect = viewport.getClientRect({
         relativeTo: stage,
       });
@@ -102,10 +102,10 @@ export default function MainMap({
               // seat number
               if (newScale && newScale < RENDER_NUM_SCALE) {
                 seatText = new Shapes.Text({
-                  x: seat.x - (Number(seat.name) < 10 ? 3.95 : 4),
-                  y: seat.y - 2.1,
+                  x: seat.x - (Number(seat.name) < 10 ? 3.95 : 4.055),
+                  y: seat.y - (Number(seat.name) < 10 ? 2.1 : 2),
                   width: 8,
-                  fontSize: 5,
+                  fontSize: Number(seat.name) < 10 ? 5 : 4.7,
                   align: "center",
                   verticalAlign: "middle",
                   fontStyle: "600",
@@ -581,17 +581,15 @@ export default function MainMap({
   // main render
   return (
     <div
-      className={`map-wrapper ${isMinimap && "minimap"}`}
+      className={`map-wrapper ${
+        isMinimap && `minimap ${!chosenSection?.id ? "filter-darker" : ""}`
+      }`}
       // DO NOT TOUCH
       style={{
         width,
         height,
         overflow: "hidden",
         zIndex: 5,
-        filter:
-          isMinimap && !chosenSection?.id
-            ? "brightness(50%)"
-            : "brightness(100%)",
         ...styles,
       }}
     >
@@ -639,13 +637,11 @@ export default function MainMap({
               tooltip?.["eye"]?.content || buttons.eyeOpen.defaultContent,
             place: tooltip?.["eye"]?.place || "",
           }}
-          onClick={() => {
-            onToggleMinimap();
-          }}
+          onClick={() => setMinimap(!showMinimap)}
         />
         {role !== "mobile" && <Tooltip id="btn-tooltip" opacity={1} />}
       </div>
-      <>{minimap}</>
+      {showMinimap && <>{minimap}</>}
       <Stage
         ref={stageRef}
         width={width}
