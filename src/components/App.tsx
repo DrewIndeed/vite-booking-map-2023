@@ -20,9 +20,9 @@ const App = () => {
     // 837 -> 185, 186, 187
     // 940 -> 210, 206, 205, 208
     (async () => {
-      const mapData = await getMap(2);
-      const adminShowData = await getAdminShowing(2);
-      const sectionData = await getSections(2, 168);
+      const mapData = await getMap(940);
+      const adminShowData = await getAdminShowing(940);
+      const sectionData = await getSections(940, 210);
       const demoData = {
         adminSectionsData: adminShowData?.data?.result?.seatMap?.sections,
         sectionData: sectionData?.data?.result,
@@ -37,19 +37,20 @@ const App = () => {
   return (
     <div style={{ position: "relative" }}>
       <MainMap
-        width={700} // 725, 375
-        height={600} // 675, 635
-        zoomSpeed={1.1}
-        role="web"
+        role="web" // SHOULD
+        width={700} // 725, 375 // MUST
+        height={600} // 675, 635 // MUST
         sections={data?.adminSectionsData} // MUST
         sectionsViewbox={data?.viewbox} // MUST
+        zoomSpeed={1.1}
         // chosenSection={data?.sectionData}
-        // Progress: handle methods
+        // [METHODS]
         onSelectSeat={(data: any) => console.log({ data })}
+        onDiffSection={() => console.log("Changed section!")}
         minimap={
           <MainMap
-            width={100}
-            height={165}
+            width={100} // MUST
+            height={165} // MUST
             sections={data?.adminSectionsData} // MUST
             sectionsViewbox={data?.viewbox} // MUST
             isMinimap
