@@ -34,6 +34,7 @@ import { Row } from "types/row";
 import { Seat } from "types/seat";
 import { Section } from "types/section";
 import Button from "./Button";
+import { ChosenSection } from "types/chosen-section";
 
 const os = getOS();
 const maxDynamic: number[] = [1];
@@ -56,7 +57,7 @@ type MainMapProps = {
 
   minimap?: ReactNode;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  chosenSection?: any;
+  chosenSection?: ChosenSection | null;
   tooltip?: Record<string, ToolTip>;
   styles?: React.CSSProperties;
 
@@ -78,7 +79,7 @@ const MainMap = ({
   fallbackColor = "#fff",
 
   minimap = null,
-  chosenSection = {},
+  chosenSection = null,
   tooltip = {}, // plus, handleReset, minus, eyeOpen, eyeClose
   styles = {},
 
@@ -858,6 +859,8 @@ export default MainMap;
  * 2.   [USERS] Seat default when reselecting ✅
  * 3.0  [ADMIN] Not available seat default and toggle styles ✅
  * 3.1  [ADMIN] Correct seat styles by seat status ✅
+ * 10.  Handle types ✅
+ *
  * 3.2  [ADMIN] Seat select all
  * 4.   [ADMIN] Seat select by row
  * 5.   [ADMIN] Toggle Available seats
@@ -865,5 +868,4 @@ export default MainMap;
  * 7.   [ADMIN] Toggle Disabled seats
  * 8.   [ADMIN] Handle sections hover and clicked
  * 9.   [USERS] [MOBILE] Post messages
- * 10.  Handle types ✅
  */
