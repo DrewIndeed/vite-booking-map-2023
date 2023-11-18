@@ -20,9 +20,9 @@ const App = () => {
     // 837 -> 185, 186, 187
     // 940 -> 210, 206, 205, 208
     (async () => {
-      const mapData = await getMap(940);
-      const adminShowData = await getAdminShowing(940);
-      const sectionData = await getSections(940, 210);
+      const mapData = await getMap(2);
+      const adminShowData = await getAdminShowing(2);
+      const sectionData = await getSections(2, 168);
       const demoData = {
         adminSectionsData: adminShowData?.data?.result?.seatMap?.sections,
         sectionData: sectionData?.data?.result,

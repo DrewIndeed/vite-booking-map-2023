@@ -142,15 +142,21 @@ export default function MainMap({
       if (!stage || !viewport || !seatsLayer || !chosenSeatsRef.current) return;
       seatsLayer.destroyChildren(); // clear current seats
 
-      if (newScale > (role !== "mobile" ? RENDER_SEAT_SCALE : 0.6)) return; // ignore on this scale value
+      if (newScale && newScale > (role !== "mobile" ? RENDER_SEAT_SCALE : 0.6))
+        return; // ignore on this scale value
       if (!seatsLayer.clearBeforeDraw()) seatsLayer.clearBeforeDraw(true);
 
       // Using [EVENT DELAGATION] to handle cursor pointer
       // to reduce event listeners
       if (role !== "mobile") {
-        seatsLayerRef.current?.on("mouseleave", (event: any) => {
+        stage.on("mouseover", (event: any) => {
           const targetElement = event.target;
-          if (targetElement instanceof Shapes.Circle) {
+          const curCursor = targetElement.getStage()!.container().style.cursor;
+          if (
+            !(targetElement instanceof Shapes.Circle) &&
+            !(targetElement instanceof Shapes.Text) &&
+            curCursor !== "auto"
+          ) {
             targetElement.getStage()!.container().style.cursor = "auto";
           }
         });
@@ -173,6 +179,8 @@ export default function MainMap({
               const initExisted = chosenSeatsRef.current.some(
                 (chosen: any) => chosen.id === seat.id
               );
+              const notAllowed = seat.status !== 1 || seat.status === 6;
+              const noEvent = !section.ticketType || notAllowed;
               if (
                 seat.x >= x1 &&
                 seat.x <= x2 &&
@@ -190,8 +198,13 @@ export default function MainMap({
                 // add circle
                 newSeatCircle.x(seat.x);
                 newSeatCircle.y(seat.y);
-                newSeatCircle.fill(initExisted ? "#2dc275" : "#fff");
-                newSeatCircle.stroke(initExisted ? "#2dc275" : "#9b9a9d");
+                if (!notAllowed) {
+                  newSeatCircle.fill(initExisted ? "#2dc275" : "#fff");
+                  newSeatCircle.stroke(initExisted ? "#2dc275" : "#9b9a9d");
+                } else {
+                  newSeatCircle.fill("#f44336");
+                  newSeatCircle.stroke("#f44336");
+                }
                 newSeatGroup.add(newSeatCircle);
 
                 if (
@@ -222,14 +235,15 @@ export default function MainMap({
                 // --- HANDLE SEAT EVENTS ---
                 if (role !== "mobile") {
                   newSeatGroup.on("mouseover", () => {
-                    newSeatCircle.getStage()!.container().style.cursor =
-                      !section.ticketType ? "not-allowed" : "pointer";
+                    newSeatCircle.getStage()!.container().style.cursor = noEvent
+                      ? "not-allowed"
+                      : "pointer";
                   });
                 }
                 newSeatGroup.on(
                   role === "mobile" ? "touchend" : "click",
                   () => {
-                    if (!stage.isDragging())
+                    if (!stage.isDragging() && !noEvent)
                       _handleSeatClicked(section, row, seat, newSeatCircle);
                   }
                 );
@@ -732,3 +746,16 @@ export default function MainMap({
   Assume 2: user uses 1 finger to drag and 2 fingers to zoom exactly
   Assume 3: user will de-select from accident selections
 */
+
+/**
+ * TODO
+ * 1. [USERS] Seat default status stylings (not 1 and 6 -> red) ✅
+ * 2. [USERS] Seat default when reselecting
+ * 3. [ADMIN] Seat select all
+ * 4. [ADMIN] Seat select by row
+ * 5. [ADMIN] Toggle Available seats
+ * 6. [ADMIN] Toggle Ordered seats
+ * 7. [ADMIN] Toggle Disabled seats
+ * 8. [ADMIN] Handle sections hover and clicked
+ * 9. [USERS] [MOBILE] Post messages
+ */
