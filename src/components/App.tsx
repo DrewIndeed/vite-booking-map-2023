@@ -38,7 +38,7 @@ const App = () => {
     <div style={{ position: "relative" }}>
       <MainMap
         role="admin" // SHOULD
-        width={600} // 725, 375 // MUST
+        width={625} // 725, 375 // MUST
         height={600} // 675, 635 // MUST
         sections={data?.adminSectionsData} // MUST
         sectionsViewbox={data?.viewbox} // MUST
@@ -53,7 +53,6 @@ const App = () => {
             height={165} // MUST
             sections={data?.adminSectionsData} // MUST
             sectionsViewbox={data?.viewbox} // MUST
-            chosenSection={data?.sectionData}
           />
         }
       />

@@ -1,17 +1,15 @@
 import Shapes from "konva";
 import {
-  ReactNode,
   useCallback,
   useEffect,
   useMemo,
   useRef,
   useState,
+  type ReactNode,
 } from "react";
 import { Group, Layer, Path, Rect, Stage } from "react-konva";
-import { PlacesType, Tooltip } from "react-tooltip";
 
 import {
-  BUTTONS,
   RENDER_NUM_SCALE,
   RENDER_SEAT_SCALE,
   SEAT_COLORS,
@@ -28,13 +26,14 @@ import {
 import type { Layer as LayerType } from "konva/lib/Layer";
 import type { KonvaEventObject as EventType } from "konva/lib/Node";
 import type { Stage as StageType } from "konva/lib/Stage";
+import type { PlacesType } from "react-tooltip";
 import type { ChosenSeat } from "types/chosen-seat";
 
+import { ChosenSection } from "types/chosen-section";
 import { Row } from "types/row";
 import { Seat } from "types/seat";
 import { Section } from "types/section";
-import Button from "./Button";
-import { ChosenSection } from "types/chosen-section";
+import Buttons from "./Buttons";
 
 const os = getOS();
 const maxDynamic: number[] = [1];
@@ -104,7 +103,6 @@ const MainMap = ({
   const [changedSection, setChangedSection] = useState(false);
   const [showMinimap, setShowMinimap] = useState(true);
 
-  // [COMMON] init needed shapes
   const seatGroup = useMemo(() => new Shapes.Group(), []);
   const seatCircle = useMemo(
     () =>
@@ -183,7 +181,7 @@ const MainMap = ({
     [onSelectSeat]
   );
   // [COMMON] [IMPORTANT] render seats
-  const renderSeats = useCallback(
+  const renderSectionSeats = useCallback(
     (newScale = 1) => {
       const stage = stageRef?.current;
       const viewport = viewPortLayerRef?.current;
@@ -281,12 +279,7 @@ const MainMap = ({
                 newSeatCircle.stroke(strokeVal);
                 newSeatGroup.add(newSeatCircle);
 
-                if (
-                  (role !== "mobile" &&
-                    newScale &&
-                    newScale < RENDER_NUM_SCALE) ||
-                  role === "mobile"
-                ) {
+                if (role === "mobile" || newScale < RENDER_NUM_SCALE) {
                   // add text
                   newSeatText.x(
                     seat.x - (Number(seat.name) < 10 ? 3.95 : 4.055)
@@ -362,8 +355,72 @@ const MainMap = ({
     },
     [role, sections, seatGroup, seatCircle, seatText, _handleSeatClicked]
   );
+  // [UTILS] handle calculate real view port
+  const _calculateViewPort = useCallback(() => {
+    const stage = stageRef?.current;
+    const viewport = viewPortLayerRef?.current;
+    if (!stage || !viewport) return;
+
+    // calculate new scale and position
+    const scale = stage.scaleX();
+    const newScale = 1 / scale;
+    const x = stage.x();
+    const y = stage.y();
+
+    // reflect changes on view port tracker
+    if (!Number.isNaN(newScale) && !Number.isNaN(newScale)) {
+      viewport.scale({ x: newScale, y: newScale });
+      viewport.position({ x: -x * newScale, y: -y * newScale });
+    }
+    viewport.clearCache();
+    renderSectionSeats(newScale);
+  }, [renderSectionSeats]);
+  // [COMMON] handle handleReset
+  const handleReset = useCallback(() => {
+    const stage = stageRef.current;
+    const layer = layerRef.current;
+    if (stage && layer) {
+      // stage dimensions
+      const stageW = stage.width();
+      const stageH = stage.height();
+
+      // all sections group dimensions
+      const sectionsRect = getViewBoxRect(sectionsViewbox);
+
+      // calculate new scale
+      const newWidth = Math.min(stageW, sectionsRect.width);
+      const newScale = newWidth / sectionsRect.width;
+
+      // stage center point
+      const stageCenterX = Math.floor(stageW / 2);
+      const stageCenterY = Math.floor(stageH / 2);
+
+      // all sections group center point
+      const sectionsCenterX = Math.floor((sectionsRect.width / 2) * newScale);
+      const sectionsCenterY = Math.floor((sectionsRect.height / 2) * newScale);
+
+      // offsets between 2 centers
+      const offsetX = stageCenterX - sectionsCenterX;
+      const offsetY = stageCenterY - sectionsCenterY;
+
+      // reflect changes on stage
+      if (!Number.isNaN(offsetX) && !Number.isNaN(offsetX)) {
+        stage.position({ x: offsetX, y: offsetY });
+        stage.scale({ x: newScale, y: newScale });
+      }
+      if (newScale && 1 / newScale > 1) {
+        if (1 / newScale > maxDynamic[maxDynamic.length - 1]) {
+          // console.log({ scaleInverse: 1 / newScale, maxDynamic });
+          maxDynamic.push(1 / newScale);
+        }
+        setInitScale(newScale);
+      }
+      _calculateViewPort();
+    }
+  }, [_calculateViewPort, sectionsViewbox]);
+
   // [COMMON] render sections
-  const renderSection = (section: Section) => {
+  const renderSectionPaths = (section: Section) => {
     if (!section) return null;
     const { elements, ticketType, isStage, id: renderId } = section; //  isStage, attribute, id, display
 
@@ -446,75 +503,10 @@ const MainMap = ({
       }
     );
   };
-  // [UTILS] handle calculate real view port
-  const _calculateViewPort = useCallback(() => {
-    const stage = stageRef?.current;
-    const viewport = viewPortLayerRef?.current;
-    if (!stage || !viewport) return;
-
-    // calculate new scale and position
-    const scale = stage.scaleX();
-    const newScale = 1 / scale;
-    const x = stage.x();
-    const y = stage.y();
-
-    // reflect changes on view port tracker
-    if (!Number.isNaN(newScale) && !Number.isNaN(newScale)) {
-      viewport.scale({ x: newScale, y: newScale });
-      viewport.position({ x: -x * newScale, y: -y * newScale });
-    }
-    viewport.clearCache();
-    renderSeats(newScale);
-  }, [renderSeats]);
-  // [COMMON] handle handleReset
-  const handleReset = useCallback(() => {
-    const stage = stageRef.current;
-    const layer = layerRef.current;
-    if (stage && layer) {
-      // stage dimensions
-      const stageW = stage.width();
-      const stageH = stage.height();
-
-      // all sections group dimensions
-      const sectionsRect = getViewBoxRect(sectionsViewbox);
-
-      // calculate new scale
-      const newWidth = Math.min(stageW, sectionsRect.width);
-      const newScale = newWidth / sectionsRect.width;
-
-      // stage center point
-      const stageCenterX = Math.floor(stageW / 2);
-      const stageCenterY = Math.floor(stageH / 2);
-
-      // all sections group center point
-      const sectionsCenterX = Math.floor((sectionsRect.width / 2) * newScale);
-      const sectionsCenterY = Math.floor((sectionsRect.height / 2) * newScale);
-
-      // offsets between 2 centers
-      const offsetX = stageCenterX - sectionsCenterX;
-      const offsetY = stageCenterY - sectionsCenterY;
-
-      // reflect changes on stage
-      if (!Number.isNaN(offsetX) && !Number.isNaN(offsetX)) {
-        stage.position({ x: offsetX, y: offsetY });
-        stage.scale({ x: newScale, y: newScale });
-      }
-      if (newScale && 1 / newScale > 1) {
-        if (1 / newScale > maxDynamic[maxDynamic.length - 1]) {
-          // console.log({ scaleInverse: 1 / newScale, maxDynamic });
-          maxDynamic.push(1 / newScale);
-        }
-        setInitScale(newScale);
-      }
-      _calculateViewPort();
-    }
-  }, [_calculateViewPort, sectionsViewbox]);
   // [UTILS] handle zoom limits
   const _limitedNewScale = (newScale: number, oldScale: number) => {
     const maxDynamicFinal = maxDynamic[maxDynamic.length - 1];
     // apply min and max values for scaling
-    // const minOffset = ZOOM_MIN_OFFSET[role as Role];
-    // const maxOffset = ZOOM_MAX_OFFSET[role as Role];
     if (
       newScale <= oldScale &&
       newScale <= initScale * (maxDynamicFinal / (maxDynamicFinal + 2))
@@ -535,6 +527,36 @@ const MainMap = ({
     }
     return { value: newScale, reached: false };
   };
+  // [COMMON] handle zoom by button
+  const handleZoomByFactor = (factor: number) => {
+    const stage = stageRef.current;
+    if (stage) {
+      // get current scale
+      const oldScale = stage.scaleX();
+
+      // calculate center point between the stage dimensions
+      const xCenter = stage.width() / 2 / oldScale - stage.x() / oldScale;
+      const yCenter = stage.height() / 2 / oldScale - stage.y() / oldScale;
+
+      // calculate new scale based on the factor
+      const newScale: number = oldScale * factor;
+      // apply scale limits
+      const adjustedNewScale = _limitedNewScale(newScale, oldScale);
+
+      // calculate new position to keep the stage centered
+      const newPos = {
+        x: -xCenter * adjustedNewScale.value + stage.width() / 2,
+        y: -yCenter * adjustedNewScale.value + stage.height() / 2,
+      };
+
+      // apply the new scale and position
+      stage.scale({ x: adjustedNewScale.value, y: adjustedNewScale.value });
+      stage.position(newPos);
+      stage.batchDraw(); // or stage.clearCache() depending on use-case
+      debounce(() => _calculateViewPort(), 100)();
+    }
+  };
+
   // [DESKTOP] handle wheeling
   const onWheel = (e: EventType<WheelEvent>) => {
     e.evt.preventDefault();
@@ -669,74 +691,18 @@ const MainMap = ({
       lastCenter.current = newCenter;
     }
   };
-  // [COMMON] handle zoom by button
-  const handleZoomByFactor = (factor: number) => {
-    const stage = stageRef.current;
-    if (stage) {
-      // get current scale
-      const oldScale = stage.scaleX();
-
-      // calculate center point between the stage dimensions
-      const xCenter = stage.width() / 2 / oldScale - stage.x() / oldScale;
-      const yCenter = stage.height() / 2 / oldScale - stage.y() / oldScale;
-
-      // calculate new scale based on the factor
-      const newScale: number = oldScale * factor;
-      // apply scale limits
-      const adjustedNewScale = _limitedNewScale(newScale, oldScale);
-
-      // calculate new position to keep the stage centered
-      const newPos = {
-        x: -xCenter * adjustedNewScale.value + stage.width() / 2,
-        y: -yCenter * adjustedNewScale.value + stage.height() / 2,
-      };
-
-      // apply the new scale and position
-      stage.scale({ x: adjustedNewScale.value, y: adjustedNewScale.value });
-      stage.position(newPos);
-      stage.batchDraw(); // or stage.clearCache() depending on use-case
-      debounce(() => _calculateViewPort(), 100)();
-    }
-  };
 
   // [COMMON] check for hydration and calculate viewport initially
+  // [COMMON] auto scale and center the all sections map
+  // [MOBILE] force prevent default
   useEffect(() => {
     // set true for hydration
     if (!mounted) {
       setMounted(true);
       return;
     }
-
-    // initially calculate the real view port
-    const stage = stageRef.current;
-    const layer = layerRef.current;
-    if (!stage || !layer) return;
-
-    // get stage and layer dimensions
-    const cw = stage.width();
-    const ch = stage.height();
-    const box = layer.getClientRect();
-
-    // calculate new scale
-    const newWidth = Math.min(cw, box.width);
-    const newScale = newWidth / box.width;
-
-    // calculate offset to re-position
-    let xOffset = 0;
-    let yOffset = 0;
-    if (box.width < cw) {
-      xOffset = (cw - box.width) / 2;
-      yOffset = (ch - box.height) / 2;
-    }
-
-    // reflect changes on stage
-    stage.position({ x: xOffset, y: yOffset });
-    stage.scale({ x: newScale, y: newScale });
-  }, [mounted]);
-  // [COMMON] auto scale and center the all sections map
-  useEffect(() => handleReset(), [handleReset]);
-  // [MOBILE] force prevent default
-  useEffect(() => {
+    // reset sections layer
+    handleReset();
     // function to prevent default behavior for touchmove events
     const preventDefault = (e: TouchEvent) => {
       // check if it's a one-finger touch event
@@ -746,7 +712,7 @@ const MainMap = ({
     document.addEventListener("touchmove", preventDefault, { passive: false });
     // cleanup the event listener when the component unmounts
     return () => document.removeEventListener("touchmove", preventDefault);
-  }, []);
+  }, [handleReset, mounted]);
   // [COMMON] detect if different seats from different section has been selected
   useEffect(() => {
     if (changedSection) {
@@ -762,7 +728,7 @@ const MainMap = ({
   return (
     <div
       className={`map-wrapper ${
-        isMinimap && `minimap ${!chosenSection?.id ? "filter-darker" : ""}`
+        isMinimap && `minimap ${!chosenSection?.id && "filter-darker"}`
       }`}
       // DO NOT TOUCH
       style={{
@@ -773,54 +739,17 @@ const MainMap = ({
         ...styles,
       }}
     >
-      <div
-        className="btn-wrapper"
-        // DO NOT TOUCH
-        style={{
-          display: isMinimap ? "none" : "flex",
-          flexDirection: "column",
-          position: "absolute",
+      <Buttons
+        {...{
+          role,
+          tooltip,
+          zoomSpeed,
+          isMinimap,
+          handleReset,
+          handleZoomByFactor,
+          setShowMinimap,
         }}
-      >
-        {Object.entries(BUTTONS).map(([, { key, icon, defaultContent }]) => {
-          if (key.includes("eye")) return null;
-          return (
-            <Button
-              key={key}
-              icon={icon}
-              tooltip={{
-                content: tooltip?.[key]?.content || defaultContent,
-                place: tooltip?.[key]?.place || "",
-              }}
-              onClick={() => {
-                switch (key) {
-                  case "plus":
-                    handleZoomByFactor(zoomSpeed * 1.2);
-                    break;
-                  case "minus":
-                    handleZoomByFactor(1 / (zoomSpeed * 1.2));
-                    break;
-                  default:
-                    handleReset();
-                    break;
-                }
-              }}
-            />
-          );
-        })}
-        <Button
-          isToggle
-          icon={BUTTONS.eyeOpen.icon}
-          secondIcon={BUTTONS.eyeClose.icon}
-          tooltip={{
-            content:
-              tooltip?.["eye"]?.content || BUTTONS.eyeOpen.defaultContent,
-            place: tooltip?.["eye"]?.place,
-          }}
-          onClick={() => setShowMinimap(!showMinimap)}
-        />
-        {role !== "mobile" && <Tooltip id="btn-tooltip" opacity={1} />}
-      </div>
+      />
       {showMinimap && <>{minimap}</>}
       <Stage
         ref={stageRef}
@@ -838,8 +767,8 @@ const MainMap = ({
             <Rect width={width} height={height} x={0} y={0} />
           </Layer>
         )}
-        <Layer ref={layerRef}>{sections?.map(renderSection)}</Layer>
-        <Layer ref={seatsLayerRef} clearBeforeDraw={false} />
+        <Layer ref={layerRef}>{sections?.map(renderSectionPaths)}</Layer>
+        {!isMinimap && <Layer ref={seatsLayerRef} clearBeforeDraw={false} />}
       </Stage>
     </div>
   );
@@ -851,6 +780,7 @@ export default MainMap;
   Assume 1: user when uses for mobile will set the right role = "mobile"
   Assume 2: user uses 1 finger to drag and 2 fingers to zoom exactly
   Assume 3: user will de-select from accident selections
+  Assume 4: if seat map is zooming to see seats, how to show minimap now?
 */
 
 /**
@@ -860,6 +790,7 @@ export default MainMap;
  * 3.0  [ADMIN] Not available seat default and toggle styles ✅
  * 3.1  [ADMIN] Correct seat styles by seat status ✅
  * 10.  Handle types ✅
+ * 11.  Refactor code before handle admin events ✅
  *
  * 3.2  [ADMIN] Seat select all
  * 4.   [ADMIN] Seat select by row
