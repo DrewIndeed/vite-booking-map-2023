@@ -1,5 +1,14 @@
 import { useState } from "react";
+import { type PlacesType } from "react-tooltip";
 
+type ButtonProps = {
+  tooltip?: { content: string; place: PlacesType };
+  icon: React.FC<React.SVGProps<SVGSVGElement>> | null;
+  secondIcon?: React.FC<React.SVGProps<SVGSVGElement>> | null;
+  isToggle?: boolean;
+  disabled?: boolean;
+  onClick: () => void;
+};
 const Button = ({
   tooltip = { content: "", place: "right-start" },
   icon: Icon = null,
@@ -7,7 +16,7 @@ const Button = ({
   isToggle = false,
   disabled = false,
   onClick,
-}: any) => {
+}: ButtonProps) => {
   const [isClicked, setIsClicked] = useState(false);
   const handleOnClick = () => {
     setIsClicked(!isClicked);

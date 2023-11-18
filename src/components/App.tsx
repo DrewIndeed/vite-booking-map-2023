@@ -15,7 +15,7 @@ const App = () => {
   useEffect(() => {
     // self called func to fetch local data
     // for beta domain
-    // 2 -> 168, 170, 176, 178
+    // 2 -> 168, 170, 176, 1781
     // 544 -> 137, 138, 140
     // 837 -> 185, 186, 187
     // 940 -> 210, 206, 205, 208
@@ -38,13 +38,13 @@ const App = () => {
     <div style={{ position: "relative" }}>
       <MainMap
         role="admin" // SHOULD
-        width={700} // 725, 375 // MUST
+        width={600} // 725, 375 // MUST
         height={600} // 675, 635 // MUST
         sections={data?.adminSectionsData} // MUST
         sectionsViewbox={data?.viewbox} // MUST
         zoomSpeed={1.1}
         // [METHODS]
-        onSelectSeat={(data: any) => console.log({ data })}
+        onSelectSeat={(data) => console.log({ data })}
         onDiffSection={() => console.log("Changed section!")}
         minimap={
           <MainMap

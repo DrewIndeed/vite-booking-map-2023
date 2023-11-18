@@ -1,6 +1,6 @@
 import { ALL_SEAT_STATUS } from "./constants";
 
-export const debounce = (func: any, delay: number) => {
+export const debounce = (func: () => void, delay: number) => {
   let timeoutId: NodeJS.Timeout;
   const debounced = (...args: []) => {
     clearTimeout(timeoutId);
@@ -11,7 +11,7 @@ export const debounce = (func: any, delay: number) => {
   return debounced;
 };
 
-export const throttle = (func: any, delay: number) => {
+export const throttle = (func: () => void, delay: number) => {
   let timeoutId: NodeJS.Timeout;
   let lastExecutedTime = 0;
   const throttled = (...args: []) => {
@@ -68,14 +68,11 @@ export const getViewBoxRect = (viewBox: string) => {
   };
 };
 
-export const getCenter = (p1: any, p2: any) => ({
+type Point = { x: number; y: number };
+export const getCenter = (p1: Point, p2: Point) => ({
   x: (p1.x + p2.x) / 2,
   y: (p1.y + p2.y) / 2,
 });
 
-export const getDistance = (p1: any, p2: any) =>
+export const getDistance = (p1: Point, p2: Point) =>
   Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
-
-export const getUniqueListBy = (arr: any, key: string) => [
-  ...new Map(arr.map((item: any) => [item[key], item])).values(),
-];

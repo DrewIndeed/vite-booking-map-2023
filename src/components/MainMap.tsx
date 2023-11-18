@@ -1,14 +1,21 @@
 import Shapes from "konva";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { Group, Layer, Path, Rect, Stage } from "react-konva";
-import { Tooltip } from "react-tooltip";
+import { PlacesType, Tooltip } from "react-tooltip";
 
 import {
+  BUTTONS,
   RENDER_NUM_SCALE,
   RENDER_SEAT_SCALE,
-  ZOOM_SPEED,
-  BUTTONS,
   SEAT_COLORS,
+  ZOOM_SPEED,
 } from "@lib/constants";
 import {
   debounce,
@@ -18,12 +25,47 @@ import {
   getViewBoxRect,
 } from "@lib/utils";
 
+import type { Layer as LayerType } from "konva/lib/Layer";
+import type { KonvaEventObject as EventType } from "konva/lib/Node";
+import type { Stage as StageType } from "konva/lib/Stage";
+import type { ChosenSeat } from "types/chosen-seat";
+
+import { Row } from "types/row";
+import { Seat } from "types/seat";
+import { Section } from "types/section";
 import Button from "./Button";
 
 const os = getOS();
-const maxDynamic: any = [1];
+const maxDynamic: number[] = [1];
 
-export default function MainMap({
+type ToolTip = {
+  place: PlacesType;
+  content: string;
+};
+type MainMapProps = {
+  width: number;
+  height: number;
+  sections: Section[];
+  sectionsViewbox: string;
+
+  role?: "web" | "admin" | "mobile";
+  zoomSpeed?: number;
+  draggable?: boolean;
+  isMinimap?: boolean;
+  fallbackColor?: "#fff";
+
+  minimap?: ReactNode;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  chosenSection?: any;
+  tooltip?: Record<string, ToolTip>;
+  styles?: React.CSSProperties;
+
+  // methods
+  onSelectSeat?: (arg0: ChosenSeat[]) => void;
+  onDiffSection?: () => void;
+};
+
+const MainMap = ({
   width = 500, // MUST
   height = 500, // MUST
   sections = [], // MUST
@@ -43,13 +85,13 @@ export default function MainMap({
   // methods
   onSelectSeat = () => {},
   onDiffSection = () => {},
-}: any) {
+}: MainMapProps) => {
   // refs
-  const stageRef = useRef<any>();
-  const viewPortLayerRef = useRef<any>();
-  const layerRef = useRef<any>();
-  const seatsLayerRef = useRef<any>();
-  const chosenSeatsRef = useRef<any>([]);
+  const stageRef = useRef<StageType>(null);
+  const viewPortLayerRef = useRef<LayerType>(null);
+  const layerRef = useRef<LayerType>(null);
+  const seatsLayerRef = useRef<LayerType>(null);
+  const chosenSeatsRef = useRef<ChosenSeat[]>([]);
 
   // [MOBILE] refs
   const lastCenter = useRef({ x: 0, y: 0 });
@@ -83,10 +125,11 @@ export default function MainMap({
 
   // [COMMON] handle seats clicked
   const _handleSeatClicked = useCallback(
-    (section: any, row: any, seat: any, ...rest: any) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (section: Section, row: Row, seat: Seat, ...rest: any) => {
       const [circleElement, isAdmin] = rest;
       const checkExisted = chosenSeatsRef.current.some(
-        (chosen: any) => chosen.id === seat.id
+        (chosen: ChosenSeat) => chosen.id === seat.id
       );
 
       // if the seat has NOT been selected
@@ -123,7 +166,7 @@ export default function MainMap({
         // if the seat has been selected
         // change data
         chosenSeatsRef.current = chosenSeatsRef.current.filter(
-          (chosen: any) => chosen.id !== seat.id
+          (chosen: ChosenSeat) => chosen.id !== seat.id
         );
 
         // change styles
@@ -155,7 +198,7 @@ export default function MainMap({
       // Using [EVENT DELAGATION] to handle cursor pointer
       // to reduce event listeners
       if (role !== "mobile") {
-        stage.on("mouseover", (event: any) => {
+        stage.on("mouseover", (event: EventType<MouseEvent>) => {
           const targetElement = event.target;
           const curCursor = targetElement.getStage()!.container().style.cursor;
           if (
@@ -178,12 +221,12 @@ export default function MainMap({
       const y2 = viewboxRect.y + viewboxRect.height;
 
       // TODO STUCK: filter section if it is in viewport or not
-      sections?.map((section: any) => {
+      sections?.map((section: Section) => {
         if (!section.isStage) {
-          section?.rows.forEach((row: any) => {
-            row?.seats.forEach((seat: any) => {
+          section?.rows.forEach((row: Row) => {
+            row?.seats.forEach((seat: Seat) => {
               const existed = chosenSeatsRef.current.some(
-                (chosen: any) => chosen.id === seat.id
+                (chosen: ChosenSeat) => chosen.id === seat.id
               );
               const notAllowed =
                 role === "web"
@@ -319,17 +362,17 @@ export default function MainMap({
     [role, sections, seatGroup, seatCircle, seatText, _handleSeatClicked]
   );
   // [COMMON] render sections
-  const renderSection = (section: any) => {
+  const renderSection = (section: Section) => {
     if (!section) return null;
     const { elements, ticketType, isStage, id: renderId } = section; //  isStage, attribute, id, display
 
-    // const _onMouseEnter = (e: any) => {
+    // const _onMouseEnter = (e: EventType<MouseEvent>) => {
     //   if (role === "mobile" || isMinimap) return;
     //   const container = e.target?.getStage()?.container();
     //   const cursorType = !ticketType ? "auto" : "pointer";
     //   if (container) container.style.cursor = cursorType;
     // };
-    // const _onMouseLeave = (e: any) => {
+    // const _onMouseLeave = (e: EventType<MouseEvent>) => {
     //   if (role === "mobile" || isMinimap) return;
     //   const container = e.target?.getStage()?.container();
     //   if (container) container.style.cursor = "";
@@ -409,7 +452,7 @@ export default function MainMap({
     if (!stage || !viewport) return;
 
     // calculate new scale and position
-    const scale = stage.getScaleX();
+    const scale = stage.scaleX();
     const newScale = 1 / scale;
     const x = stage.x();
     const y = stage.y();
@@ -428,8 +471,8 @@ export default function MainMap({
     const layer = layerRef.current;
     if (stage && layer) {
       // stage dimensions
-      const stageW = stage.getWidth();
-      const stageH = stage.getHeight();
+      const stageW = stage.width();
+      const stageH = stage.height();
 
       // all sections group dimensions
       const sectionsRect = getViewBoxRect(sectionsViewbox);
@@ -492,7 +535,7 @@ export default function MainMap({
     return { value: newScale, reached: false };
   };
   // [DESKTOP] handle wheeling
-  const onWheel = (e: any) => {
+  const onWheel = (e: EventType<WheelEvent>) => {
     e.evt.preventDefault();
     if (isMinimap) return;
     const stage = stageRef.current;
@@ -531,7 +574,7 @@ export default function MainMap({
     }
   };
   // [MOBILE] handle when fingers start to touch
-  const onTouchStart = (e: any) => {
+  const onTouchStart = (e: EventType<TouchEvent>) => {
     if (role !== "mobile") return;
     if (e.evt.touches.length === 2) {
       // Prevent the window from being moved around
@@ -553,7 +596,7 @@ export default function MainMap({
     }
   };
   // [MOBILE] handle when 2 fingers move
-  const onTouchMove = (e: any) => {
+  const onTouchMove = (e: EventType<TouchEvent>) => {
     if (role !== "mobile") return;
     if (e.evt.touches.length === 2) {
       // Prevent the window from being moved around
@@ -669,8 +712,8 @@ export default function MainMap({
     if (!stage || !layer) return;
 
     // get stage and layer dimensions
-    const cw = stage.getWidth();
-    const ch = stage.getHeight();
+    const cw = stage.width();
+    const ch = stage.height();
     const box = layer.getClientRect();
 
     // calculate new scale
@@ -694,7 +737,7 @@ export default function MainMap({
   // [MOBILE] force prevent default
   useEffect(() => {
     // function to prevent default behavior for touchmove events
-    const preventDefault = (e: any) => {
+    const preventDefault = (e: TouchEvent) => {
       // check if it's a one-finger touch event
       if (e.touches.length === 1) e.preventDefault();
     };
@@ -771,7 +814,7 @@ export default function MainMap({
           tooltip={{
             content:
               tooltip?.["eye"]?.content || BUTTONS.eyeOpen.defaultContent,
-            place: tooltip?.["eye"]?.place || "",
+            place: tooltip?.["eye"]?.place,
           }}
           onClick={() => setShowMinimap(!showMinimap)}
         />
@@ -799,7 +842,9 @@ export default function MainMap({
       </Stage>
     </div>
   );
-}
+};
+
+export default MainMap;
 
 /*
   Assume 1: user when uses for mobile will set the right role = "mobile"
@@ -820,4 +865,5 @@ export default function MainMap({
  * 7.   [ADMIN] Toggle Disabled seats
  * 8.   [ADMIN] Handle sections hover and clicked
  * 9.   [USERS] [MOBILE] Post messages
+ * 10.  Handle types ✅
  */
