@@ -21,6 +21,10 @@ import Button from "./Button";
 
 const os = getOS();
 const maxDynamic: any = [1];
+const adminColors = {
+  fill: ["", "#fff", "#C2C1C1", "#D32F2F", "#F44336"],
+  stroke: ["", "#9C9B9B", "#C2C1C1", "#D32F2F", "#D32F2F"],
+};
 
 export default function MainMap({
   width = 500, // MUST
@@ -82,7 +86,8 @@ export default function MainMap({
 
   // [COMMON] handle seats clicked
   const _handleSeatClicked = useCallback(
-    (section: any, row: any, seat: any, targetElement: any) => {
+    (section: any, row: any, seat: any, ...rest: any) => {
+      const [circleElement, textElement, isAdmin] = rest;
       const checkExisted = chosenSeatsRef.current.some(
         (chosen: any) => chosen.id === seat.id
       );
@@ -114,8 +119,9 @@ export default function MainMap({
         ];
 
         // changes styles
-        targetElement.fill("#2dc275");
-        targetElement.stroke("#2dc275");
+        circleElement.fill("#2dc275");
+        circleElement.stroke("#2dc275");
+        // textElement.fill("#000");
       } else {
         // if the seat has been selected
         // change data
@@ -124,15 +130,18 @@ export default function MainMap({
         );
 
         // change styles
-        targetElement.fill("#fff");
-        targetElement.stroke("#9b9a9d");
+        circleElement.fill(isAdmin ? adminColors.stroke[seat.status] : "#fff");
+        circleElement.stroke(
+          isAdmin ? adminColors.stroke[seat.status] : "#9C9B9B"
+        );
+        // textElement.fill(isAdmin ? "#fff" : "#000");
       }
 
       onSelectSeat(chosenSeatsRef.current);
     },
     [onSelectSeat]
   );
-  // [COMMON] render seats
+  // [COMMON] [IMPORTANT] render seats
   const renderSeats = useCallback(
     (newScale = 1) => {
       const stage = stageRef?.current;
@@ -176,11 +185,16 @@ export default function MainMap({
         if (!section.isStage) {
           section?.rows.forEach((row: any) => {
             row?.seats.forEach((seat: any) => {
-              const initExisted = chosenSeatsRef.current.some(
+              const existed = chosenSeatsRef.current.some(
                 (chosen: any) => chosen.id === seat.id
               );
-              const notAllowed = seat.status !== 1 || seat.status === 6;
+              const notAllowed =
+                role === "web"
+                  ? ![1, 3, 6].includes(seat.status)
+                  : [4, 5].includes(seat.status);
+              const isAdmin = role === "admin";
               const noEvent = !section.ticketType || notAllowed;
+              const isPrevSelected = seat.status === 3 && role === "web";
               if (
                 seat.x >= x1 &&
                 seat.x <= x2 &&
@@ -198,12 +212,29 @@ export default function MainMap({
                 // add circle
                 newSeatCircle.x(seat.x);
                 newSeatCircle.y(seat.y);
-                if (!notAllowed) {
-                  newSeatCircle.fill(initExisted ? "#2dc275" : "#fff");
-                  newSeatCircle.stroke(initExisted ? "#2dc275" : "#9b9a9d");
+                if (notAllowed) {
+                  newSeatCircle.fill(
+                    isAdmin ? adminColors.fill[seat.status] : "#f44336"
+                  );
+                  newSeatCircle.stroke(
+                    isAdmin ? adminColors.stroke[seat.status] : "#f44336"
+                  );
                 } else {
-                  newSeatCircle.fill("#f44336");
-                  newSeatCircle.stroke("#f44336");
+                  // fill color
+                  const adminFillCheck = isAdmin
+                    ? adminColors.fill[seat.status]
+                    : "#fff";
+                  const fillVal =
+                    existed || isPrevSelected ? "#2dc275" : adminFillCheck;
+                  // stroke color
+                  const adminStrokeCheck = isAdmin
+                    ? adminColors.stroke[seat.status]
+                    : "#9C9B9B";
+                  const strokeVal =
+                    existed || isPrevSelected ? "#2dc275" : adminStrokeCheck;
+                  // final paint
+                  newSeatCircle.fill(fillVal);
+                  newSeatCircle.stroke(strokeVal);
                 }
                 newSeatGroup.add(newSeatCircle);
 
@@ -227,6 +258,7 @@ export default function MainMap({
                   );
                   newSeatText.width(8);
                   newSeatText.fontSize(Number(seat.name) < 10 ? 5 : 4.7);
+                  // newSeatText.fill(isAdmin ? "#fff" : "#000");
                   newSeatText.text(seat.name);
                   newSeatGroup.add(newSeatText);
                 }
@@ -244,9 +276,33 @@ export default function MainMap({
                   role === "mobile" ? "touchend" : "click",
                   () => {
                     if (!stage.isDragging() && !noEvent)
-                      _handleSeatClicked(section, row, seat, newSeatCircle);
+                      _handleSeatClicked(
+                        section,
+                        row,
+                        seat,
+                        newSeatCircle,
+                        newSeatText,
+                        isAdmin
+                      );
                   }
                 );
+
+                // [VERY IMPORTANT] auto pick HOLDING seats
+                if (isPrevSelected && !existed) {
+                  chosenSeatsRef.current = [
+                    ...chosenSeatsRef.current,
+                    {
+                      ...seat,
+                      rowId: undefined,
+                      section: {
+                        ...section,
+                        elements: undefined,
+                        rows: undefined,
+                      },
+                      row: { ...row, seats: undefined },
+                    },
+                  ];
+                }
                 // --- HANDLE SEAT EVENTS ---
 
                 // add created seat group to seats layer
@@ -336,7 +392,7 @@ export default function MainMap({
 
         return (
           <Group
-            key={`sections-${key}`}
+            key={`sections-${renderId}-${key}`}
             onMouseEnter={() => {}}
             onMouseLeave={() => {}}
           >
@@ -359,8 +415,10 @@ export default function MainMap({
     const y = stage.y();
 
     // reflect changes on view port tracker
-    viewport.scale({ x: newScale, y: newScale });
-    viewport.position({ x: -x * newScale, y: -y * newScale });
+    if (!Number.isNaN(newScale) && !Number.isNaN(newScale)) {
+      viewport.scale({ x: newScale, y: newScale });
+      viewport.position({ x: -x * newScale, y: -y * newScale });
+    }
     viewport.clearCache();
     renderSeats(newScale);
   }, [renderSeats]);
@@ -393,8 +451,10 @@ export default function MainMap({
       const offsetY = stageCenterY - sectionsCenterY;
 
       // reflect changes on stage
-      stage.position({ x: offsetX, y: offsetY });
-      stage.scale({ x: newScale, y: newScale });
+      if (!Number.isNaN(offsetX) && !Number.isNaN(offsetX)) {
+        stage.position({ x: offsetX, y: offsetY });
+        stage.scale({ x: newScale, y: newScale });
+      }
       if (newScale && 1 / newScale > 1) {
         if (1 / newScale > maxDynamic[maxDynamic.length - 1]) {
           // console.log({ scaleInverse: 1 / newScale, maxDynamic });
@@ -749,13 +809,15 @@ export default function MainMap({
 
 /**
  * TODO
- * 1. [USERS] Seat default status stylings (not 1 and 6 -> red) ✅
- * 2. [USERS] Seat default when reselecting
- * 3. [ADMIN] Seat select all
- * 4. [ADMIN] Seat select by row
- * 5. [ADMIN] Toggle Available seats
- * 6. [ADMIN] Toggle Ordered seats
- * 7. [ADMIN] Toggle Disabled seats
- * 8. [ADMIN] Handle sections hover and clicked
- * 9. [USERS] [MOBILE] Post messages
+ * 1.   [USERS] Seat default status stylings (not 1 and 6 -> red) ✅
+ * 2.   [USERS] Seat default when reselecting ✅
+ * 3.0  [ADMIN] Not available seat default and toggle styles ✅
+ * 3.1  [ADMIN] Correct seat styles by seat status ✅
+ * 3.2  [ADMIN] Seat select all
+ * 4.   [ADMIN] Seat select by row
+ * 5.   [ADMIN] Toggle Available seats
+ * 6.   [ADMIN] Toggle Ordered seats
+ * 7.   [ADMIN] Toggle Disabled seats
+ * 8.   [ADMIN] Handle sections hover and clicked
+ * 9.   [USERS] [MOBILE] Post messages
  */

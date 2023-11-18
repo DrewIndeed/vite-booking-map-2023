@@ -37,24 +37,23 @@ const App = () => {
   return (
     <div style={{ position: "relative" }}>
       <MainMap
-        role="web" // SHOULD
+        role="admin" // SHOULD
         width={700} // 725, 375 // MUST
         height={600} // 675, 635 // MUST
         sections={data?.adminSectionsData} // MUST
         sectionsViewbox={data?.viewbox} // MUST
         zoomSpeed={1.1}
-        // chosenSection={data?.sectionData}
         // [METHODS]
         onSelectSeat={(data: any) => console.log({ data })}
         onDiffSection={() => console.log("Changed section!")}
         minimap={
           <MainMap
+            isMinimap
             width={100} // MUST
             height={165} // MUST
             sections={data?.adminSectionsData} // MUST
             sectionsViewbox={data?.viewbox} // MUST
-            isMinimap
-            // chosenSection={data?.sectionData}
+            chosenSection={data?.sectionData}
           />
         }
       />
