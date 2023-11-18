@@ -28,11 +28,11 @@ import type { KonvaEventObject as EventType } from "konva/lib/Node";
 import type { Stage as StageType } from "konva/lib/Stage";
 import type { PlacesType } from "react-tooltip";
 import type { ChosenSeat } from "types/chosen-seat";
+import type { ChosenSection } from "types/chosen-section";
+import type { Row } from "types/row";
+import type { Seat } from "types/seat";
+import type { Section } from "types/section";
 
-import { ChosenSection } from "types/chosen-section";
-import { Row } from "types/row";
-import { Seat } from "types/seat";
-import { Section } from "types/section";
 import Buttons from "../Buttons";
 import { _limitedNewScale, handleSectionFill } from "./methods";
 

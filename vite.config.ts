@@ -24,11 +24,17 @@ export default defineConfig({
     port: 6789,
   },
   plugins: [
-    react(),
     svgr(),
+    react(),
     terser(),
     chunkSplitPlugin({
       strategy: "unbundle",
+      customSplitting: {
+        components: [/src\/components/],
+        icons: [/src\/icons/],
+        types: [/src\/types/],
+        lib: [/src\/lib/],
+      },
     }),
     viteCompression({
       algorithm: "brotliCompress",
@@ -41,6 +47,7 @@ export default defineConfig({
     cssCodeSplit: true,
     emptyOutDir: true,
     rollupOptions: {
+      external: [/^src\/components\/App.tsx$/, /^src\/mock$/, /^src\/store$/],
       output: {
         manualChunks: undefined,
         globals: {
