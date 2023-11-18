@@ -33,7 +33,8 @@ import { ChosenSection } from "types/chosen-section";
 import { Row } from "types/row";
 import { Seat } from "types/seat";
 import { Section } from "types/section";
-import Buttons from "./Buttons";
+import Buttons from "../Buttons";
+import { _limitedNewScale, handleSectionFill } from "./methods";
 
 const os = getOS();
 const maxDynamic: number[] = [1];
@@ -79,7 +80,7 @@ const MainMap = ({
 
   minimap = null,
   chosenSection = null,
-  tooltip = {}, // plus, handleReset, minus, eyeOpen, eyeClose
+  tooltip = {}, // plus, handleReset, minus, eye
   styles = {},
 
   // methods
@@ -88,7 +89,7 @@ const MainMap = ({
 }: MainMapProps) => {
   // refs
   const stageRef = useRef<StageType>(null);
-  const viewPortLayerRef = useRef<LayerType>(null);
+  const viewLayerRef = useRef<LayerType>(null);
   const layerRef = useRef<LayerType>(null);
   const seatsLayerRef = useRef<LayerType>(null);
   const chosenSeatsRef = useRef<ChosenSeat[]>([]);
@@ -103,6 +104,7 @@ const MainMap = ({
   const [changedSection, setChangedSection] = useState(false);
   const [showMinimap, setShowMinimap] = useState(true);
 
+  // init konva needed shapes
   const seatGroup = useMemo(() => new Shapes.Group(), []);
   const seatCircle = useMemo(
     () =>
@@ -115,6 +117,7 @@ const MainMap = ({
   const seatText = useMemo(
     () =>
       new Shapes.Text({
+        width: 8,
         align: "center",
         verticalAlign: "middle",
         fontStyle: "600",
@@ -122,8 +125,24 @@ const MainMap = ({
     []
   );
 
+  // [COMMON] handle update chosen seats array
+  const _updateChosenSeats = (section: Section, row: Row, seat: Seat) => {
+    chosenSeatsRef.current = [
+      ...chosenSeatsRef.current,
+      {
+        ...seat,
+        rowId: undefined,
+        section: {
+          ...section,
+          elements: undefined,
+          rows: undefined,
+        },
+        row: { ...row, seats: undefined },
+      },
+    ];
+  };
   // [COMMON] handle seats clicked
-  const _handleSeatClicked = useCallback(
+  const _renderSeatClicked = useCallback(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (section: Section, row: Row, seat: Seat, ...rest: any) => {
       const [circleElement, isAdmin] = rest;
@@ -141,39 +160,22 @@ const MainMap = ({
             setChangedSection(true);
           }
         }
-
         // change data
-        chosenSeatsRef.current = [
-          ...chosenSeatsRef.current,
-          {
-            ...seat,
-            rowId: undefined,
-            section: {
-              ...section,
-              elements: undefined,
-              rows: undefined,
-            },
-            row: { ...row, seats: undefined },
-          },
-        ];
-
+        _updateChosenSeats(section, row, seat);
         // changes styles
         circleElement.fill("#2dc275");
         circleElement.stroke("#2dc275");
-        // textElement.fill("#000");
       } else {
         // if the seat has been selected
         // change data
         chosenSeatsRef.current = chosenSeatsRef.current.filter(
           (chosen: ChosenSeat) => chosen.id !== seat.id
         );
-
         // change styles
-        circleElement.fill(isAdmin ? SEAT_COLORS.filled[seat.status] : "#fff");
-        circleElement.stroke(
-          isAdmin ? SEAT_COLORS.stroke[seat.status] : "#9C9B9B"
-        );
-        // textElement.fill(isAdmin ? "#fff" : "#000");
+        const adminFilled = SEAT_COLORS.filled[seat.status];
+        const adminStroke = SEAT_COLORS.stroke[seat.status];
+        circleElement.fill(isAdmin ? adminFilled : "#fff");
+        circleElement.stroke(isAdmin ? adminStroke : "#9C9B9B");
       }
 
       onSelectSeat(chosenSeatsRef.current);
@@ -181,10 +183,10 @@ const MainMap = ({
     [onSelectSeat]
   );
   // [COMMON] [IMPORTANT] render seats
-  const renderSectionSeats = useCallback(
+  const _renderSectionSeats = useCallback(
     (newScale = 1) => {
       const stage = stageRef?.current;
-      const viewport = viewPortLayerRef?.current;
+      const viewport = viewLayerRef?.current;
       const seatsLayer = seatsLayerRef?.current;
 
       if (!stage || !viewport || !seatsLayer || !chosenSeatsRef.current) return;
@@ -220,7 +222,7 @@ const MainMap = ({
       const y2 = viewboxRect.y + viewboxRect.height;
 
       // TODO STUCK: filter section if it is in viewport or not
-      sections?.map((section: Section) => {
+      sections?.forEach((section: Section) => {
         if (!section.isStage) {
           section?.rows.forEach((row: Row) => {
             row?.seats.forEach((seat: Seat) => {
@@ -241,11 +243,9 @@ const MainMap = ({
                 seat.y <= y2
               ) {
                 // --- CREATE SEAT UI ---
-                // seat group clone
+                // shape clones
                 const newSeatGroup = seatGroup.clone();
-                // seat circle clone
                 const newSeatCircle = seatCircle.clone();
-                // seat number clone
                 const newSeatText = seatText.clone();
 
                 // add circle
@@ -253,54 +253,43 @@ const MainMap = ({
                 newSeatCircle.y(seat.y);
                 let fillVal = "";
                 let strokeVal = "";
+                const adminFilled = SEAT_COLORS.filled[seat.status];
+                const adminStroke = SEAT_COLORS.stroke[seat.status];
+                const shouldAdjustVal = existed || isPrevSelected;
+                // handle colors
                 if (notAllowed) {
-                  fillVal = isAdmin
-                    ? SEAT_COLORS.filled[seat.status]
-                    : "#f44336";
-                  strokeVal = isAdmin
-                    ? SEAT_COLORS.stroke[seat.status]
-                    : "#f44336";
+                  fillVal = isAdmin ? adminFilled : "#f44336";
+                  strokeVal = isAdmin ? adminStroke : "#f44336";
                 } else {
-                  // fill color
-                  const adminFillCheck = isAdmin
-                    ? SEAT_COLORS.filled[seat.status]
-                    : "#fff";
-                  fillVal =
-                    existed || isPrevSelected ? "#2dc275" : adminFillCheck;
-                  // stroke color
-                  const adminStrokeCheck = isAdmin
-                    ? SEAT_COLORS.stroke[seat.status]
-                    : "#9C9B9B";
-                  strokeVal =
-                    existed || isPrevSelected ? "#2dc275" : adminStrokeCheck;
+                  const adminFillCheck = isAdmin ? adminFilled : "#fff";
+                  const adminStrokeCheck = isAdmin ? adminStroke : "#9C9B9B";
+                  fillVal = shouldAdjustVal ? "#2dc275" : adminFillCheck;
+                  strokeVal = shouldAdjustVal ? "#2dc275" : adminStrokeCheck;
                 }
                 // final paint
                 newSeatCircle.fill(fillVal);
                 newSeatCircle.stroke(strokeVal);
                 newSeatGroup.add(newSeatCircle);
 
+                // add text
                 if (role === "mobile" || newScale < RENDER_NUM_SCALE) {
-                  // add text
-                  newSeatText.x(
-                    seat.x - (Number(seat.name) < 10 ? 3.95 : 4.055)
-                  );
-                  newSeatText.y(
-                    seat.y -
-                      (Number(seat.name) < 10
-                        ? 2.1
-                        : role === "mobile"
-                        ? 1.7
-                        : 2)
-                  );
-                  newSeatText.width(8);
-                  newSeatText.fontSize(Number(seat.name) < 10 ? 5 : 4.7);
-                  // newSeatText.fill(isAdmin ? "#fff" : "#000");
+                  const xVal = seat.x - (Number(seat.name) < 10 ? 3.95 : 4.055);
+                  const moreThan10 = role === "mobile" ? 1.7 : 2;
+                  const yOffset = Number(seat.name) < 10 ? 2.1 : moreThan10;
+                  const yVal = seat.y - yOffset;
+                  const fontSize = Number(seat.name) < 10 ? 5 : 4.7;
+                  newSeatText.x(xVal);
+                  newSeatText.y(yVal);
+                  newSeatText.fontSize(fontSize);
                   newSeatText.text(seat.name);
                   newSeatGroup.add(newSeatText);
                 }
                 // --- CREATE SEAT UI ---
 
                 // --- HANDLE SEAT EVENTS ---
+                // [VERY IMPORTANT] auto pick HOLDING seats
+                if (isPrevSelected && !existed)
+                  _updateChosenSeats(section, row, seat);
                 if (role !== "mobile") {
                   newSeatGroup.on("mouseover", () => {
                     newSeatCircle.getStage()!.container().style.cursor = noEvent
@@ -312,7 +301,7 @@ const MainMap = ({
                   role === "mobile" ? "touchend" : "click",
                   () => {
                     if (!stage.isDragging() && !noEvent) {
-                      _handleSeatClicked(
+                      _renderSeatClicked(
                         section,
                         row,
                         seat,
@@ -323,23 +312,6 @@ const MainMap = ({
                     }
                   }
                 );
-
-                // [VERY IMPORTANT] auto pick HOLDING seats
-                if (isPrevSelected && !existed) {
-                  chosenSeatsRef.current = [
-                    ...chosenSeatsRef.current,
-                    {
-                      ...seat,
-                      rowId: undefined,
-                      section: {
-                        ...section,
-                        elements: undefined,
-                        rows: undefined,
-                      },
-                      row: { ...row, seats: undefined },
-                    },
-                  ];
-                }
                 // --- HANDLE SEAT EVENTS ---
 
                 // add created seat group to seats layer
@@ -353,12 +325,12 @@ const MainMap = ({
       // clear cache
       seatsLayer.clearCache();
     },
-    [role, sections, seatGroup, seatCircle, seatText, _handleSeatClicked]
+    [role, sections, seatGroup, seatCircle, seatText, _renderSeatClicked]
   );
   // [UTILS] handle calculate real view port
   const _calculateViewPort = useCallback(() => {
     const stage = stageRef?.current;
-    const viewport = viewPortLayerRef?.current;
+    const viewport = viewLayerRef?.current;
     if (!stage || !viewport) return;
 
     // calculate new scale and position
@@ -373,8 +345,8 @@ const MainMap = ({
       viewport.position({ x: -x * newScale, y: -y * newScale });
     }
     viewport.clearCache();
-    renderSectionSeats(newScale);
-  }, [renderSectionSeats]);
+    _renderSectionSeats(newScale);
+  }, [_renderSectionSeats]);
   // [COMMON] handle handleReset
   const handleReset = useCallback(() => {
     const stage = stageRef.current;
@@ -419,23 +391,47 @@ const MainMap = ({
     }
   }, [_calculateViewPort, sectionsViewbox]);
 
+  // [COMMON] handle zoom by button
+  const _getLimitedNewScale = (newScale: number, oldScale: number) =>
+    _limitedNewScale({
+      role,
+      initScale,
+      newScale,
+      oldScale,
+      maxDynamic,
+    });
+  const handleZoomByFactor = (factor: number) => {
+    const stage = stageRef.current;
+    if (stage) {
+      // get current scale
+      const oldScale = stage.scaleX();
+
+      // calculate center point between the stage dimensions
+      const xCenter = stage.width() / 2 / oldScale - stage.x() / oldScale;
+      const yCenter = stage.height() / 2 / oldScale - stage.y() / oldScale;
+
+      // calculate new scale based on the factor
+      const newScale: number = oldScale * factor;
+      // apply scale limits
+      const adjustedNewScale = _getLimitedNewScale(newScale, oldScale);
+
+      // calculate new position to keep the stage centered
+      const newPos = {
+        x: -xCenter * adjustedNewScale.value + stage.width() / 2,
+        y: -yCenter * adjustedNewScale.value + stage.height() / 2,
+      };
+
+      // apply the new scale and position
+      stage.scale({ x: adjustedNewScale.value, y: adjustedNewScale.value });
+      stage.position(newPos);
+      stage.batchDraw(); // or stage.clearCache() depending on use-case
+      debounce(() => _calculateViewPort(), 100)();
+    }
+  };
   // [COMMON] render sections
   const renderSectionPaths = (section: Section) => {
     if (!section) return null;
-    const { elements, ticketType, isStage, id: renderId } = section; //  isStage, attribute, id, display
-
-    // const _onMouseEnter = (e: EventType<MouseEvent>) => {
-    //   if (role === "mobile" || isMinimap) return;
-    //   const container = e.target?.getStage()?.container();
-    //   const cursorType = !ticketType ? "auto" : "pointer";
-    //   if (container) container.style.cursor = cursorType;
-    // };
-    // const _onMouseLeave = (e: EventType<MouseEvent>) => {
-    //   if (role === "mobile" || isMinimap) return;
-    //   const container = e.target?.getStage()?.container();
-    //   if (container) container.style.cursor = "";
-    // };
-
+    const { elements, ticketType, isStage, id: renderId } = section;
     return elements?.map(
       (
         {
@@ -457,39 +453,17 @@ const MainMap = ({
         // is not stage and not background in minimap
         if (!isStage && isMinimap && !isBg) return null;
 
-        // HANDLE FILL COLOR
-        let finalFillColor = "";
-        // handle the color code
-        const hasHashSymbol = ticketType?.color?.includes("#");
-        const extractedColor = ticketType?.color
-          ? `${hasHashSymbol ? "" : "#"}${ticketType?.color}`
-          : fallbackColor;
-
-        // if it is the color of the bg and there is ticket type
-        if (isBg && ticketType) {
-          finalFillColor = extractedColor;
-        }
-        // if it is a stage
-        if (isStage) finalFillColor = fill;
-        // if fill color is ""
-        if (!finalFillColor && !isStage) finalFillColor = fallbackColor;
-
-        // if it is minimap
-        if (isMinimap) {
-          // if it is normal sections
-          if (!isStage && chosenSection?.id && chosenSection?.id !== 0)
-            finalFillColor = fallbackColor;
-          if (chosenSection?.id && chosenSection?.id === renderId)
-            finalFillColor = extractedColor;
-        }
-
-        // final colors render
-        const isNormalBg = isBg && !isStage;
-        const finalColors = {
-          fill: finalFillColor,
-          stroke: isNormalBg ? (isMinimap ? "#000" : fallbackColor) : "",
-          strokeWidth: isNormalBg ? 1.5 : 0.5,
-        };
+        // handle colors
+        const finalColors = handleSectionFill({
+          fill,
+          ticketType,
+          fallbackColor,
+          chosenSection,
+          renderId,
+          isBg,
+          isStage,
+          isMinimap,
+        });
 
         return (
           <Group
@@ -503,60 +477,6 @@ const MainMap = ({
       }
     );
   };
-  // [UTILS] handle zoom limits
-  const _limitedNewScale = (newScale: number, oldScale: number) => {
-    const maxDynamicFinal = maxDynamic[maxDynamic.length - 1];
-    // apply min and max values for scaling
-    if (
-      newScale <= oldScale &&
-      newScale <= initScale * (maxDynamicFinal / (maxDynamicFinal + 2))
-    ) {
-      return {
-        value: initScale * (maxDynamicFinal / (maxDynamicFinal + 2)),
-        reached: true,
-      };
-    }
-    if (
-      newScale >= oldScale &&
-      newScale >= initScale * maxDynamicFinal * (role === "mobile" ? 2 : 1)
-    ) {
-      return {
-        value: initScale * maxDynamicFinal * (role === "mobile" ? 2 : 1),
-        reached: true,
-      };
-    }
-    return { value: newScale, reached: false };
-  };
-  // [COMMON] handle zoom by button
-  const handleZoomByFactor = (factor: number) => {
-    const stage = stageRef.current;
-    if (stage) {
-      // get current scale
-      const oldScale = stage.scaleX();
-
-      // calculate center point between the stage dimensions
-      const xCenter = stage.width() / 2 / oldScale - stage.x() / oldScale;
-      const yCenter = stage.height() / 2 / oldScale - stage.y() / oldScale;
-
-      // calculate new scale based on the factor
-      const newScale: number = oldScale * factor;
-      // apply scale limits
-      const adjustedNewScale = _limitedNewScale(newScale, oldScale);
-
-      // calculate new position to keep the stage centered
-      const newPos = {
-        x: -xCenter * adjustedNewScale.value + stage.width() / 2,
-        y: -yCenter * adjustedNewScale.value + stage.height() / 2,
-      };
-
-      // apply the new scale and position
-      stage.scale({ x: adjustedNewScale.value, y: adjustedNewScale.value });
-      stage.position(newPos);
-      stage.batchDraw(); // or stage.clearCache() depending on use-case
-      debounce(() => _calculateViewPort(), 100)();
-    }
-  };
-
   // [DESKTOP] handle wheeling
   const onWheel = (e: EventType<WheelEvent>) => {
     e.evt.preventDefault();
@@ -581,7 +501,7 @@ const MainMap = ({
       const newScale: number =
         direction > 0 ? oldScale * zoomSpeed : oldScale / zoomSpeed;
       // apply scale limits
-      const adjustedNewScale = _limitedNewScale(newScale, oldScale);
+      const adjustedNewScale = _getLimitedNewScale(newScale, oldScale);
 
       // calculate new pos based on newScale
       const newPos = {
@@ -647,7 +567,7 @@ const MainMap = ({
       const oldScale = stage.scaleX();
       const newScale: number = oldScale * scaleFactor;
       // apply scale limits
-      const adjustedNewScale = _limitedNewScale(newScale, oldScale);
+      const adjustedNewScale = _getLimitedNewScale(newScale, oldScale);
 
       // if not reached limits
       if (!adjustedNewScale.reached) {
@@ -762,41 +682,18 @@ const MainMap = ({
         onTouchEnd={() => _calculateViewPort()}
         onDragEnd={() => _calculateViewPort()}
       >
-        {!isMinimap && (
-          <Layer ref={viewPortLayerRef} x={0} y={0} listening={false}>
-            <Rect width={width} height={height} x={0} y={0} />
-          </Layer>
-        )}
         <Layer ref={layerRef}>{sections?.map(renderSectionPaths)}</Layer>
-        {!isMinimap && <Layer ref={seatsLayerRef} clearBeforeDraw={false} />}
+        {!isMinimap && (
+          <>
+            <Layer ref={viewLayerRef} x={0} y={0} listening={false}>
+              <Rect width={width} height={height} x={0} y={0} />
+            </Layer>
+            <Layer ref={seatsLayerRef} clearBeforeDraw={false} />
+          </>
+        )}
       </Stage>
     </div>
   );
 };
 
 export default MainMap;
-
-/*
-  Assume 1: user when uses for mobile will set the right role = "mobile"
-  Assume 2: user uses 1 finger to drag and 2 fingers to zoom exactly
-  Assume 3: user will de-select from accident selections
-  Assume 4: if seat map is zooming to see seats, how to show minimap now?
-*/
-
-/**
- * TODO
- * 1.   [USERS] Seat default status stylings (not 1 and 6 -> red) ✅
- * 2.   [USERS] Seat default when reselecting ✅
- * 3.0  [ADMIN] Not available seat default and toggle styles ✅
- * 3.1  [ADMIN] Correct seat styles by seat status ✅
- * 10.  Handle types ✅
- * 11.  Refactor code before handle admin events ✅
- *
- * 3.2  [ADMIN] Seat select all
- * 4.   [ADMIN] Seat select by row
- * 5.   [ADMIN] Toggle Available seats
- * 6.   [ADMIN] Toggle Ordered seats
- * 7.   [ADMIN] Toggle Disabled seats
- * 8.   [ADMIN] Handle sections hover and clicked
- * 9.   [USERS] [MOBILE] Post messages
- */

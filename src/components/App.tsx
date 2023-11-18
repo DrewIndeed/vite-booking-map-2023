@@ -13,12 +13,6 @@ const App = () => {
 
   // effects
   useEffect(() => {
-    // self called func to fetch local data
-    // for beta domain
-    // 2 -> 168, 170, 176, 1781
-    // 544 -> 137, 138, 140
-    // 837 -> 185, 186, 187
-    // 940 -> 210, 206, 205, 208
     (async () => {
       const mapData = await getMap(2);
       const adminShowData = await getAdminShowing(2);
@@ -61,3 +55,29 @@ const App = () => {
 };
 
 export default App;
+
+/*
+  Test showings
+  2 -> 168, 170, 176, 1781
+  544 -> 137, 138, 140
+  837 -> 185, 186, 187
+  940 -> 210, 206, 205, 208
+*/
+
+/*
+  Assume 1: user when uses for mobile will set the right role = "mobile"
+  Assume 2: user uses 1 finger to drag and 2 fingers to zoom exactly
+  Assume 3: user will de-select from accident selections
+  Assume 4: if seat map is zooming to see seats, how to show minimap now?
+*/
+
+/**
+ * TODO
+ * 3.2  [ADMIN] Seat select all
+ * 4.   [ADMIN] Seat select by row
+ * 5.   [ADMIN] Toggle Available seats
+ * 6.   [ADMIN] Toggle Ordered seats
+ * 7.   [ADMIN] Toggle Disabled seats
+ * 8.   [ADMIN] Handle sections hover and clicked
+ * 9.   [USERS] [MOBILE] Post messages
+ */
