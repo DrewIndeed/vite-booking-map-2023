@@ -7,7 +7,8 @@ import {
   RENDER_NUM_SCALE,
   RENDER_SEAT_SCALE,
   ZOOM_SPEED,
-  buttons,
+  BUTTONS,
+  SEAT_COLORS,
 } from "@lib/constants";
 import {
   debounce,
@@ -21,10 +22,6 @@ import Button from "./Button";
 
 const os = getOS();
 const maxDynamic: any = [1];
-const adminColors = {
-  fill: ["", "#fff", "#C2C1C1", "#D32F2F", "#F44336"],
-  stroke: ["", "#9C9B9B", "#C2C1C1", "#D32F2F", "#D32F2F"],
-};
 
 export default function MainMap({
   width = 500, // MUST
@@ -87,7 +84,7 @@ export default function MainMap({
   // [COMMON] handle seats clicked
   const _handleSeatClicked = useCallback(
     (section: any, row: any, seat: any, ...rest: any) => {
-      const [circleElement, textElement, isAdmin] = rest;
+      const [circleElement, isAdmin] = rest;
       const checkExisted = chosenSeatsRef.current.some(
         (chosen: any) => chosen.id === seat.id
       );
@@ -130,9 +127,9 @@ export default function MainMap({
         );
 
         // change styles
-        circleElement.fill(isAdmin ? adminColors.stroke[seat.status] : "#fff");
+        circleElement.fill(isAdmin ? SEAT_COLORS.filled[seat.status] : "#fff");
         circleElement.stroke(
-          isAdmin ? adminColors.stroke[seat.status] : "#9C9B9B"
+          isAdmin ? SEAT_COLORS.stroke[seat.status] : "#9C9B9B"
         );
         // textElement.fill(isAdmin ? "#fff" : "#000");
       }
@@ -212,30 +209,32 @@ export default function MainMap({
                 // add circle
                 newSeatCircle.x(seat.x);
                 newSeatCircle.y(seat.y);
+                let fillVal = "";
+                let strokeVal = "";
                 if (notAllowed) {
-                  newSeatCircle.fill(
-                    isAdmin ? adminColors.fill[seat.status] : "#f44336"
-                  );
-                  newSeatCircle.stroke(
-                    isAdmin ? adminColors.stroke[seat.status] : "#f44336"
-                  );
+                  fillVal = isAdmin
+                    ? SEAT_COLORS.filled[seat.status]
+                    : "#f44336";
+                  strokeVal = isAdmin
+                    ? SEAT_COLORS.stroke[seat.status]
+                    : "#f44336";
                 } else {
                   // fill color
                   const adminFillCheck = isAdmin
-                    ? adminColors.fill[seat.status]
+                    ? SEAT_COLORS.filled[seat.status]
                     : "#fff";
-                  const fillVal =
+                  fillVal =
                     existed || isPrevSelected ? "#2dc275" : adminFillCheck;
                   // stroke color
                   const adminStrokeCheck = isAdmin
-                    ? adminColors.stroke[seat.status]
+                    ? SEAT_COLORS.stroke[seat.status]
                     : "#9C9B9B";
-                  const strokeVal =
+                  strokeVal =
                     existed || isPrevSelected ? "#2dc275" : adminStrokeCheck;
-                  // final paint
-                  newSeatCircle.fill(fillVal);
-                  newSeatCircle.stroke(strokeVal);
                 }
+                // final paint
+                newSeatCircle.fill(fillVal);
+                newSeatCircle.stroke(strokeVal);
                 newSeatGroup.add(newSeatCircle);
 
                 if (
@@ -275,7 +274,7 @@ export default function MainMap({
                 newSeatGroup.on(
                   role === "mobile" ? "touchend" : "click",
                   () => {
-                    if (!stage.isDragging() && !noEvent)
+                    if (!stage.isDragging() && !noEvent) {
                       _handleSeatClicked(
                         section,
                         row,
@@ -284,6 +283,7 @@ export default function MainMap({
                         newSeatText,
                         isAdmin
                       );
+                    }
                   }
                 );
 
@@ -738,7 +738,7 @@ export default function MainMap({
           position: "absolute",
         }}
       >
-        {Object.entries(buttons).map(([, { key, icon, defaultContent }]) => {
+        {Object.entries(BUTTONS).map(([, { key, icon, defaultContent }]) => {
           if (key.includes("eye")) return null;
           return (
             <Button
@@ -766,11 +766,11 @@ export default function MainMap({
         })}
         <Button
           isToggle
-          icon={buttons.eyeOpen.icon}
-          secondIcon={buttons.eyeClose.icon}
+          icon={BUTTONS.eyeOpen.icon}
+          secondIcon={BUTTONS.eyeClose.icon}
           tooltip={{
             content:
-              tooltip?.["eye"]?.content || buttons.eyeOpen.defaultContent,
+              tooltip?.["eye"]?.content || BUTTONS.eyeOpen.defaultContent,
             place: tooltip?.["eye"]?.place || "",
           }}
           onClick={() => setShowMinimap(!showMinimap)}

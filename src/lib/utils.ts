@@ -1,4 +1,4 @@
-import { ALL_SEAT_STATUS, SEAT_STYLES_PARSED } from "./constants";
+import { ALL_SEAT_STATUS } from "./constants";
 
 export const debounce = (func: any, delay: number) => {
   let timeoutId: NodeJS.Timeout;
@@ -57,9 +57,6 @@ export const getOS = (forDesktop: boolean = true): string => {
 
 export const getSeatStatusStr = (status: number = 1) =>
   !(status < 1 || status > 6) ? ALL_SEAT_STATUS[status - 1] : "available";
-
-export const getSeatParsedStyles = (statusStr: string = "available") =>
-  SEAT_STYLES_PARSED[statusStr];
 
 export const getViewBoxRect = (viewBox: string) => {
   const values = viewBox?.split(" ");
