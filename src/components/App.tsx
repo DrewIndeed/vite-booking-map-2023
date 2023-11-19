@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { getAdminShowing, getMap, getSections } from "@lib/fetching";
 import { useData } from "@store/useData";
@@ -10,6 +10,14 @@ const App = () => {
   // zustand
   const data = useData(({ data }) => data);
   const saveData = useData(({ saveData }) => saveData);
+
+  // refs
+  // any for a reason
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const mainMapRef = useRef<any>();
+
+  // states
+  const [selectAll, setSelectAll] = useState(false);
 
   // effects
   useEffect(() => {
@@ -31,6 +39,7 @@ const App = () => {
   return (
     <div style={{ position: "relative" }}>
       <MainMap
+        ref={mainMapRef} // MUST FOR ADMIN
         role="admin" // SHOULD
         width={625} // 725, 375 // MUST
         height={600} // 675, 635 // MUST
@@ -40,6 +49,9 @@ const App = () => {
         // [METHODS]
         onSelectSeat={(data) => console.log({ data })}
         onDiffSection={() => console.log("Changed section!")}
+        // [ADMIN]
+        selectAll={selectAll}
+        prevStageInfos={mainMapRef?.current?.getStageInfo()}
         minimap={
           <MainMap
             isMinimap
@@ -50,6 +62,7 @@ const App = () => {
           />
         }
       />
+      <button onClick={() => setSelectAll((prev) => !prev)}>Select All</button>
     </div>
   );
 };
@@ -73,7 +86,8 @@ export default App;
 
 /**
  * TODO
- * 3.2  [ADMIN] Seat select all
+ * 3.2  [ADMIN] Seat select all stylings ✅
+ * 3.3  [ADMIN] Seat select all data
  * 4.   [ADMIN] Seat select by row
  * 5.   [ADMIN] Toggle Available seats
  * 6.   [ADMIN] Toggle Ordered seats

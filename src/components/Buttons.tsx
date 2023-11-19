@@ -15,6 +15,7 @@ type Props = {
   zoomSpeed: number;
   isMinimap: boolean;
   handleReset: () => void;
+  handleResetCallback: () => void;
   handleZoomByFactor: (arg0: number) => void;
   setShowMinimap: Dispatch<SetStateAction<boolean>>;
 };
@@ -25,6 +26,7 @@ const Buttons = ({
   zoomSpeed,
   isMinimap,
   handleReset,
+  handleResetCallback,
   handleZoomByFactor,
   setShowMinimap,
 }: Props) => {
@@ -72,7 +74,10 @@ const Buttons = ({
           content: tooltip?.["eye"]?.content || BUTTONS.eyeOpen.defaultContent,
           place: tooltip?.["eye"]?.place,
         }}
-        onClick={() => setShowMinimap((prev: boolean) => !prev)}
+        onClick={() => {
+          setShowMinimap((prev: boolean) => !prev);
+          handleResetCallback();
+        }}
       />
       {role !== "mobile" && <Tooltip id="btn-tooltip" opacity={1} />}
     </div>
