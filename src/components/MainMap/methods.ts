@@ -1,5 +1,7 @@
 import { ChosenSection } from "types/chosen-section";
-import { TicketType } from "types/section";
+import { Row } from "types/row";
+import { Seat } from "types/seat";
+import { Section, TicketType } from "types/section";
 
 // [UTILS] handle zoom limits
 type LimitedNewScale = {
@@ -39,6 +41,7 @@ export const _limitedNewScale = ({
   return { value: newScale, reached: false };
 };
 
+// [UTILS] handle section bg colors
 type HandleSectionFill = {
   fill: string;
   ticketType: TicketType;
@@ -94,3 +97,31 @@ export const handleSectionFill = ({
   };
   return finalColors;
 };
+
+// [UTILS] get seat map capacity
+export const getCapacity = (sections: Section[]) =>
+  sections.reduce((prev, curr) => {
+    prev += curr.capacity;
+    return prev;
+  }, 0);
+
+export const getAllSeats = (sections: Section[]) =>
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  sections.reduce((prev: any, curr: Section) => {
+    if (!curr.rows) return prev;
+    const seats = curr.rows
+      .map((row: Row) => {
+        return row.seats.map((seat: Seat) => ({
+          ...seat,
+          rowId: undefined,
+          section: {
+            ...curr,
+            elements: undefined,
+            rows: undefined,
+          },
+          row: { ...row, seats: undefined },
+        }));
+      })
+      .flat(Infinity);
+    return [...prev, ...seats];
+  }, []);

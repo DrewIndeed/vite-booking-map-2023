@@ -36,7 +36,7 @@ import type { Seat } from "types/seat";
 import type { Section } from "types/section";
 
 import Buttons from "../Buttons";
-import { _limitedNewScale, handleSectionFill } from "./methods";
+import { _limitedNewScale, getAllSeats, handleSectionFill } from "./methods";
 
 const os = getOS();
 const maxDynamic: number[] = [1];
@@ -118,7 +118,9 @@ const MainMap = forwardRef(
     const [changedSection, setChangedSection] = useState(false);
     const [showMinimap, setShowMinimap] = useState(true);
     const [changedStage, setChangedStage] = useState(false);
+    // const [allSeatsTouched, setAllSeatsTouched] = useState(false);
 
+    // memos
     // init konva needed shapes
     const seatGroup = useMemo(
       () => new Shapes.Group({ perfectDrawEnabled: false }),
@@ -144,6 +146,8 @@ const MainMap = forwardRef(
         }),
       []
     );
+    // all seats
+    const allSeats = useMemo(() => getAllSeats(sections), [sections]);
 
     // [COMMON] handle update chosen seats array
     const _updateChosenSeats = (section: Section, row: Row, seat: Seat) => {
@@ -462,10 +466,8 @@ const MainMap = forwardRef(
         stage.scale({ x: adjustedNewScale.value, y: adjustedNewScale.value });
         stage.position(newPos);
         stage.batchDraw(); // or stage.clearCache() depending on use-case
-        debounce(() => {
-          _calculateViewPort();
-          setChangedStage(true);
-        }, 100)();
+        if (!changedStage) setChangedStage(true);
+        debounce(() => _calculateViewPort(), 100)();
       }
     };
     // [COMMON] render sections
@@ -559,10 +561,8 @@ const MainMap = forwardRef(
         stage.scale({ x: adjustedNewScale.value, y: adjustedNewScale.value });
         stage.position(newPos);
         stage.clearCache();
-        debounce(() => {
-          _calculateViewPort();
-          setChangedStage(true);
-        }, 100)();
+        if (!changedStage) setChangedStage(true);
+        debounce(() => _calculateViewPort(), 100)();
       }
     };
     // [MOBILE] handle when fingers start to touch
@@ -683,7 +683,7 @@ const MainMap = forwardRef(
       });
       // cleanup the event listener when the component unmounts
       return () => document.removeEventListener("touchmove", preventDefault);
-    }, [handleReset, mounted]);
+    }, [allSeats, handleReset, mounted]);
     // [COMMON] detect if different seats from different section has been selected
     useEffect(() => {
       if (changedSection) {
@@ -717,6 +717,9 @@ const MainMap = forwardRef(
         return stageCurr;
       },
     }));
+    useEffect(() => {
+      if (selectAll) chosenSeatsRef.current = [...allSeats];
+    }, [allSeats, selectAll]);
     // [END] [ADMIN] select all
 
     // if not hydrated and no sections
@@ -744,7 +747,9 @@ const MainMap = forwardRef(
             zoomSpeed,
             isMinimap,
             handleReset,
-            handleResetCallback: () => setChangedStage(false), // important for admin
+            handleResetCallback: () => {
+              if (changedStage) setChangedStage(false);
+            }, // important for admin
             handleZoomByFactor,
             setShowMinimap,
           }}

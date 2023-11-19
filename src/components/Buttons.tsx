@@ -60,6 +60,7 @@ const Buttons = ({
                   break;
                 default:
                   handleReset();
+                  handleResetCallback();
                   break;
               }
             }}
@@ -74,10 +75,7 @@ const Buttons = ({
           content: tooltip?.["eye"]?.content || BUTTONS.eyeOpen.defaultContent,
           place: tooltip?.["eye"]?.place,
         }}
-        onClick={() => {
-          setShowMinimap((prev: boolean) => !prev);
-          handleResetCallback();
-        }}
+        onClick={() => setShowMinimap((prev: boolean) => !prev)}
       />
       {role !== "mobile" && <Tooltip id="btn-tooltip" opacity={1} />}
     </div>

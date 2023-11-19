@@ -5,6 +5,7 @@ import { useData } from "@store/useData";
 import MainMap from "./MainMap";
 
 import "@style/App.css";
+import { getAllSeats, getCapacity } from "./MainMap/methods";
 
 const App = () => {
   // zustand
@@ -26,10 +27,12 @@ const App = () => {
       const adminShowData = await getAdminShowing(2);
       const sectionData = await getSections(2, 168);
       const demoData = {
-        adminSectionsData: adminShowData?.data?.result?.seatMap?.sections,
-        sectionData: sectionData?.data?.result,
-        sections: mapData?.data?.result?.sections,
+        adminSections: adminShowData?.data?.result?.seatMap?.sections,
+        chosenSection: sectionData?.data?.result,
         viewbox: mapData?.data?.result?.viewbox,
+        capacity: getCapacity(adminShowData?.data?.result?.seatMap?.sections),
+        allSeats: getAllSeats(adminShowData?.data?.result?.seatMap?.sections),
+        // sections: mapData?.data?.result?.sections,
       };
       // console.log({ demoData });
       saveData(demoData);
@@ -43,7 +46,7 @@ const App = () => {
         role="admin" // SHOULD
         width={625} // 725, 375 // MUST
         height={600} // 675, 635 // MUST
-        sections={data?.adminSectionsData} // MUST
+        sections={data?.adminSections} // MUST
         sectionsViewbox={data?.viewbox} // MUST
         zoomSpeed={1.1}
         // [METHODS]
@@ -57,12 +60,14 @@ const App = () => {
             isMinimap
             width={100} // MUST
             height={165} // MUST
-            sections={data?.adminSectionsData} // MUST
+            sections={data?.adminSections} // MUST
             sectionsViewbox={data?.viewbox} // MUST
           />
         }
       />
-      <button onClick={() => setSelectAll((prev) => !prev)}>Select All</button>
+      <button style={{ cursor: "pointer" }} onClick={() => setSelectAll(true)}>
+        Select All
+      </button>
     </div>
   );
 };
@@ -86,12 +91,15 @@ export default App;
 
 /**
  * TODO
- * 3.2  [ADMIN] Seat select all stylings ✅
- * 3.3  [ADMIN] Seat select all data
- * 4.   [ADMIN] Seat select by row
- * 5.   [ADMIN] Toggle Available seats
- * 6.   [ADMIN] Toggle Ordered seats
- * 7.   [ADMIN] Toggle Disabled seats
- * 8.   [ADMIN] Handle sections hover and clicked
- * 9.   [USERS] [MOBILE] Post messages
+ * 3.2   [ADMIN] Seat select all stylings ✅
+ * 3.3   [ADMIN] Seat select all data ✅
+ * 3.3.1 [BUG - ADMIN] Handle deselect seats after select all
+ * 3.3.2 [BUG - ADMIN] Handle select seats normally before select all
+ * 3.4   [ADMIN] Handle clear all selections
+ * 4.    [ADMIN] Seat select by row
+ * 5.    [ADMIN] Toggle Available seats
+ * 6.    [ADMIN] Toggle Ordered seats
+ * 7.    [ADMIN] Toggle Disabled seats
+ * 8.    [ADMIN] Handle sections hover and clicked
+ * 9.    [USERS] [MOBILE] Post messages
  */
