@@ -68,7 +68,7 @@ type MainMapProps = {
   onDiffSection?: () => void;
 
   // admin
-  selectAll?: boolean;
+  useSelectAll?: (arg0: boolean) => [boolean, (arg0: boolean) => void];
   prevStageInfos?: Record<string, number>;
 };
 
@@ -96,7 +96,7 @@ const MainMap = forwardRef(
       onDiffSection = () => {},
 
       // admin
-      selectAll = false,
+      useSelectAll = () => [false, () => {}],
       prevStageInfos = {},
     }: MainMapProps,
     mainMapRef
@@ -118,7 +118,10 @@ const MainMap = forwardRef(
     const [changedSection, setChangedSection] = useState(false);
     const [showMinimap, setShowMinimap] = useState(true);
     const [changedStage, setChangedStage] = useState(false);
-    // const [allSeatsTouched, setAllSeatsTouched] = useState(false);
+
+    // [ADMIN] select all related
+    const allSeatsReachedRef = useRef<boolean>(false);
+    const [isSelectAll, setIsSelectAll] = useSelectAll(false);
 
     // memos
     // init konva needed shapes
@@ -200,11 +203,18 @@ const MainMap = forwardRef(
           const adminStroke = SEAT_COLORS.stroke[seat.status];
           circleElement.fill(isAdmin ? adminFilled : "#fff");
           circleElement.stroke(isAdmin ? adminStroke : "#9C9B9B");
+
+          if (isSelectAll) {
+            if (!allSeatsReachedRef.current) allSeatsReachedRef.current = true;
+            setIsSelectAll(false);
+          }
         }
 
         onSelectSeat(chosenSeatsRef.current);
       },
-      [onSelectSeat]
+      // DO NOT ADD setIsSelectAll
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      [isSelectAll, onSelectSeat]
     );
     // [COMMON] [IMPORTANT] render seats
     const _renderSectionSeats = useCallback(
@@ -255,6 +265,7 @@ const MainMap = forwardRef(
           if (!section.isStage) {
             section?.rows.forEach((row: Row) => {
               row?.seats.forEach((seat: Seat) => {
+                const hasTicketType = !!section.ticketType;
                 const existed = chosenSeatsRef.current.some(
                   (chosen: ChosenSeat) => chosen.id === seat.id
                 );
@@ -285,7 +296,12 @@ const MainMap = forwardRef(
                   const adminFilled = SEAT_COLORS.filled[seat.status];
                   const adminStroke = SEAT_COLORS.stroke[seat.status];
                   const shouldAdjustVal =
-                    existed || isPrevSelected || (isAdmin && selectAll);
+                    (existed ||
+                      isPrevSelected ||
+                      (isAdmin &&
+                        isSelectAll &&
+                        !allSeatsReachedRef.current)) &&
+                    hasTicketType;
                   // handle colors
                   if (notAllowed) {
                     fillVal = isAdmin ? adminFilled : "#f44336";
@@ -362,7 +378,7 @@ const MainMap = forwardRef(
         seatGroup,
         seatCircle,
         seatText,
-        selectAll,
+        isSelectAll,
         _renderSeatClicked,
       ]
     );
@@ -707,19 +723,32 @@ const MainMap = forwardRef(
       }
       // DO NOT REMOVE THE WARNING SUPPRESS
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [selectAll, prevStageInfos]);
+    }, [isSelectAll, prevStageInfos]);
     useImperativeHandle(mainMapRef, () => ({
       getStageInfo: () => {
-        const stageCurr = {
-          ...stageRef.current?.getClientRect(),
-          scale: stageRef.current?.scaleX(),
-        };
-        return stageCurr;
+        const stage = stageRef.current;
+        if (stage) {
+          const stageCurr = {
+            width: Math.ceil(width),
+            height: Math.ceil(height),
+            x: Math.floor(stage.x()),
+            y: Math.floor(stage.y()),
+            scale: stage?.scaleX(),
+          };
+          return stageCurr;
+        }
       },
     }));
     useEffect(() => {
-      if (selectAll) chosenSeatsRef.current = [...allSeats];
-    }, [allSeats, selectAll]);
+      if (isSelectAll && allSeats.length > 0) {
+        const withTicketTypes = allSeats.filter(
+          (seat: ChosenSeat) => !!seat.section.ticketType
+        );
+        chosenSeatsRef.current = [...withTicketTypes];
+        _calculateViewPort();
+      }
+    }, [_calculateViewPort, allSeats, isSelectAll]);
+
     // [END] [ADMIN] select all
 
     // if not hydrated and no sections

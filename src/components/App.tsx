@@ -18,7 +18,7 @@ const App = () => {
   const mainMapRef = useRef<any>();
 
   // states
-  const [selectAll, setSelectAll] = useState(false);
+  const [isSelectAll, setIsSelectAll] = useState(false);
 
   // effects
   useEffect(() => {
@@ -44,8 +44,8 @@ const App = () => {
       <MainMap
         ref={mainMapRef} // MUST FOR ADMIN
         role="admin" // SHOULD
-        width={625} // 725, 375 // MUST
-        height={600} // 675, 635 // MUST
+        width={650} // 725, 375 // MUST
+        height={700} // 675, 635 // MUST
         sections={data?.adminSections} // MUST
         sectionsViewbox={data?.viewbox} // MUST
         zoomSpeed={1.1}
@@ -53,7 +53,10 @@ const App = () => {
         onSelectSeat={(data) => console.log({ data })}
         onDiffSection={() => console.log("Changed section!")}
         // [ADMIN]
-        selectAll={selectAll}
+        useSelectAll={(initVal: boolean) => [
+          isSelectAll,
+          (newVal: boolean) => setIsSelectAll(newVal || initVal),
+        ]}
         prevStageInfos={mainMapRef?.current?.getStageInfo()}
         minimap={
           <MainMap
@@ -62,10 +65,14 @@ const App = () => {
             height={165} // MUST
             sections={data?.adminSections} // MUST
             sectionsViewbox={data?.viewbox} // MUST
+            // chosenSection={data?.chosenSection}
           />
         }
       />
-      <button style={{ cursor: "pointer" }} onClick={() => setSelectAll(true)}>
+      <button
+        style={{ cursor: "pointer" }}
+        onClick={() => setIsSelectAll(true)}
+      >
         Select All
       </button>
     </div>
@@ -87,14 +94,15 @@ export default App;
   Assume 2: user uses 1 finger to drag and 2 fingers to zoom exactly
   Assume 3: user will de-select from accident selections
   Assume 4: if seat map is zooming to see seats, how to show minimap now?
+  Assume 5: if select all if not zoom on, user will know that all seats are selected
 */
 
 /**
  * TODO
  * 3.2   [ADMIN] Seat select all stylings ✅
  * 3.3   [ADMIN] Seat select all data ✅
- * 3.3.1 [BUG - ADMIN] Handle deselect seats after select all
- * 3.3.2 [BUG - ADMIN] Handle select seats normally before select all
+ * 3.3.1 [BUG - ADMIN] Handle deselect seats after select all ✅
+ * 3.3.2 [BUG - ADMIN] Handle select seats normally before select all ✅
  * 3.4   [ADMIN] Handle clear all selections
  * 4.    [ADMIN] Seat select by row
  * 5.    [ADMIN] Toggle Available seats
