@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { RENDER_NUM_SCALE, SEAT_COLORS } from "@lib/constants";
+
+import { ChosenSeat } from "types/chosen-seat";
 import { ChosenSection } from "types/chosen-section";
 import { Row } from "types/row";
 import { Seat } from "types/seat";
@@ -125,3 +129,109 @@ export const getAllSeats = (sections: Section[]) =>
       .flat(Infinity);
     return [...prev, ...seats];
   }, []);
+
+// [UI] render section rows
+export const renderSectionRows = (section: any, others: any[]) => {
+  const [
+    role,
+    isSelectAll,
+    newScale,
+    { x1, x2, y1, y2 },
+    { seatGroup, seatCircle, seatText },
+    { stageRef, seatsLayerRef, chosenSeatsRef, allSeatsReachedRef },
+    { _updateChosenSeats, _renderSeatClicked },
+  ] = others;
+  return section?.rows.forEach((row: Row) => {
+    row?.seats.forEach((seat: Seat) => {
+      const hasTicketType = !!section.ticketType;
+      const existed = chosenSeatsRef.current.some(
+        (chosen: ChosenSeat) => chosen.id === seat.id
+      );
+      const notAllowed =
+        role === "web"
+          ? ![1, 3, 6].includes(seat.status)
+          : [4, 5].includes(seat.status);
+      const isAdmin = role === "admin";
+      const noEvent = !section.ticketType || notAllowed;
+      const isPrevSelected = seat.status === 3 && role === "web";
+      if (seat.x >= x1 && seat.x <= x2 && seat.y >= y1 && seat.y <= y2) {
+        // --- CREATE SEAT UI ---
+        // shape clones
+        const newSeatGroup = seatGroup.clone();
+        const newSeatCircle = seatCircle.clone();
+        const newSeatText = seatText.clone();
+
+        // add circle
+        newSeatCircle.x(seat.x);
+        newSeatCircle.y(seat.y);
+        let fillVal = "";
+        let strokeVal = "";
+        const adminFilled = SEAT_COLORS.filled[seat.status];
+        const adminStroke = SEAT_COLORS.stroke[seat.status];
+        const shouldAdjustVal =
+          (existed ||
+            isPrevSelected ||
+            (isAdmin && isSelectAll && !allSeatsReachedRef.current)) &&
+          hasTicketType;
+        // handle colors
+        if (notAllowed) {
+          fillVal = isAdmin ? adminFilled : "#f44336";
+          strokeVal = isAdmin ? adminStroke : "#f44336";
+        } else {
+          const adminFillCheck = isAdmin ? adminFilled : "#fff";
+          const adminStrokeCheck = isAdmin ? adminStroke : "#9C9B9B";
+          fillVal = shouldAdjustVal ? "#2dc275" : adminFillCheck;
+          strokeVal = shouldAdjustVal ? "#2dc275" : adminStrokeCheck;
+        }
+        // final paint
+        newSeatCircle.fill(fillVal);
+        newSeatCircle.stroke(strokeVal);
+        newSeatGroup.add(newSeatCircle);
+
+        // add text
+        if (role === "mobile" || newScale < RENDER_NUM_SCALE) {
+          const fontSize = Number(seat.name) < 10 ? 5 : 4.7;
+          const xVal = seat.x - (Number(seat.name) < 10 ? 3.95 : 4.055);
+          const yTenMore = role === "mobile" ? 1.7 : 2;
+          const yOffset = Number(seat.name) < 10 ? 2.1 : yTenMore;
+          const yVal = seat.y - yOffset;
+          newSeatText.x(xVal);
+          newSeatText.y(yVal);
+          newSeatText.fontSize(fontSize);
+          newSeatText.text(seat.name);
+          newSeatGroup.add(newSeatText);
+        }
+        // --- CREATE SEAT UI ---
+
+        // --- HANDLE SEAT EVENTS ---
+        // [VERY IMPORTANT] auto pick HOLDING seats
+        if (isPrevSelected && !existed) {
+          _updateChosenSeats(section, row, seat);
+        }
+        if (role !== "mobile") {
+          newSeatGroup.on("mouseover", () => {
+            newSeatCircle.getStage()!.container().style.cursor = noEvent
+              ? "not-allowed"
+              : "pointer";
+          });
+        }
+        newSeatGroup.on(role === "mobile" ? "touchend" : "click", () => {
+          if (!stageRef.current.isDragging() && !noEvent) {
+            _renderSeatClicked(
+              section,
+              row,
+              seat,
+              newSeatCircle,
+              newSeatText,
+              isAdmin
+            );
+          }
+        });
+        // --- HANDLE SEAT EVENTS ---
+
+        // add created seat group to seats layer
+        seatsLayerRef.current.add(newSeatGroup);
+      }
+    });
+  });
+};

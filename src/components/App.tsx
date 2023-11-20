@@ -42,8 +42,8 @@ const App = () => {
   return (
     <div style={{ position: "relative" }}>
       <MainMap
-        ref={mainMapRef} // MUST FOR ADMIN
-        role="admin" // SHOULD
+        // ref={mainMapRef} // MUST FOR ADMIN
+        role="web" // SHOULD
         width={650} // 725, 375 // MUST
         height={700} // 675, 635 // MUST
         sections={data?.adminSections} // MUST
@@ -52,12 +52,14 @@ const App = () => {
         // [METHODS]
         onSelectSeat={(data) => console.log({ data })}
         onDiffSection={() => console.log("Changed section!")}
+        // [SPECIFIC SECTION]
+        chosenSection={data?.chosenSection}
         // [ADMIN]
-        useSelectAll={(initVal: boolean) => [
-          isSelectAll,
-          (newVal: boolean) => setIsSelectAll(newVal || initVal),
-        ]}
-        prevStageInfos={mainMapRef?.current?.getStageInfo()}
+        // useSelectAll={(initVal: boolean) => [
+        //   isSelectAll,
+        //   (newVal: boolean) => setIsSelectAll(newVal || initVal),
+        // ]}
+        // prevStageInfos={mainMapRef?.current?.getStageInfo()}
         minimap={
           <MainMap
             isMinimap
@@ -65,16 +67,17 @@ const App = () => {
             height={165} // MUST
             sections={data?.adminSections} // MUST
             sectionsViewbox={data?.viewbox} // MUST
-            // chosenSection={data?.chosenSection}
+            // [SPECIFIC SECTION]
+            chosenSection={data?.chosenSection}
           />
         }
       />
-      <button
+      {/* <button
         style={{ cursor: "pointer" }}
         onClick={() => setIsSelectAll(true)}
       >
         Select All
-      </button>
+      </button> */}
     </div>
   );
 };
