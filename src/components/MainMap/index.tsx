@@ -107,6 +107,8 @@ const MainMap = forwardRef(
     const layerRef = useRef<LayerType>(null);
     const seatsLayerRef = useRef<LayerType>(null);
     const chosenSeatsRef = useRef<ChosenSeat[]>([]);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const allSectionsRef = useRef<any>({});
 
     // [MOBILE] refs
     const lastCenter = useRef({ x: 0, y: 0 });
@@ -398,56 +400,73 @@ const MainMap = forwardRef(
     // [COMMON] render sections
     const renderSectionPaths = (section: Section) => {
       if (!section) return null;
+      const _onMouseEnter = (e: EventType<MouseEvent>) => {
+        if (role === "mobile" || isMinimap || chosenSection?.id) return;
+        const container = e.target?.getStage()?.container();
+        const cursorType = !ticketType ? "auto" : "pointer";
+        if (container) container.style.cursor = cursorType;
+      };
+      const _onMouseLeave = (e: EventType<MouseEvent>) => {
+        if (role === "mobile" || isMinimap || chosenSection?.id) return;
+        const container = e.target?.getStage()?.container();
+        if (container) container.style.cursor = "";
+      };
       const { elements, ticketType, isStage, id: renderId } = section;
-      return elements?.map(
-        (
-          {
-            data,
-            display,
-            fill,
-          }: {
-            data: string;
-            fill: string;
-            display: number;
-          },
-          key: number
-        ) => {
-          const isBg = key === 0;
+      return (
+        <Group
+          ref={(ref) => {
+            if (ref) allSectionsRef.current[section.id] = ref;
+          }}
+          data-section-id={renderId}
+          key={`sections-${renderId}`}
+          onMouseEnter={_onMouseEnter}
+          onMouseLeave={_onMouseLeave}
+          perfectDrawEnabled={false}
+        >
+          {elements?.map(
+            (
+              {
+                data,
+                display,
+                fill,
+              }: {
+                data: string;
+                fill: string;
+                display: number;
+              },
+              key: number
+            ) => {
+              const isBg = key === 0;
 
-          // if display value from BE
-          if (display !== 1) return null;
+              // if display value from BE
+              if (display !== 1) return null;
 
-          // is not stage and not background in minimap
-          if (!isStage && isMinimap && !isBg) return null;
+              // is not stage and not background in minimap
+              if (!isStage && isMinimap && !isBg) return null;
 
-          // handle colors
-          const finalColors = handleSectionFill({
-            fill,
-            ticketType,
-            fallbackColor,
-            chosenSection,
-            renderId,
-            isBg,
-            isStage,
-            isMinimap,
-          });
+              // handle colors
+              const finalColors = handleSectionFill({
+                fill,
+                ticketType,
+                fallbackColor,
+                chosenSection,
+                renderId,
+                isBg,
+                isStage,
+                isMinimap,
+              });
 
-          return (
-            <Group
-              key={`sections-${renderId}-${key}`}
-              onMouseEnter={() => {}}
-              onMouseLeave={() => {}}
-              perfectDrawEnabled={false}
-            >
-              <Path
-                perfectDrawEnabled={false}
-                key={key}
-                data={data}
-                {...finalColors}
-              />
-            </Group>
-          );
-        }
+              return (
+                <Path
+                  perfectDrawEnabled={false}
+                  key={key}
+                  data={data}
+                  {...finalColors}
+                />
+              );
+            }
+          )}
+        </Group>
       );
     };
     // [DESKTOP] handle wheeling
@@ -657,7 +676,6 @@ const MainMap = forwardRef(
         _calculateViewPort();
       }
     }, [_calculateViewPort, allSeats, isSelectAll]);
-
     // [END] [ADMIN] select all
 
     // if not hydrated and no sections
@@ -687,12 +705,92 @@ const MainMap = forwardRef(
             handleReset,
             handleResetCallback: () => {
               if (changedStage) setChangedStage(false);
+
+              const stage = stageRef.current;
+              if (!stage) return;
+              const sectionCorners =
+                allSectionsRef.current[168].children[0].dataArray
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  .map((item: any) => item.points)
+                  .reduce(
+                    (
+                      prev: { x: number[]; y: number[] },
+                      item: [number, number]
+                    ) => {
+                      if (!item.length) return prev;
+                      prev.x = [...prev.x, item[0]];
+                      prev.y = [...prev.y, item[1]];
+                      return prev;
+                    },
+                    { x: [], y: [] }
+                  );
+
+              const sortedCornersData = {
+                x: sectionCorners.x.sort((a: number, b: number) => a - b),
+                y: sectionCorners.y.sort((a: number, b: number) => a - b),
+              };
+
+              /**               X   Y
+               * Top left:     min min
+               * Top right:    max min
+               * Bottom right: max max
+               * Bottom left:  min max
+               */
+              const realRect = {
+                topLeft: [sortedCornersData.x[0], sortedCornersData.y[0]],
+                topRight: [
+                  sortedCornersData.x[sortedCornersData.x.length - 1],
+                  sortedCornersData.y[0],
+                ],
+                bottomRight: [
+                  sortedCornersData.x[sortedCornersData.x.length - 1],
+                  sortedCornersData.y[sortedCornersData.y.length - 1],
+                ],
+                bottomLeft: [
+                  sortedCornersData.x[0],
+                  sortedCornersData.y[sortedCornersData.y.length - 1],
+                ],
+              };
+
+              const realRectWrap = new Shapes.Line({
+                points: [...Object.values(realRect).flat(Infinity)],
+                stroke: "yellow",
+                strokeWidth: 3,
+                fill: "#1288F340",
+                closed: true,
+              });
+
+              const allCornersPoints = [
+                ...allSectionsRef.current[168].children[0].dataArray.map(
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  (item: any) => item.points
+                ),
+              ];
+              layerRef.current?.add(realRectWrap);
+              allCornersPoints.forEach((point) => {
+                return layerRef.current?.add(
+                  new Shapes.Circle({
+                    x: point[0],
+                    y: point[1],
+                    radius: 5,
+                    fill: "cyan",
+                  })
+                );
+              });
+
+              console.log({
+                allSectionGroups: allSectionsRef.current,
+                realRect,
+                realRectWrap: realRectWrap.getClientRect({
+                  relativeTo: stage,
+                }),
+              });
             }, // important for admin
             handleZoomByFactor,
             setShowMinimap,
           }}
         />
-        {showMinimap && <>{minimap}</>}
+        {!isMinimap && showMinimap && <>{minimap}</>}
         <Stage
           ref={stageRef}
           width={width}

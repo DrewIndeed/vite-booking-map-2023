@@ -44,8 +44,8 @@ const App = () => {
       <MainMap
         // ref={mainMapRef} // MUST FOR ADMIN
         role="web" // SHOULD
-        width={650} // 725, 375 // MUST
-        height={700} // 675, 635 // MUST
+        width={615} // 725, 375 // MUST
+        height={550} // 675, 635 // MUST
         sections={data?.adminSections} // MUST
         sectionsViewbox={data?.viewbox} // MUST
         zoomSpeed={1.1}
