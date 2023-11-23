@@ -120,6 +120,8 @@ const MainMap = forwardRef(
     const [changedSection, setChangedSection] = useState(false);
     const [showMinimap, setShowMinimap] = useState(true);
     const [changedStage, setChangedStage] = useState(false);
+    const [hasReset, setHasReset] = useState(false);
+    const [hasResetSection, setHasResetSection] = useState(false);
 
     // [ADMIN] select all related
     const allSeatsReachedRef = useRef<boolean>(false);
@@ -373,43 +375,7 @@ const MainMap = forwardRef(
       const wrapLine = new Shapes.Line({
         points: [...Object.values(wrapCorners).flat(Infinity)],
         closed: true,
-        // stroke: "yellow",
-        // strokeWidth: 3,
-        // fill: "#1288F340",
       });
-
-      // const allCornersPoints = [
-      //   ...allSectionsRef.current[chosenSection?.id].children[0].dataArray.map(
-      //     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      //     (item: any) => item.points
-      //   ),
-      // ];
-      // layerRef.current?.add(wrapLine);
-      // allCornersPoints.forEach((point) => {
-      //   return layerRef.current?.add(
-      //     new Shapes.Circle({
-      //       x: point[0],
-      //       y: point[1],
-      //       radius: 5,
-      //       fill: "cyan",
-      //     })
-      //   );
-      // });
-
-      // [TESTING] print all the needed values to compute scaling and postions
-      // console.log({
-      //   allSectionGroups: allSectionsRef.current,
-      //   wrapCorners,
-      //   wrapToStage: wrapLine.getClientRect({
-      //     relativeTo: stage,
-      //   }),
-      //   wrapSelTest: {
-      //     x: wrapCorners.topLeft[0],
-      //     y: wrapCorners.topLeft[1],
-      //     width: wrapCorners.topRight[0] - wrapCorners.topLeft[0],
-      //     height: wrapCorners.bottomLeft[1] - wrapCorners.topLeft[1],
-      //   },
-      // });
 
       // initial relocate stage before auto zoom in
       const wrapLineRect = wrapLine.getClientRect({
@@ -455,17 +421,19 @@ const MainMap = forwardRef(
             x: -wrapLineRect.x * stage.scaleX() + partialWidth,
             y: -wrapLineRect.y * stage.scaleX() + partialHeight,
           });
-        }, 30 * i); // 30: change this if need
+        }, 10 * i); // 10: change this if need
 
+        // redraw seats and update reset section status
         setTimeout(() => {
           _calculateViewPort();
-        }, 30 * (count + 1.5));
+          setHasResetSection(true);
+        }, 10 * (count + 1.5));
       }
     }, [_calculateViewPort, chosenSection?.id, initScale]);
     // [COMMON] handle handle reset
     const handleReset = useCallback(() => {
       const stage = stageRef.current;
-      if (stage) {
+      if (stage && sectionsViewbox !== "0 0 0 0" && !hasReset) {
         // stage dimensions
         const stageW = stage.width();
         const stageH = stage.height();
@@ -504,9 +472,11 @@ const MainMap = forwardRef(
           setInitScale(newScale);
         }
 
+        setHasReset(true);
         _calculateViewPort();
       }
-    }, [_calculateViewPort, sectionsViewbox]);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [sectionsViewbox]);
     // [COMMON] handle zoom by button
     const _getLimitedNewScale = (newScale: number, oldScale: number) =>
       _limitedNewScale({
@@ -757,17 +727,13 @@ const MainMap = forwardRef(
     // [COMMON] auto scale and center the all sections map
     // [MOBILE] force prevent default
     useEffect(() => {
-      // reset sections layer
-      if (mounted && sectionsViewbox) {
-        handleReset();
-      }
-    }, [handleReset, handleResetSection, mounted, sectionsViewbox]);
-    useEffect(() => {
       // set true for hydration
       if (!mounted) {
         setMounted(true);
         return;
       }
+      // reset all sections map
+      handleReset();
       // function to prevent default behavior for touchmove events
       const preventDefault = (e: TouchEvent) => {
         // check if it's a one-finger touch event
@@ -779,7 +745,7 @@ const MainMap = forwardRef(
       });
       // cleanup the event listener when the component unmounts
       return () => document.removeEventListener("touchmove", preventDefault);
-    }, [allSeats, mounted]);
+    }, [handleReset, mounted]);
     // [COMMON] detect if different seats from different section has been selected
     useEffect(() => {
       if (changedSection) {
@@ -788,6 +754,11 @@ const MainMap = forwardRef(
         onDiffSection();
       }
     }, [changedSection, _calculateViewPort, onDiffSection]);
+    // [SPECIAL] auto scale to fit and center Chosen Section
+    useEffect(() => {
+      if (hasReset) handleResetSection();
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [hasReset]);
 
     // [START] [ADMIN] select all
     useEffect(() => {
@@ -856,8 +827,12 @@ const MainMap = forwardRef(
             isMinimap,
             handleReset,
             handleResetCallback: () => {
+              setHasReset(false);
               if (changedStage) setChangedStage(false);
-              handleResetSection();
+              if (chosenSection?.id) {
+                setHasResetSection(false);
+                handleResetSection();
+              }
             }, // important for admin
             handleZoomByFactor,
             setShowMinimap,
@@ -875,15 +850,21 @@ const MainMap = forwardRef(
           onTouchEnd={() => _calculateViewPort()}
           onDragEnd={() => _calculateViewPort()}
         >
-          <Layer listening={!isMinimap} ref={layerRef}>
+          <Layer
+            listening={!isMinimap}
+            ref={layerRef}
+            visible={
+              isMinimap ? true : chosenSection?.id ? hasResetSection : true
+            }
+          >
             {sections
-              // ?.filter((section) =>
-              //   isMinimap
-              //     ? true
-              //     : chosenSection?.id
-              //     ? section.id === chosenSection?.id
-              //     : true
-              // )
+              ?.filter((section) =>
+                isMinimap
+                  ? true
+                  : chosenSection?.id
+                  ? section.id === chosenSection?.id
+                  : true
+              )
               .map(renderSectionPaths)}
           </Layer>
           {!isMinimap && (
@@ -891,7 +872,13 @@ const MainMap = forwardRef(
               <Layer ref={viewLayerRef} x={0} y={0} listening={false}>
                 <Rect width={width} height={height} x={0} y={0} />
               </Layer>
-              <Layer ref={seatsLayerRef} clearBeforeDraw={false} />
+              <Layer
+                ref={seatsLayerRef}
+                clearBeforeDraw={false}
+                visible={
+                  isMinimap ? true : chosenSection?.id ? hasResetSection : true
+                }
+              />
             </>
           )}
         </Stage>
