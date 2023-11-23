@@ -181,6 +181,7 @@ const MainMap = forwardRef(
 
         // if the seat has NOT been selected
         if (!checkExisted) {
+          // TODO: check isAdmin again
           if (chosenSeatsRef.current.length > 0 && !isAdmin) {
             const diffSection =
               section.id !== chosenSeatsRef.current[0].section.id;
@@ -313,11 +314,158 @@ const MainMap = forwardRef(
       viewport.clearCache();
       _renderSectionSeats(newScale);
     }, [_renderSectionSeats]);
-    // [COMMON] handle handleReset
+    // [SPECIAL] handle reset chosen section
+    const handleResetSection = useCallback(() => {
+      const stage = stageRef.current;
+      const viewLayer = viewLayerRef.current;
+      if (!stage || !viewLayer || !chosenSection?.id) return;
+
+      // get chosen section Group corners from bakcground path
+      const sectionCorners = allSectionsRef.current[
+        chosenSection?.id
+      ].children[0].dataArray
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .map((item: any) => item.points)
+        .reduce(
+          (prev: { x: number[]; y: number[] }, item: [number, number]) => {
+            if (!item.length) return prev;
+            prev.x = [...prev.x, item[0]];
+            prev.y = [...prev.y, item[1]];
+            return prev;
+          },
+          { x: [], y: [] }
+        );
+
+      // sort x and y of corner coordinates from small to large
+      const sortedCornersData = {
+        x: sectionCorners.x
+          .sort((a: number, b: number) => a - b)
+          .map(Math.floor),
+        y: sectionCorners.y
+          .sort((a: number, b: number) => a - b)
+          .map(Math.floor),
+      };
+
+      /**               X   Y
+       * Top left:     min min
+       * Top right:    max min
+       * Bottom right: max max
+       * Bottom left:  min max
+       */
+      // create 4 corners object
+      const wrapCorners = {
+        topLeft: [sortedCornersData.x[0], sortedCornersData.y[0]],
+        topRight: [
+          sortedCornersData.x[sortedCornersData.x.length - 1],
+          sortedCornersData.y[0],
+        ],
+        bottomRight: [
+          sortedCornersData.x[sortedCornersData.x.length - 1],
+          sortedCornersData.y[sortedCornersData.y.length - 1],
+        ],
+        bottomLeft: [
+          sortedCornersData.x[0],
+          sortedCornersData.y[sortedCornersData.y.length - 1],
+        ],
+      };
+
+      // [IMPORTANT] wrap line to represent the correct Rect
+      const wrapLine = new Shapes.Line({
+        points: [...Object.values(wrapCorners).flat(Infinity)],
+        closed: true,
+        // stroke: "yellow",
+        // strokeWidth: 3,
+        // fill: "#1288F340",
+      });
+
+      // const allCornersPoints = [
+      //   ...allSectionsRef.current[chosenSection?.id].children[0].dataArray.map(
+      //     // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      //     (item: any) => item.points
+      //   ),
+      // ];
+      // layerRef.current?.add(wrapLine);
+      // allCornersPoints.forEach((point) => {
+      //   return layerRef.current?.add(
+      //     new Shapes.Circle({
+      //       x: point[0],
+      //       y: point[1],
+      //       radius: 5,
+      //       fill: "cyan",
+      //     })
+      //   );
+      // });
+
+      // [TESTING] print all the needed values to compute scaling and postions
+      // console.log({
+      //   allSectionGroups: allSectionsRef.current,
+      //   wrapCorners,
+      //   wrapToStage: wrapLine.getClientRect({
+      //     relativeTo: stage,
+      //   }),
+      //   wrapSelTest: {
+      //     x: wrapCorners.topLeft[0],
+      //     y: wrapCorners.topLeft[1],
+      //     width: wrapCorners.topRight[0] - wrapCorners.topLeft[0],
+      //     height: wrapCorners.bottomLeft[1] - wrapCorners.topLeft[1],
+      //   },
+      // });
+
+      // initial relocate stage before auto zoom in
+      const wrapLineRect = wrapLine.getClientRect({
+        relativeTo: stage,
+      });
+      const SCALE_PER_FRAME = 1.1;
+      const PADDING_TOPLEFT = 6; // min = 1
+      stage.position({
+        x:
+          -wrapLineRect.x * stage.scaleX() +
+          viewLayer?.width() / PADDING_TOPLEFT,
+        y:
+          -wrapLineRect.y * stage.scaleX() +
+          viewLayer?.height() / (PADDING_TOPLEFT * 2),
+      });
+
+      // calculate the number of auto iteration frames for scale to fit and center
+      let count = 0;
+      let beginScale = stage.scaleX();
+      let percent = Math.round(
+        (beginScale / (maxDynamic[maxDynamic.length - 1] * initScale)) * 100
+      );
+      while (percent < 30) {
+        beginScale *= SCALE_PER_FRAME;
+        percent = Math.round(
+          (beginScale / (maxDynamic[maxDynamic.length - 1] * initScale)) * 100
+        );
+        count++;
+      }
+
+      // apply dynamic count to scale to fit and center chosen section
+      for (let i = 1; i <= count; i++) {
+        setTimeout(() => {
+          stage.scale({
+            x: stage.scaleX() * SCALE_PER_FRAME,
+            y: stage.scaleX() * SCALE_PER_FRAME,
+          });
+
+          const partialWidth = viewLayer?.width() / PADDING_TOPLEFT;
+          const partialHeight = viewLayer?.height() / (PADDING_TOPLEFT * 2);
+          stage.position({
+            // duration: 0.5, // if using to()
+            x: -wrapLineRect.x * stage.scaleX() + partialWidth,
+            y: -wrapLineRect.y * stage.scaleX() + partialHeight,
+          });
+        }, 30 * i); // 30: change this if need
+
+        setTimeout(() => {
+          _calculateViewPort();
+        }, 30 * (count + 1.5));
+      }
+    }, [_calculateViewPort, chosenSection?.id, initScale]);
+    // [COMMON] handle handle reset
     const handleReset = useCallback(() => {
       const stage = stageRef.current;
-      const layer = layerRef.current;
-      if (stage && layer) {
+      if (stage) {
         // stage dimensions
         const stageW = stage.width();
         const stageH = stage.height();
@@ -355,10 +503,10 @@ const MainMap = forwardRef(
           }
           setInitScale(newScale);
         }
+
         _calculateViewPort();
       }
     }, [_calculateViewPort, sectionsViewbox]);
-
     // [COMMON] handle zoom by button
     const _getLimitedNewScale = (newScale: number, oldScale: number) =>
       _limitedNewScale({
@@ -609,13 +757,17 @@ const MainMap = forwardRef(
     // [COMMON] auto scale and center the all sections map
     // [MOBILE] force prevent default
     useEffect(() => {
+      // reset sections layer
+      if (mounted && sectionsViewbox) {
+        handleReset();
+      }
+    }, [handleReset, handleResetSection, mounted, sectionsViewbox]);
+    useEffect(() => {
       // set true for hydration
       if (!mounted) {
         setMounted(true);
         return;
       }
-      // reset sections layer
-      handleReset();
       // function to prevent default behavior for touchmove events
       const preventDefault = (e: TouchEvent) => {
         // check if it's a one-finger touch event
@@ -627,7 +779,7 @@ const MainMap = forwardRef(
       });
       // cleanup the event listener when the component unmounts
       return () => document.removeEventListener("touchmove", preventDefault);
-    }, [allSeats, handleReset, mounted]);
+    }, [allSeats, mounted]);
     // [COMMON] detect if different seats from different section has been selected
     useEffect(() => {
       if (changedSection) {
@@ -705,86 +857,7 @@ const MainMap = forwardRef(
             handleReset,
             handleResetCallback: () => {
               if (changedStage) setChangedStage(false);
-
-              const stage = stageRef.current;
-              if (!stage) return;
-              const sectionCorners =
-                allSectionsRef.current[168].children[0].dataArray
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  .map((item: any) => item.points)
-                  .reduce(
-                    (
-                      prev: { x: number[]; y: number[] },
-                      item: [number, number]
-                    ) => {
-                      if (!item.length) return prev;
-                      prev.x = [...prev.x, item[0]];
-                      prev.y = [...prev.y, item[1]];
-                      return prev;
-                    },
-                    { x: [], y: [] }
-                  );
-
-              const sortedCornersData = {
-                x: sectionCorners.x.sort((a: number, b: number) => a - b),
-                y: sectionCorners.y.sort((a: number, b: number) => a - b),
-              };
-
-              /**               X   Y
-               * Top left:     min min
-               * Top right:    max min
-               * Bottom right: max max
-               * Bottom left:  min max
-               */
-              const realRect = {
-                topLeft: [sortedCornersData.x[0], sortedCornersData.y[0]],
-                topRight: [
-                  sortedCornersData.x[sortedCornersData.x.length - 1],
-                  sortedCornersData.y[0],
-                ],
-                bottomRight: [
-                  sortedCornersData.x[sortedCornersData.x.length - 1],
-                  sortedCornersData.y[sortedCornersData.y.length - 1],
-                ],
-                bottomLeft: [
-                  sortedCornersData.x[0],
-                  sortedCornersData.y[sortedCornersData.y.length - 1],
-                ],
-              };
-
-              const realRectWrap = new Shapes.Line({
-                points: [...Object.values(realRect).flat(Infinity)],
-                stroke: "yellow",
-                strokeWidth: 3,
-                fill: "#1288F340",
-                closed: true,
-              });
-
-              const allCornersPoints = [
-                ...allSectionsRef.current[168].children[0].dataArray.map(
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  (item: any) => item.points
-                ),
-              ];
-              layerRef.current?.add(realRectWrap);
-              allCornersPoints.forEach((point) => {
-                return layerRef.current?.add(
-                  new Shapes.Circle({
-                    x: point[0],
-                    y: point[1],
-                    radius: 5,
-                    fill: "cyan",
-                  })
-                );
-              });
-
-              console.log({
-                allSectionGroups: allSectionsRef.current,
-                realRect,
-                realRectWrap: realRectWrap.getClientRect({
-                  relativeTo: stage,
-                }),
-              });
+              handleResetSection();
             }, // important for admin
             handleZoomByFactor,
             setShowMinimap,
@@ -803,7 +876,15 @@ const MainMap = forwardRef(
           onDragEnd={() => _calculateViewPort()}
         >
           <Layer listening={!isMinimap} ref={layerRef}>
-            {sections?.map(renderSectionPaths)}
+            {sections
+              // ?.filter((section) =>
+              //   isMinimap
+              //     ? true
+              //     : chosenSection?.id
+              //     ? section.id === chosenSection?.id
+              //     : true
+              // )
+              .map(renderSectionPaths)}
           </Layer>
           {!isMinimap && (
             <>

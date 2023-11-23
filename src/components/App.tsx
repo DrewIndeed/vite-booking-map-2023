@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
 import { getAdminShowing, getMap, getSections } from "@lib/fetching";
 import { useData } from "@store/useData";
@@ -13,12 +13,12 @@ const App = () => {
   const saveData = useData(({ saveData }) => saveData);
 
   // refs
-  // any for a reason
+  // use 'any' for a reason
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const mainMapRef = useRef<any>();
 
   // states
-  const [isSelectAll, setIsSelectAll] = useState(false);
+  // const [isSelectAll, setIsSelectAll] = useState(false);
 
   // effects
   useEffect(() => {
@@ -42,10 +42,10 @@ const App = () => {
   return (
     <div style={{ position: "relative" }}>
       <MainMap
-        // ref={mainMapRef} // MUST FOR ADMIN
+        ref={mainMapRef} // MUST FOR ADMIN
         role="web" // SHOULD
-        width={615} // 725, 375 // MUST
-        height={550} // 675, 635 // MUST
+        width={500} // 725, 375 // MUST
+        height={500} // 675, 635 // MUST
         sections={data?.adminSections} // MUST
         sectionsViewbox={data?.viewbox} // MUST
         zoomSpeed={1.1}
@@ -106,6 +106,7 @@ export default App;
  * 3.3   [ADMIN] Seat select all data ✅
  * 3.3.1 [BUG - ADMIN] Handle deselect seats after select all ✅
  * 3.3.2 [BUG - ADMIN] Handle select seats normally before select all ✅
+ *
  * 3.4   [ADMIN] Handle clear all selections
  * 4.    [ADMIN] Seat select by row
  * 5.    [ADMIN] Toggle Available seats
@@ -113,4 +114,7 @@ export default App;
  * 7.    [ADMIN] Toggle Disabled seats
  * 8.    [ADMIN] Handle sections hover and clicked
  * 9.    [USERS] [MOBILE] Post messages
+ *
+ * 10.   [USERS] Auto scale to fit and center Chosen Section ✅
+ * 11.   [ALL] Handle correct interactions for each role
  */
