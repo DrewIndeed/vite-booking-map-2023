@@ -217,14 +217,7 @@ export const renderSectionRows = (section: any, others: any[]) => {
         }
         newSeatGroup.on(role === "mobile" ? "touchend" : "click", () => {
           if (!stageRef.current.isDragging() && !noEvent) {
-            _renderSeatClicked(
-              section,
-              row,
-              seat,
-              newSeatCircle,
-              newSeatText,
-              isAdmin
-            );
+            _renderSeatClicked(section, row, seat, newSeatCircle, isAdmin);
           }
         });
         // --- HANDLE SEAT EVENTS ---

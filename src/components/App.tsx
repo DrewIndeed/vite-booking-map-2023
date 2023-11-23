@@ -51,9 +51,10 @@ const App = () => {
         zoomSpeed={1.1}
         // [METHODS]
         onSelectSeat={(data) => console.log({ data })}
+        onSelectSection={(data) => console.log({ data })}
         onDiffSection={() => console.log("Changed section!")}
         // [SPECIFIC SECTION]
-        chosenSection={data?.chosenSection}
+        // chosenSection={data?.chosenSection}
         // [ADMIN]
         // useSelectAll={(initVal: boolean) => [
         //   isSelectAll,
@@ -68,7 +69,7 @@ const App = () => {
             sections={data?.adminSections} // MUST
             sectionsViewbox={data?.viewbox} // MUST
             // [SPECIFIC SECTION]
-            chosenSection={data?.chosenSection}
+            // chosenSection={data?.chosenSection}
           />
         }
       />
@@ -116,5 +117,6 @@ export default App;
  * 9.    [USERS] [MOBILE] Post messages
  *
  * 10.   [USERS] Auto scale to fit and center Chosen Section ✅
- * 11.   [ALL] Handle correct interactions for each role
+ * 11.   [ALL] Handle correct interactions for each role ✅
+ * 12.   [USERS] Section click event to grab section data ✅
  */

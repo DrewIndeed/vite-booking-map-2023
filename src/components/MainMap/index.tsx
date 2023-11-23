@@ -65,6 +65,7 @@ type MainMapProps = {
 
   // methods
   onSelectSeat?: (arg0: ChosenSeat[]) => void;
+  onSelectSection?: (arg0: Section) => void;
   onDiffSection?: () => void;
 
   // admin
@@ -93,6 +94,7 @@ const MainMap = forwardRef(
 
       // methods
       onSelectSeat = () => {},
+      onSelectSection = () => {},
       onDiffSection = () => {},
 
       // admin
@@ -228,7 +230,16 @@ const MainMap = forwardRef(
         const viewport = viewLayerRef?.current;
         const seatsLayer = seatsLayerRef?.current;
 
-        if (!stage || !viewport || !seatsLayer || !chosenSeatsRef.current)
+        // TEMP: if it is all sections view
+        const isAllSectionView = !chosenSection?.id;
+
+        if (
+          !stage ||
+          !viewport ||
+          !seatsLayer ||
+          !chosenSeatsRef.current ||
+          isAllSectionView
+        )
           return;
         seatsLayer.destroyChildren(); // clear current seats
 
@@ -477,6 +488,7 @@ const MainMap = forwardRef(
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [sectionsViewbox]);
+
     // [COMMON] handle zoom by button
     const _getLimitedNewScale = (newScale: number, oldScale: number) =>
       _limitedNewScale({
@@ -539,6 +551,8 @@ const MainMap = forwardRef(
           key={`sections-${renderId}`}
           onMouseEnter={_onMouseEnter}
           onMouseLeave={_onMouseLeave}
+          onClick={() => !section.isStage && onSelectSection(section)}
+          onTouchEnd={() => !section.isStage && onSelectSection(section)}
           perfectDrawEnabled={false}
         >
           {elements?.map(
@@ -850,6 +864,11 @@ const MainMap = forwardRef(
           onTouchEnd={() => _calculateViewPort()}
           onDragEnd={() => _calculateViewPort()}
         >
+          {!isMinimap && (
+            <Layer ref={viewLayerRef} x={0} y={0} listening={false}>
+              <Rect width={width} height={height} x={0} y={0} />
+            </Layer>
+          )}
           <Layer
             listening={!isMinimap}
             ref={layerRef}
@@ -868,18 +887,13 @@ const MainMap = forwardRef(
               .map(renderSectionPaths)}
           </Layer>
           {!isMinimap && (
-            <>
-              <Layer ref={viewLayerRef} x={0} y={0} listening={false}>
-                <Rect width={width} height={height} x={0} y={0} />
-              </Layer>
-              <Layer
-                ref={seatsLayerRef}
-                clearBeforeDraw={false}
-                visible={
-                  isMinimap ? true : chosenSection?.id ? hasResetSection : true
-                }
-              />
-            </>
+            <Layer
+              ref={seatsLayerRef}
+              clearBeforeDraw={false}
+              visible={
+                isMinimap ? true : chosenSection?.id ? hasResetSection : true
+              }
+            />
           )}
         </Stage>
       </div>
