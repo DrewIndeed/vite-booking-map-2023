@@ -497,6 +497,7 @@ const MainMap = forwardRef(
         newScale,
         oldScale,
         maxDynamic,
+        hasChosenSection: !!chosenSection?.id,
       });
     const handleZoomByFactor = (factor: number) => {
       const stage = stageRef.current;

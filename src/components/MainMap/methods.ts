@@ -14,6 +14,7 @@ type LimitedNewScale = {
   newScale: number;
   oldScale: number;
   maxDynamic: number[];
+  hasChosenSection: boolean;
 };
 export const _limitedNewScale = ({
   role,
@@ -21,15 +22,21 @@ export const _limitedNewScale = ({
   newScale,
   oldScale,
   maxDynamic,
+  hasChosenSection,
 }: LimitedNewScale) => {
   const maxDynamicFinal = maxDynamic[maxDynamic.length - 1];
   // apply min and max values for scaling
   if (
     newScale <= oldScale &&
-    newScale <= initScale * (maxDynamicFinal / (maxDynamicFinal + 2))
+    newScale <=
+      (hasChosenSection
+        ? 1
+        : initScale * (maxDynamicFinal / (maxDynamicFinal + 2)))
   ) {
     return {
-      value: initScale * (maxDynamicFinal / (maxDynamicFinal + 2)),
+      value: hasChosenSection
+        ? 1
+        : initScale * (maxDynamicFinal / (maxDynamicFinal + 2)),
       reached: true,
     };
   }
