@@ -54,7 +54,7 @@ const App = () => {
         onSelectSection={(data) => console.log({ data })}
         onDiffSection={() => console.log("Changed section!")}
         // [SPECIFIC SECTION]
-        // chosenSection={data?.chosenSection}
+        chosenSection={data?.chosenSection}
         // [ADMIN]
         // useSelectAll={(initVal: boolean) => [
         //   isSelectAll,
@@ -69,7 +69,7 @@ const App = () => {
             sections={data?.adminSections} // MUST
             sectionsViewbox={data?.viewbox} // MUST
             // [SPECIFIC SECTION]
-            // chosenSection={data?.chosenSection}
+            chosenSection={data?.chosenSection}
           />
         }
       />
