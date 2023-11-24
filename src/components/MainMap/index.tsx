@@ -571,8 +571,6 @@ const MainMap = forwardRef(
       };
       const { elements, ticketType, isStage, id: renderId } = section;
 
-      const commonClick =
-        !section.isStage && !chosenSection?.id && onSelectSection(section);
       return (
         <Group
           ref={(ref) => {
@@ -582,8 +580,16 @@ const MainMap = forwardRef(
           key={`sections-${renderId}`}
           onMouseEnter={_onMouseEnter}
           onMouseLeave={_onMouseLeave}
-          onClick={() => commonClick}
-          onTouchEnd={() => commonClick}
+          onClick={() =>
+            !section.isStage && !chosenSection?.id
+              ? onSelectSection(section)
+              : () => {}
+          }
+          onTouchEnd={() =>
+            !section.isStage && !chosenSection?.id
+              ? onSelectSection(section)
+              : () => {}
+          }
           perfectDrawEnabled={false}
         >
           {elements?.map(

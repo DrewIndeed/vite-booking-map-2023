@@ -51,7 +51,7 @@ const App = () => {
         zoomSpeed={1.1}
         // [METHODS]
         onSelectSeat={(data) => console.log({ data })}
-        onSelectSection={(data) => console.log({ data })}
+        onSelectSection={(sectionData) => console.log({ sectionData })}
         onDiffSection={() => console.log("Changed section!")}
         // [SPECIFIC SECTION]
         chosenSection={data?.chosenSection}
@@ -119,4 +119,5 @@ export default App;
  * 10.   [USERS] Auto scale to fit and center Chosen Section ✅
  * 11.   [ALL] Handle correct interactions for each role ✅
  * 12.   [USERS] Section click event to grab section data ✅
+ * 13.   [USERS] Denoubce reset chosen section auto reset
  */
