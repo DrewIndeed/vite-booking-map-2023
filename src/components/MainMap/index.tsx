@@ -386,6 +386,9 @@ const MainMap = forwardRef(
       const wrapLine = new Shapes.Line({
         points: [...Object.values(wrapCorners).flat(Infinity)],
         closed: true,
+        stroke: "yellow",
+        strokeWidth: 3,
+        fill: "#1288F340",
       });
 
       // initial relocate stage before auto zoom in
@@ -403,13 +406,31 @@ const MainMap = forwardRef(
           viewLayer?.height() / (PADDING_TOPLEFT * 2),
       });
 
+      // const allCornersPoints = [
+      //   ...allSectionsRef.current[chosenSection?.id].children[0].dataArray.map(
+      //     // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      //     (item: any) => item.points
+      //   ),
+      // ];
+      // layerRef.current?.add(wrapLine);
+      // allCornersPoints.forEach((point) => {
+      //   return layerRef.current?.add(
+      //     new Shapes.Circle({
+      //       x: point[0],
+      //       y: point[1],
+      //       radius: 5,
+      //       fill: "cyan",
+      //     })
+      //   );
+      // });
+
       // calculate the number of auto iteration frames for scale to fit and center
       let count = 0;
       let beginScale = stage.scaleX();
       let percent = Math.round(
         (beginScale / (maxDynamic[maxDynamic.length - 1] * initScale)) * 100
       );
-      while (percent < 30) {
+      while (percent < 25) {
         beginScale *= SCALE_PER_FRAME;
         percent = Math.round(
           (beginScale / (maxDynamic[maxDynamic.length - 1] * initScale)) * 100
@@ -425,21 +446,27 @@ const MainMap = forwardRef(
             y: stage.scaleX() * SCALE_PER_FRAME,
           });
 
-          const partialWidth = viewLayer?.width() / PADDING_TOPLEFT;
-          const partialHeight = viewLayer?.height() / (PADDING_TOPLEFT * 2);
+          const partialWidth = viewLayer?.width() / 2;
+          const partialHeight = viewLayer?.height() / 2;
           stage.position({
             // duration: 0.5, // if using to()
-            x: -wrapLineRect.x * stage.scaleX() + partialWidth,
-            y: -wrapLineRect.y * stage.scaleX() + partialHeight,
+            x:
+              -wrapLineRect.x * stage.scaleX() +
+              partialWidth -
+              (wrapLineRect.width * stage.scaleX()) / 2,
+            y:
+              -wrapLineRect.y * stage.scaleX() +
+              partialHeight -
+              (wrapLineRect.height * stage.scaleX()) / 2,
           });
         }, 10 * i); // 10: change this if need
-
-        // redraw seats and update reset section status
-        setTimeout(() => {
-          _calculateViewPort();
-          setHasResetSection(true);
-        }, 10 * (count + 1.5));
       }
+
+      // redraw seats and update reset section status
+      setTimeout(() => {
+        _calculateViewPort();
+        setHasResetSection(true);
+      }, 10 * (count + 1.5));
     }, [_calculateViewPort, chosenSection?.id, initScale]);
     // [COMMON] handle handle reset
     const handleReset = useCallback(() => {

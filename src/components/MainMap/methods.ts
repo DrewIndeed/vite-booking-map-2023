@@ -28,15 +28,10 @@ export const _limitedNewScale = ({
   // apply min and max values for scaling
   if (
     newScale <= oldScale &&
-    newScale <=
-      (hasChosenSection
-        ? 1
-        : initScale * (maxDynamicFinal / (maxDynamicFinal + 2)))
+    newScale <= initScale * (maxDynamicFinal / (maxDynamicFinal + 2))
   ) {
     return {
-      value: hasChosenSection
-        ? 1
-        : initScale * (maxDynamicFinal / (maxDynamicFinal + 2)),
+      value: initScale * (maxDynamicFinal / (maxDynamicFinal + 2)),
       reached: true,
     };
   }
