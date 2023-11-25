@@ -50,6 +50,7 @@ const Buttons = ({
               content: tooltip?.[key]?.content || defaultContent,
               place: tooltip?.[key]?.place || "",
             }}
+            debounceValue={key === "reset" ? 200 : 0}
             onClick={() => {
               switch (key) {
                 case "plus":

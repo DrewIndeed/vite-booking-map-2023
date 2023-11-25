@@ -395,7 +395,7 @@ const MainMap = forwardRef(
       const wrapLineRect = wrapLine.getClientRect({
         relativeTo: stage,
       });
-      const SCALE_PER_FRAME = 1.1;
+      const SCALE_PER_FRAME = 1.5;
       const PADDING_TOPLEFT = 6; // min = 1
       stage.position({
         x:
@@ -459,14 +459,14 @@ const MainMap = forwardRef(
               partialHeight -
               (wrapLineRect.height * stage.scaleX()) / 2,
           });
-        }, 10 * i); // 10: change this if need
+        }, 50 * i); // 10: change this if need
       }
 
       // redraw seats and update reset section status
       setTimeout(() => {
         _calculateViewPort();
         setHasResetSection(true);
-      }, 10 * (count + 1.5));
+      }, 50 * (count + 1.5));
     }, [_calculateViewPort, chosenSection?.id, initScale]);
     // [COMMON] handle handle reset
     const handleReset = useCallback(() => {
@@ -552,7 +552,8 @@ const MainMap = forwardRef(
         stage.position(newPos);
         stage.batchDraw(); // or stage.clearCache() depending on use-case
         if (!changedStage) setChangedStage(true);
-        debounce(() => _calculateViewPort(), 100)();
+        const dbCalViewPort = debounce(() => _calculateViewPort(), 50);
+        dbCalViewPort();
       }
     };
     // [COMMON] render sections
@@ -675,7 +676,8 @@ const MainMap = forwardRef(
         stage.position(newPos);
         stage.clearCache();
         if (!changedStage) setChangedStage(true);
-        debounce(() => _calculateViewPort(), 100)();
+        const dbCalViewPort = debounce(() => _calculateViewPort(), 50);
+        dbCalViewPort();
       }
     };
     // [MOBILE] handle when fingers start to touch
@@ -766,7 +768,8 @@ const MainMap = forwardRef(
         // reflect changes
         stage.batchDraw();
         stage.clearCache();
-        debounce(() => _calculateViewPort(), 100)();
+        const dbCalViewPort = debounce(() => _calculateViewPort(), 50);
+        dbCalViewPort();
 
         // Update last known distance and center point
         lastDist.current = newDist;

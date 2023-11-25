@@ -1,3 +1,4 @@
+import { debounce } from "@lib/utils";
 import { useState } from "react";
 import { type PlacesType } from "react-tooltip";
 
@@ -8,6 +9,7 @@ type ButtonProps = {
   isToggle?: boolean;
   disabled?: boolean;
   onClick: () => void;
+  debounceValue?: number;
 };
 const Button = ({
   tooltip = { content: "", place: "right-start" },
@@ -16,6 +18,7 @@ const Button = ({
   isToggle = false,
   disabled = false,
   onClick,
+  debounceValue = 0,
 }: ButtonProps) => {
   const [isClicked, setIsClicked] = useState(false);
   const handleOnClick = () => {
@@ -29,7 +32,7 @@ const Button = ({
       data-tooltip-place={tooltip.place || "right-start"}
       className={`${disabled && "disabled"}`}
       style={{ cursor: disabled ? "not-allowed" : "pointer" }}
-      onClick={handleOnClick}
+      onClick={debounce(handleOnClick, debounceValue || 100)}
     >
       {!isToggle && Icon !== null ? <Icon /> : null}
       {isToggle &&
