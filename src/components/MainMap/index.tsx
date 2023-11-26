@@ -881,7 +881,7 @@ const MainMap = forwardRef(
     ]);
     // handle clear all data
     useEffect(() => {
-      if (isClearAll && allSeats.length > 0) {
+      if (isClearAll && allSeats.length && chosenSeatsRef.current.length) {
         chosenSeatsRef.current = [];
         _calculateViewPort();
         setIsSelectAll(false);
@@ -898,8 +898,19 @@ const MainMap = forwardRef(
     ]);
     // handle select row data
     useEffect(() => {
-      if (isSelectRow && allSeats.length > 0) {
-        chosenSeatsRef.current = [];
+      if (isSelectRow && allSeats.length && chosenSeatsRef.current.length) {
+        const chosenSeats = chosenSeatsRef.current;
+        const allSelectedRows = [
+          ...new Set(chosenSeats.map((seat: ChosenSeat) => seat.row.id)),
+        ];
+        const filterByRows = allSeats.filter((seat: ChosenSeat) =>
+          allSelectedRows.includes(seat.row.id)
+        );
+        const filterByStatus = filterByRows.filter(
+          (seat: ChosenSeat) =>
+            seat.status === 1 || (role === "admin" && seat.status === 2)
+        );
+        chosenSeatsRef.current = [...filterByStatus];
         _calculateViewPort();
         setIsSelectRow(false);
         setIsSelectAll(false);
@@ -907,8 +918,9 @@ const MainMap = forwardRef(
       }
     }, [
       _calculateViewPort,
-      allSeats.length,
+      allSeats,
       isSelectRow,
+      role,
       setIsClearAll,
       setIsSelectAll,
       setIsSelectRow,

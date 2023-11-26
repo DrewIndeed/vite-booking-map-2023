@@ -133,11 +133,12 @@ export default App;
  * 3.3.2 [BUG - ADMIN] Handle select seats normally before select all ✅
  *
  * 3.4   [ADMIN] Handle clear all selections ✅
- * 4.    [ADMIN] Seat select by row
+ * 4.    [ADMIN] Seat select by row ✅
+ * 8.    [ADMIN] Handle sections hover and clicked ✅
+ *
  * 5.    [ADMIN] Toggle Available seats
  * 6.    [ADMIN] Toggle Ordered seats
  * 7.    [ADMIN] Toggle Disabled seats
- * 8.    [ADMIN] Handle sections hover and clicked ✅
  * 9.    [USERS] [MOBILE] Post messages
  *
  * 10.   [USERS] Auto scale to fit and center Chosen Section ✅
