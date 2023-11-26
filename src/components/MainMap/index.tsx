@@ -247,7 +247,13 @@ const MainMap = forwardRef(
         const seatsLayer = seatsLayerRef?.current;
 
         // if it is all sections view
-        if (!stage || !viewport || !seatsLayer || !chosenSeatsRef.current)
+        if (
+          !stage ||
+          !viewport ||
+          !seatsLayer ||
+          !chosenSeatsRef.current ||
+          (role !== "admin" && !chosenSection?.id)
+        )
           return;
         seatsLayer.destroyChildren(); // clear current seats
 

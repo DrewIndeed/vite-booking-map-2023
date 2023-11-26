@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
 import { getAdminShowing, getMap, getSections } from "@lib/fetching";
 import { useData } from "@store/useData";
@@ -18,12 +18,12 @@ const App = () => {
   const mainMapRef = useRef<any>();
 
   // states
-  const [isSelectAll, setIsSelectAll] = useState(false);
-  const [isClearAll, setIsClearAll] = useState(false);
-  const [isSelectRow, setIsSelectRow] = useState(false);
-  const [isShowAvailable, setIsShowAvailable] = useState(true);
-  const [isShowOrdered, setIsShowOrdered] = useState(true);
-  const [isShowDisabled, setIsShowDisabled] = useState(true);
+  // const [isSelectAll, setIsSelectAll] = useState(false);
+  // const [isClearAll, setIsClearAll] = useState(false);
+  // const [isSelectRow, setIsSelectRow] = useState(false);
+  // const [isShowAvailable, setIsShowAvailable] = useState(true);
+  // const [isShowOrdered, setIsShowOrdered] = useState(true);
+  // const [isShowDisabled, setIsShowDisabled] = useState(true);
 
   // effects
   useEffect(() => {
@@ -59,7 +59,7 @@ const App = () => {
         onSelectSection={(sectionData) => console.log({ sectionData })}
         onDiffSection={() => console.log("Changed section!")}
         // [SPECIFIC SECTION]
-        chosenSection={data?.chosenSection}
+        // chosenSection={data?.chosenSection}
         // [ADMIN]
         // previous info of stage when selection happened
         // prevStageInfos={mainMapRef?.current?.getStageInfo()} // MUST
@@ -100,43 +100,48 @@ const App = () => {
             sections={data?.adminSections} // MUST
             sectionsViewbox={data?.viewbox} // MUST
             // [SPECIFIC SECTION]
-            chosenSection={data?.chosenSection}
+            // chosenSection={data?.chosenSection}
           />
         }
       />
-      <button
-        style={{ cursor: "pointer" }}
-        onClick={() => setIsSelectAll(true)}
-      >
-        Select All
-      </button>
-      <button style={{ cursor: "pointer" }} onClick={() => setIsClearAll(true)}>
-        Clear All
-      </button>
-      <button
-        style={{ cursor: "pointer" }}
-        onClick={() => setIsSelectRow(true)}
-      >
-        Select Row
-      </button>
-      <button
-        style={{ cursor: "pointer" }}
-        onClick={() => setIsShowAvailable((prev) => !prev)}
-      >
-        Toggle Available
-      </button>
-      <button
-        style={{ cursor: "pointer" }}
-        onClick={() => setIsShowOrdered((prev) => !prev)}
-      >
-        Toggle Ordered
-      </button>
-      <button
-        style={{ cursor: "pointer" }}
-        onClick={() => setIsShowDisabled((prev) => !prev)}
-      >
-        Toggle Disabled
-      </button>
+      {/* <>
+        <button
+          style={{ cursor: "pointer" }}
+          onClick={() => setIsSelectAll(true)}
+        >
+          Select All
+        </button>
+        <button
+          style={{ cursor: "pointer" }}
+          onClick={() => setIsClearAll(true)}
+        >
+          Clear All
+        </button>
+        <button
+          style={{ cursor: "pointer" }}
+          onClick={() => setIsSelectRow(true)}
+        >
+          Select Row
+        </button>
+        <button
+          style={{ cursor: "pointer" }}
+          onClick={() => setIsShowAvailable((prev) => !prev)}
+        >
+          Toggle Available
+        </button>
+        <button
+          style={{ cursor: "pointer" }}
+          onClick={() => setIsShowOrdered((prev) => !prev)}
+        >
+          Toggle Ordered
+        </button>
+        <button
+          style={{ cursor: "pointer" }}
+          onClick={() => setIsShowDisabled((prev) => !prev)}
+        >
+          Toggle Disabled
+        </button>
+      </> */}
     </div>
   );
 };
