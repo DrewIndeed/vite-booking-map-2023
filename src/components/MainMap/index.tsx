@@ -247,14 +247,7 @@ const MainMap = forwardRef(
         const seatsLayer = seatsLayerRef?.current;
 
         // if it is all sections view
-        const isAllSectionView = role === "admin" || !chosenSection;
-        if (
-          !stage ||
-          !viewport ||
-          !seatsLayer ||
-          !chosenSeatsRef.current ||
-          !isAllSectionView
-        )
+        if (!stage || !viewport || !seatsLayer || !chosenSeatsRef.current)
           return;
         seatsLayer.destroyChildren(); // clear current seats
 
@@ -961,7 +954,6 @@ const MainMap = forwardRef(
       _calculateViewPort();
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isShowAvailable, isShowOrdered, isShowDisabled]);
-
     // [END] [ADMIN] selection
 
     // if not hydrated and no sections

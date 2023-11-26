@@ -142,9 +142,9 @@ export const renderSectionRows = (section: any, others: any[]) => {
   const [
     role,
     isSelectAll,
-    isShowAvailable,
-    isShowOrdered,
-    isShowDisabled,
+    isShowAvailable = true,
+    isShowOrdered = true,
+    isShowDisabled = true,
     newScale,
     { x1, x2, y1, y2 },
     { seatGroup, seatCircle, seatText },
@@ -164,9 +164,12 @@ export const renderSectionRows = (section: any, others: any[]) => {
       const isAdmin = role === "admin";
       const noEvent = !section.ticketType || notAllowed;
       const isPrevSelected = seat.status === 3 && role === "web";
-      const hideAvailable = seat.status === 1 && !isShowAvailable;
-      const hideOrdered = seat.status === 4 && !isShowOrdered;
-      const hideDisabled = seat.status === 2 && !isShowDisabled;
+      const hideAvailable =
+        seat.status === 1 && !isShowAvailable && role === "admin";
+      const hideOrdered =
+        seat.status === 4 && !isShowOrdered && role === "admin";
+      const hideDisabled =
+        seat.status === 2 && !isShowDisabled && role === "admin";
       if (seat.x >= x1 && seat.x <= x2 && seat.y >= y1 && seat.y <= y2) {
         if (hideAvailable || hideOrdered || hideDisabled) return;
         // --- CREATE SEAT UI ---

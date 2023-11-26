@@ -48,7 +48,7 @@ const App = () => {
     <div style={{ position: "relative" }}>
       <MainMap
         ref={mainMapRef} // MUST FOR ADMIN
-        role="admin" // SHOULD
+        role="web" // SHOULD
         width={500} // 725, 375 // MUST
         height={500} // 675, 635 // MUST
         sections={data?.adminSections} // MUST
@@ -59,48 +59,48 @@ const App = () => {
         onSelectSection={(sectionData) => console.log({ sectionData })}
         onDiffSection={() => console.log("Changed section!")}
         // [SPECIFIC SECTION]
-        // chosenSection={data?.chosenSection}
+        chosenSection={data?.chosenSection}
         // [ADMIN]
         // previous info of stage when selection happened
-        prevStageInfos={mainMapRef?.current?.getStageInfo()} // MUST
-        // select all
-        useSelectAll={(initVal: boolean) => [
-          isSelectAll,
-          (newVal: boolean) => setIsSelectAll(newVal || initVal),
-        ]}
-        // clear all
-        useClearAll={(initVal: boolean) => [
-          isClearAll,
-          (newVal: boolean) => setIsClearAll(newVal || initVal),
-        ]}
-        // select row
-        useSelectRow={(initVal: boolean) => [
-          isSelectRow,
-          (newVal: boolean) => setIsSelectRow(newVal || initVal),
-        ]}
-        // toggle display types of seats
-        useShowAvailable={(initVal: boolean) => [
-          isShowAvailable,
-          (newVal: boolean) => setIsShowAvailable(newVal || initVal),
-        ]}
-        useShowOrdered={(initVal: boolean) => [
-          isShowOrdered,
-          (newVal: boolean) => setIsShowOrdered(newVal || initVal),
-        ]}
-        useShowDisabled={(initVal: boolean) => [
-          isShowDisabled,
-          (newVal: boolean) => setIsShowDisabled(newVal || initVal),
-        ]}
+        // prevStageInfos={mainMapRef?.current?.getStageInfo()} // MUST
+        // // select all
+        // useSelectAll={(initVal: boolean) => [
+        //   isSelectAll,
+        //   (newVal: boolean) => setIsSelectAll(newVal || initVal),
+        // ]}
+        // // clear all
+        // useClearAll={(initVal: boolean) => [
+        //   isClearAll,
+        //   (newVal: boolean) => setIsClearAll(newVal || initVal),
+        // ]}
+        // // select row
+        // useSelectRow={(initVal: boolean) => [
+        //   isSelectRow,
+        //   (newVal: boolean) => setIsSelectRow(newVal || initVal),
+        // ]}
+        // // toggle display types of seats
+        // useShowAvailable={(initVal: boolean) => [
+        //   isShowAvailable,
+        //   (newVal: boolean) => setIsShowAvailable(newVal || initVal),
+        // ]}
+        // useShowOrdered={(initVal: boolean) => [
+        //   isShowOrdered,
+        //   (newVal: boolean) => setIsShowOrdered(newVal || initVal),
+        // ]}
+        // useShowDisabled={(initVal: boolean) => [
+        //   isShowDisabled,
+        //   (newVal: boolean) => setIsShowDisabled(newVal || initVal),
+        // ]}
         minimap={
           <MainMap
             isMinimap // MUST FOR MINIMAP
-            role="admin" // SHOULD
+            role="web" // SHOULD
             width={100} // MUST
             height={165} // MUST
             sections={data?.adminSections} // MUST
             sectionsViewbox={data?.viewbox} // MUST
             // [SPECIFIC SECTION]
-            // chosenSection={data?.chosenSection}
+            chosenSection={data?.chosenSection}
           />
         }
       />
