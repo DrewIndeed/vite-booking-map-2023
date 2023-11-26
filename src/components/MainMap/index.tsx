@@ -59,7 +59,6 @@ type MainMapProps = {
   fallbackColor?: "#fff";
 
   minimap?: ReactNode;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   chosenSection?: ChosenSection | null;
   tooltip?: Record<string, ToolTip>;
   styles?: React.CSSProperties;
@@ -67,6 +66,10 @@ type MainMapProps = {
   // methods
   onSelectSeat?: (arg0: ChosenSeat[]) => void;
   onSelectSection?: (arg0: Section) => void;
+  onPostMessage?: (arg0: {
+    type: "onSelectSection" | "onSelectSeat";
+    data: string;
+  }) => void;
   onDiffSection?: () => void;
 
   // admin
@@ -102,6 +105,7 @@ const MainMap = forwardRef(
       onSelectSeat = () => {},
       onSelectSection = () => {},
       onDiffSection = () => {},
+      onPostMessage = () => {},
 
       // admin
       useSelectAll = () => [false, () => {}],
@@ -175,21 +179,24 @@ const MainMap = forwardRef(
     const allSeats = useMemo(() => getAllSeats(sections), [sections]);
 
     // [COMMON] handle update chosen seats array
-    const _updateChosenSeats = (section: Section, row: Row, seat: Seat) => {
-      chosenSeatsRef.current = [
-        ...chosenSeatsRef.current,
-        {
-          ...seat,
-          rowId: undefined,
-          section: {
-            ...section,
-            elements: undefined,
-            rows: undefined,
+    const _updateChosenSeats = useCallback(
+      (section: Section, row: Row, seat: Seat) => {
+        chosenSeatsRef.current = [
+          ...chosenSeatsRef.current,
+          {
+            ...seat,
+            rowId: undefined,
+            section: {
+              ...section,
+              elements: undefined,
+              rows: undefined,
+            },
+            row: { ...row, seats: undefined },
           },
-          row: { ...row, seats: undefined },
-        },
-      ];
-    };
+        ];
+      },
+      []
+    );
     // [COMMON] handle seats clicked
     const _renderSeatClicked = useCallback(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -234,6 +241,12 @@ const MainMap = forwardRef(
         }
 
         onSelectSeat(chosenSeatsRef.current);
+        if (role === "mobile") {
+          onPostMessage({
+            type: "onSelectSeat",
+            data: JSON.stringify(chosenSeatsRef.current),
+          });
+        }
       },
       // DO NOT ADD setIsSelectAll
       // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -257,10 +270,7 @@ const MainMap = forwardRef(
           return;
         seatsLayer.destroyChildren(); // clear current seats
 
-        if (
-          newScale &&
-          newScale > (role !== "mobile" ? RENDER_SEAT_SCALE : 0.6)
-        )
+        if (newScale && newScale > (role !== "mobile" ? RENDER_SEAT_SCALE : 1))
           return; // ignore on this scale value
         if (!seatsLayer.clearBeforeDraw()) seatsLayer.clearBeforeDraw(true);
 
@@ -323,6 +333,7 @@ const MainMap = forwardRef(
         seatGroup,
         seatCircle,
         seatText,
+        _updateChosenSeats,
         _renderSeatClicked,
         sections,
       ]
@@ -591,6 +602,17 @@ const MainMap = forwardRef(
         if (container) container.style.cursor = "";
       };
       const { elements, ticketType, isStage, id: renderId } = section;
+      const _commonClick = () => {
+        if (!section.isStage && !chosenSection?.id) {
+          onSelectSection(section);
+          if (role === "mobile") {
+            onPostMessage({
+              type: "onSelectSection",
+              data: JSON.stringify(section),
+            });
+          }
+        }
+      };
 
       return (
         <Group
@@ -601,16 +623,8 @@ const MainMap = forwardRef(
           key={`sections-${renderId}`}
           onMouseEnter={_onMouseEnter}
           onMouseLeave={_onMouseLeave}
-          onClick={() =>
-            !section.isStage && !chosenSection?.id
-              ? onSelectSection(section)
-              : () => {}
-          }
-          onTouchEnd={() =>
-            !section.isStage && !chosenSection?.id
-              ? onSelectSection(section)
-              : () => {}
-          }
+          onClick={_commonClick}
+          onTouchEnd={_commonClick}
           perfectDrawEnabled={false}
         >
           {elements?.map(

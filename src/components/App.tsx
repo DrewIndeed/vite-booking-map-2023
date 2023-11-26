@@ -48,9 +48,9 @@ const App = () => {
     <div style={{ position: "relative" }}>
       <MainMap
         ref={mainMapRef} // MUST FOR ADMIN
-        role="web" // SHOULD
-        width={500} // 725, 375 // MUST
-        height={500} // 675, 635 // MUST
+        role="mobile" // SHOULD
+        width={375} // 725, 375 // MUST
+        height={635} // 675, 635 // MUST
         sections={data?.adminSections} // MUST
         sectionsViewbox={data?.viewbox} // MUST
         zoomSpeed={1.1}
@@ -58,8 +58,9 @@ const App = () => {
         onSelectSeat={(data) => console.log({ data })}
         onSelectSection={(sectionData) => console.log({ sectionData })}
         onDiffSection={() => console.log("Changed section!")}
+        onPostMessage={(postMsg) => console.log({ postMsg })}
         // [SPECIFIC SECTION]
-        // chosenSection={data?.chosenSection}
+        chosenSection={data?.chosenSection}
         // [ADMIN]
         // previous info of stage when selection happened
         // prevStageInfos={mainMapRef?.current?.getStageInfo()} // MUST
@@ -94,13 +95,13 @@ const App = () => {
         minimap={
           <MainMap
             isMinimap // MUST FOR MINIMAP
-            role="web" // SHOULD
+            role="mobile" // SHOULD
             width={100} // MUST
             height={165} // MUST
             sections={data?.adminSections} // MUST
             sectionsViewbox={data?.viewbox} // MUST
             // [SPECIFIC SECTION]
-            // chosenSection={data?.chosenSection}
+            chosenSection={data?.chosenSection}
           />
         }
       />
@@ -179,7 +180,7 @@ export default App;
  * 5.    [ADMIN] Toggle Available seats ✅
  * 6.    [ADMIN] Toggle Ordered seats ✅
  * 7.    [ADMIN] Toggle Disabled seats ✅
- * 9.    [USERS] [MOBILE] Post messages
+ * 9.    [USERS] [MOBILE] Post messages ✅
  *
  * 10.   [USERS] Auto scale to fit and center Chosen Section ✅
  * 11.   [ALL] Handle correct interactions for each role ✅

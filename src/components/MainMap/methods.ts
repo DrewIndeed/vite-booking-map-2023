@@ -158,12 +158,12 @@ export const renderSectionRows = (section: any, others: any[]) => {
         (chosen: ChosenSeat) => chosen.id === seat.id
       );
       const notAllowed =
-        role === "web"
+        role !== "admin"
           ? ![1, 3, 6].includes(seat.status)
           : [4, 5].includes(seat.status);
       const isAdmin = role === "admin";
       const noEvent = !section.ticketType || notAllowed;
-      const isPrevSelected = seat.status === 3 && role === "web";
+      const isPrevSelected = seat.status === 3 && role !== "admin";
       const hideAvailable =
         seat.status === 1 && !isShowAvailable && role === "admin";
       const hideOrdered =
