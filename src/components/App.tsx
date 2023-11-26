@@ -19,6 +19,7 @@ const App = () => {
 
   // states
   const [isSelectAll, setIsSelectAll] = useState(false);
+  const [isClearAll, setIsClearAll] = useState(false);
 
   // effects
   useEffect(() => {
@@ -56,11 +57,17 @@ const App = () => {
         // [SPECIFIC SECTION]
         // chosenSection={data?.chosenSection}
         // [ADMIN]
+        // select all
         useSelectAll={(initVal: boolean) => [
           isSelectAll,
           (newVal: boolean) => setIsSelectAll(newVal || initVal),
         ]}
         prevStageInfos={mainMapRef?.current?.getStageInfo()}
+        // clear all
+        useClearAll={(initVal: boolean) => [
+          isClearAll,
+          (newVal: boolean) => setIsClearAll(newVal || initVal),
+        ]}
         minimap={
           <MainMap
             isMinimap // MUST FOR MINIMAP
@@ -79,6 +86,9 @@ const App = () => {
         onClick={() => setIsSelectAll(true)}
       >
         Select All
+      </button>
+      <button style={{ cursor: "pointer" }} onClick={() => setIsClearAll(true)}>
+        Clear All
       </button>
     </div>
   );
@@ -109,12 +119,12 @@ export default App;
  * 3.3.1 [BUG - ADMIN] Handle deselect seats after select all ✅
  * 3.3.2 [BUG - ADMIN] Handle select seats normally before select all ✅
  *
- * 3.4   [ADMIN] Handle clear all selections
+ * 3.4   [ADMIN] Handle clear all selections ✅
  * 4.    [ADMIN] Seat select by row
  * 5.    [ADMIN] Toggle Available seats
  * 6.    [ADMIN] Toggle Ordered seats
  * 7.    [ADMIN] Toggle Disabled seats
- * 8.    [ADMIN] Handle sections hover and clicked
+ * 8.    [ADMIN] Handle sections hover and clicked ✅
  * 9.    [USERS] [MOBILE] Post messages
  *
  * 10.   [USERS] Auto scale to fit and center Chosen Section ✅

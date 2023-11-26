@@ -72,6 +72,7 @@ type MainMapProps = {
   // admin
   useSelectAll?: (arg0: boolean) => [boolean, (arg0: boolean) => void];
   prevStageInfos?: Record<string, number>;
+  useClearAll?: (arg0: boolean) => [boolean, (arg0: boolean) => void];
 };
 
 const MainMap = forwardRef(
@@ -101,6 +102,7 @@ const MainMap = forwardRef(
       // admin
       useSelectAll = () => [false, () => {}],
       prevStageInfos = {},
+      useClearAll = () => [false, () => {}],
     }: MainMapProps,
     mainMapRef
   ) => {
@@ -129,6 +131,7 @@ const MainMap = forwardRef(
     // [ADMIN] select all related
     const allSeatsReachedRef = useRef<boolean>(false);
     const [isSelectAll, setIsSelectAll] = useSelectAll(false);
+    const [isClearAll, setIsClearAll] = useClearAll(false);
 
     // memos
     // init konva needed shapes
@@ -829,7 +832,7 @@ const MainMap = forwardRef(
       }
       // DO NOT REMOVE THE WARNING SUPPRESS
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isSelectAll, prevStageInfos]);
+    }, [isSelectAll, isClearAll, prevStageInfos]);
     useImperativeHandle(mainMapRef, () => ({
       getStageInfo: () => {
         const stage = stageRef.current;
@@ -855,6 +858,23 @@ const MainMap = forwardRef(
       }
     }, [_calculateViewPort, allSeats, isSelectAll]);
     // [END] [ADMIN] select all
+
+    // [START] [ADMIN] clear all
+    useEffect(() => {
+      if (isClearAll && allSeats.length > 0) {
+        chosenSeatsRef.current = [];
+        _calculateViewPort();
+        setIsSelectAll(false);
+        setIsClearAll(false);
+      }
+    }, [
+      _calculateViewPort,
+      allSeats,
+      isClearAll,
+      setIsClearAll,
+      setIsSelectAll,
+    ]);
+    // [END] [ADMIN] clear all
 
     // if not hydrated and no sections
     if (!mounted && sections?.length === 0) return <div>No data.</div>;
@@ -907,11 +927,13 @@ const MainMap = forwardRef(
           onTouchEnd={() => _calculateViewPort()}
           onDragEnd={() => _calculateViewPort()}
         >
+          {/* get view port layer */}
           {!isMinimap && (
             <Layer ref={viewLayerRef} x={0} y={0} listening={false}>
               <Rect width={width} height={height} x={0} y={0} />
             </Layer>
           )}
+          {/* main sections layer */}
           <Layer
             listening={!isMinimap}
             ref={layerRef}
@@ -929,6 +951,7 @@ const MainMap = forwardRef(
               )
               .map(renderSectionPaths)}
           </Layer>
+          {/* main seats layer */}
           {!isMinimap && (
             <Layer
               ref={seatsLayerRef}
