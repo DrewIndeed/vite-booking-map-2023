@@ -74,6 +74,7 @@ type MainMapProps = {
   prevStageInfos?: Record<string, number>;
   useClearAll?: (arg0: boolean) => [boolean, (arg0: boolean) => void];
   useSelectRow?: (arg0: boolean) => [boolean, (arg0: boolean) => void];
+  useShowAvailable?: (arg0: boolean) => [boolean, (arg0: boolean) => void];
 };
 
 const MainMap = forwardRef(
@@ -105,6 +106,7 @@ const MainMap = forwardRef(
       prevStageInfos = {},
       useClearAll = () => [false, () => {}],
       useSelectRow = () => [false, () => {}],
+      useShowAvailable = () => [false, () => {}],
     }: MainMapProps,
     mainMapRef
   ) => {
@@ -135,6 +137,7 @@ const MainMap = forwardRef(
     const [isSelectAll, setIsSelectAll] = useSelectAll(false);
     const [isClearAll, setIsClearAll] = useClearAll(false);
     const [isSelectRow, setIsSelectRow] = useSelectRow(false);
+    const [isShowAvailable, setIsShowAvailable] = useShowAvailable(false);
 
     // memos
     // init konva needed shapes
@@ -237,9 +240,8 @@ const MainMap = forwardRef(
         const viewport = viewLayerRef?.current;
         const seatsLayer = seatsLayerRef?.current;
 
-        // TEMP: if it is all sections view
+        // if it is all sections view
         const isAllSectionView = role === "admin" || !chosenSection;
-
         if (
           !stage ||
           !viewport ||
@@ -288,6 +290,7 @@ const MainMap = forwardRef(
         const commonParams = [
           role,
           isSelectAll,
+          isShowAvailable,
           newScale,
           { x1, x2, y1, y2 },
           { seatGroup, seatCircle, seatText },
@@ -306,12 +309,13 @@ const MainMap = forwardRef(
       [
         role,
         chosenSection,
-        sections,
+        isShowAvailable,
         isSelectAll,
         seatGroup,
         seatCircle,
         seatText,
         _renderSeatClicked,
+        sections,
       ]
     );
     // [UTILS] handle calculate real view port
@@ -870,14 +874,17 @@ const MainMap = forwardRef(
         _calculateViewPort();
         setIsClearAll(false);
         setIsSelectRow(false);
+        if (!isShowAvailable) setIsShowAvailable(true);
       }
     }, [
       _calculateViewPort,
       allSeats,
       isSelectAll,
+      isShowAvailable,
       role,
       setIsClearAll,
       setIsSelectRow,
+      setIsShowAvailable,
     ]);
     // handle clear all data
     useEffect(() => {
@@ -915,16 +922,24 @@ const MainMap = forwardRef(
         setIsSelectRow(false);
         setIsSelectAll(false);
         setIsClearAll(false);
+        if (!isShowAvailable) setIsShowAvailable(true);
       }
     }, [
       _calculateViewPort,
       allSeats,
       isSelectRow,
+      isShowAvailable,
       role,
       setIsClearAll,
       setIsSelectAll,
       setIsSelectRow,
+      setIsShowAvailable,
     ]);
+    useEffect(() => {
+      _calculateViewPort();
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isShowAvailable]);
+
     // [END] [ADMIN] selection
 
     // if not hydrated and no sections

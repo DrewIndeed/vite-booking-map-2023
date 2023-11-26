@@ -21,6 +21,7 @@ const App = () => {
   const [isSelectAll, setIsSelectAll] = useState(false);
   const [isClearAll, setIsClearAll] = useState(false);
   const [isSelectRow, setIsSelectRow] = useState(false);
+  const [isShowAvailable, setIsShowAvailable] = useState(true);
 
   // effects
   useEffect(() => {
@@ -75,6 +76,11 @@ const App = () => {
           isSelectRow,
           (newVal: boolean) => setIsSelectRow(newVal || initVal),
         ]}
+        // show available seats
+        useShowAvailable={(initVal: boolean) => [
+          isShowAvailable,
+          (newVal: boolean) => setIsShowAvailable(newVal || initVal),
+        ]}
         minimap={
           <MainMap
             isMinimap // MUST FOR MINIMAP
@@ -103,6 +109,12 @@ const App = () => {
       >
         Select Row
       </button>
+      <button
+        style={{ cursor: "pointer" }}
+        onClick={() => setIsShowAvailable((prev) => !prev)}
+      >
+        Toggle Available
+      </button>
     </div>
   );
 };
@@ -123,6 +135,7 @@ export default App;
   Assume 3: user will de-select from accident selections
   Assume 4: if seat map is zooming to see seats, how to show minimap now?
   Assume 5: if select all if not zoom on, user will know that all seats are selected
+  Assume 6: if hide Available Seats, when Select All or Select Row hit, show Available Seats again
 */
 
 /**
@@ -136,7 +149,7 @@ export default App;
  * 4.    [ADMIN] Seat select by row ✅
  * 8.    [ADMIN] Handle sections hover and clicked ✅
  *
- * 5.    [ADMIN] Toggle Available seats
+ * 5.    [ADMIN] Toggle Available seats ✅
  * 6.    [ADMIN] Toggle Ordered seats
  * 7.    [ADMIN] Toggle Disabled seats
  * 9.    [USERS] [MOBILE] Post messages
