@@ -68,16 +68,19 @@ const Buttons = ({
           />
         );
       })}
-      <Button
-        isToggle
-        icon={BUTTONS.eyeOpen.icon}
-        secondIcon={BUTTONS.eyeClose.icon}
-        tooltip={{
-          content: tooltip?.["eye"]?.content || BUTTONS.eyeOpen.defaultContent,
-          place: tooltip?.["eye"]?.place,
-        }}
-        onClick={() => setShowMinimap((prev: boolean) => !prev)}
-      />
+      {role !== "admin" && (
+        <Button
+          isToggle
+          icon={BUTTONS.eyeOpen.icon}
+          secondIcon={BUTTONS.eyeClose.icon}
+          tooltip={{
+            content:
+              tooltip?.["eye"]?.content || BUTTONS.eyeOpen.defaultContent,
+            place: tooltip?.["eye"]?.place,
+          }}
+          onClick={() => setShowMinimap((prev: boolean) => !prev)}
+        />
+      )}
       {role !== "mobile" && <Tooltip id="btn-tooltip" opacity={1} />}
     </div>
   );

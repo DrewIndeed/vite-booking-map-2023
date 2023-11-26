@@ -13,6 +13,7 @@ import { Group, Layer, Path, Rect, Stage } from "react-konva";
 
 import { RENDER_SEAT_SCALE, SEAT_COLORS, ZOOM_SPEED } from "@lib/constants";
 import {
+  cn,
   debounce,
   getCenter,
   getDistance,
@@ -231,14 +232,14 @@ const MainMap = forwardRef(
         const seatsLayer = seatsLayerRef?.current;
 
         // TEMP: if it is all sections view
-        const isAllSectionView = !chosenSection?.id;
+        const isAllSectionView = role === "admin" || !chosenSection;
 
         if (
           !stage ||
           !viewport ||
           !seatsLayer ||
           !chosenSeatsRef.current ||
-          isAllSectionView
+          !isAllSectionView
         )
           return;
         seatsLayer.destroyChildren(); // clear current seats
@@ -861,10 +862,12 @@ const MainMap = forwardRef(
     // main render
     return (
       <div
-        className={`map-wrapper ${
-          isMinimap && `minimap ${!chosenSection?.id && "filter-darker"}`
-        }`}
-        // DO NOT TOUCH
+        className={cn(
+          "map-wrapper",
+          isMinimap && "minimap",
+          isMinimap && !chosenSection?.id && "filter-darker",
+          isMinimap && role === "admin" && " hidden-admin"
+        )}
         style={{
           width,
           height,

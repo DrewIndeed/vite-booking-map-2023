@@ -31,6 +31,11 @@ body,
   -webkit-filter: brightness(50%) !important;
 }
 
+/* can only hide the seat map to zoom correctly */
+.hidden-admin {
+  left: -10rem;
+}
+
 .btn-wrapper {
   gap: 0.5rem;
   padding: 1rem;

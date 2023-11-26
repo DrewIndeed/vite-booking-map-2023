@@ -1,3 +1,4 @@
+import { clsx, type ClassValue } from "clsx";
 import { ALL_SEAT_STATUS } from "./constants";
 
 export const debounce = (func: () => void, delay: number) => {
@@ -76,3 +77,8 @@ export const getCenter = (p1: Point, p2: Point) => ({
 
 export const getDistance = (p1: Point, p2: Point) =>
   Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
+
+export const cn = (...inputs: ClassValue[]) => {
+  // console.log({ test: clsx(inputs) });
+  return clsx(inputs);
+};

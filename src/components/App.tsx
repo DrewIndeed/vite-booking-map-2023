@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { getAdminShowing, getMap, getSections } from "@lib/fetching";
 import { useData } from "@store/useData";
@@ -18,7 +18,7 @@ const App = () => {
   const mainMapRef = useRef<any>();
 
   // states
-  // const [isSelectAll, setIsSelectAll] = useState(false);
+  const [isSelectAll, setIsSelectAll] = useState(false);
 
   // effects
   useEffect(() => {
@@ -43,7 +43,7 @@ const App = () => {
     <div style={{ position: "relative" }}>
       <MainMap
         ref={mainMapRef} // MUST FOR ADMIN
-        role="web" // SHOULD
+        role="admin" // SHOULD
         width={500} // 725, 375 // MUST
         height={500} // 675, 635 // MUST
         sections={data?.adminSections} // MUST
@@ -54,31 +54,32 @@ const App = () => {
         onSelectSection={(sectionData) => console.log({ sectionData })}
         onDiffSection={() => console.log("Changed section!")}
         // [SPECIFIC SECTION]
-        chosenSection={data?.chosenSection}
+        // chosenSection={data?.chosenSection}
         // [ADMIN]
-        // useSelectAll={(initVal: boolean) => [
-        //   isSelectAll,
-        //   (newVal: boolean) => setIsSelectAll(newVal || initVal),
-        // ]}
-        // prevStageInfos={mainMapRef?.current?.getStageInfo()}
+        useSelectAll={(initVal: boolean) => [
+          isSelectAll,
+          (newVal: boolean) => setIsSelectAll(newVal || initVal),
+        ]}
+        prevStageInfos={mainMapRef?.current?.getStageInfo()}
         minimap={
           <MainMap
-            isMinimap
+            isMinimap // MUST FOR MINIMAP
+            role="admin" // SHOULD
             width={100} // MUST
             height={165} // MUST
             sections={data?.adminSections} // MUST
             sectionsViewbox={data?.viewbox} // MUST
             // [SPECIFIC SECTION]
-            chosenSection={data?.chosenSection}
+            // chosenSection={data?.chosenSection}
           />
         }
       />
-      {/* <button
+      <button
         style={{ cursor: "pointer" }}
         onClick={() => setIsSelectAll(true)}
       >
         Select All
-      </button> */}
+      </button>
     </div>
   );
 };
@@ -119,5 +120,6 @@ export default App;
  * 10.   [USERS] Auto scale to fit and center Chosen Section ✅
  * 11.   [ALL] Handle correct interactions for each role ✅
  * 12.   [USERS] Section click event to grab section data ✅
- * 13.   [USERS] Denoubce reset chosen section auto reset
+ * 13.   [USERS] Denoubce reset chosen section auto reset ✅
+ * 14.   [ADMIN] minimap visibility ✅
  */
