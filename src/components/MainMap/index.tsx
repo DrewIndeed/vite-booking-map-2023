@@ -75,6 +75,8 @@ type MainMapProps = {
   useClearAll?: (arg0: boolean) => [boolean, (arg0: boolean) => void];
   useSelectRow?: (arg0: boolean) => [boolean, (arg0: boolean) => void];
   useShowAvailable?: (arg0: boolean) => [boolean, (arg0: boolean) => void];
+  useShowOrdered?: (arg0: boolean) => [boolean, (arg0: boolean) => void];
+  useShowDisabled?: (arg0: boolean) => [boolean, (arg0: boolean) => void];
 };
 
 const MainMap = forwardRef(
@@ -107,6 +109,8 @@ const MainMap = forwardRef(
       useClearAll = () => [false, () => {}],
       useSelectRow = () => [false, () => {}],
       useShowAvailable = () => [false, () => {}],
+      useShowOrdered = () => [false, () => {}],
+      useShowDisabled = () => [false, () => {}],
     }: MainMapProps,
     mainMapRef
   ) => {
@@ -138,6 +142,8 @@ const MainMap = forwardRef(
     const [isClearAll, setIsClearAll] = useClearAll(false);
     const [isSelectRow, setIsSelectRow] = useSelectRow(false);
     const [isShowAvailable, setIsShowAvailable] = useShowAvailable(false);
+    const [isShowOrdered, setIsShowOrdered] = useShowOrdered(false);
+    const [isShowDisabled, setIsShowDisabled] = useShowDisabled(false);
 
     // memos
     // init konva needed shapes
@@ -291,6 +297,8 @@ const MainMap = forwardRef(
           role,
           isSelectAll,
           isShowAvailable,
+          isShowOrdered,
+          isShowDisabled,
           newScale,
           { x1, x2, y1, y2 },
           { seatGroup, seatCircle, seatText },
@@ -309,8 +317,10 @@ const MainMap = forwardRef(
       [
         role,
         chosenSection,
-        isShowAvailable,
         isSelectAll,
+        isShowAvailable,
+        isShowOrdered,
+        isShowDisabled,
         seatGroup,
         seatCircle,
         seatText,
@@ -875,16 +885,22 @@ const MainMap = forwardRef(
         setIsClearAll(false);
         setIsSelectRow(false);
         if (!isShowAvailable) setIsShowAvailable(true);
+        if (!isShowOrdered) setIsShowOrdered(true);
+        if (!isShowDisabled) setIsShowDisabled(true);
       }
     }, [
       _calculateViewPort,
       allSeats,
       isSelectAll,
       isShowAvailable,
+      isShowDisabled,
+      isShowOrdered,
       role,
       setIsClearAll,
       setIsSelectRow,
       setIsShowAvailable,
+      setIsShowDisabled,
+      setIsShowOrdered,
     ]);
     // handle clear all data
     useEffect(() => {
@@ -923,22 +939,28 @@ const MainMap = forwardRef(
         setIsSelectAll(false);
         setIsClearAll(false);
         if (!isShowAvailable) setIsShowAvailable(true);
+        if (!isShowOrdered) setIsShowOrdered(true);
+        if (!isShowDisabled) setIsShowDisabled(true);
       }
     }, [
       _calculateViewPort,
       allSeats,
       isSelectRow,
       isShowAvailable,
+      isShowDisabled,
+      isShowOrdered,
       role,
       setIsClearAll,
       setIsSelectAll,
       setIsSelectRow,
       setIsShowAvailable,
+      setIsShowDisabled,
+      setIsShowOrdered,
     ]);
     useEffect(() => {
       _calculateViewPort();
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isShowAvailable]);
+    }, [isShowAvailable, isShowOrdered, isShowDisabled]);
 
     // [END] [ADMIN] selection
 
@@ -977,6 +999,11 @@ const MainMap = forwardRef(
                 setHasResetSection(false);
                 handleResetSection();
               }
+
+              // display all seats when reset
+              if (!isShowAvailable) setIsShowAvailable(true);
+              if (!isShowOrdered) setIsShowOrdered(true);
+              if (!isShowDisabled) setIsShowDisabled(true);
             }, // important for admin
             handleZoomByFactor,
             setShowMinimap,

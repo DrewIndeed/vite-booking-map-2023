@@ -143,6 +143,8 @@ export const renderSectionRows = (section: any, others: any[]) => {
     role,
     isSelectAll,
     isShowAvailable,
+    isShowOrdered,
+    isShowDisabled,
     newScale,
     { x1, x2, y1, y2 },
     { seatGroup, seatCircle, seatText },
@@ -163,8 +165,10 @@ export const renderSectionRows = (section: any, others: any[]) => {
       const noEvent = !section.ticketType || notAllowed;
       const isPrevSelected = seat.status === 3 && role === "web";
       const hideAvailable = seat.status === 1 && !isShowAvailable;
+      const hideOrdered = seat.status === 4 && !isShowOrdered;
+      const hideDisabled = seat.status === 2 && !isShowDisabled;
       if (seat.x >= x1 && seat.x <= x2 && seat.y >= y1 && seat.y <= y2) {
-        if (hideAvailable) return;
+        if (hideAvailable || hideOrdered || hideDisabled) return;
         // --- CREATE SEAT UI ---
         // shape clones
         const newSeatGroup = seatGroup.clone();

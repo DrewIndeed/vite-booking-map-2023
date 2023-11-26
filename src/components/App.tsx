@@ -22,6 +22,8 @@ const App = () => {
   const [isClearAll, setIsClearAll] = useState(false);
   const [isSelectRow, setIsSelectRow] = useState(false);
   const [isShowAvailable, setIsShowAvailable] = useState(true);
+  const [isShowOrdered, setIsShowOrdered] = useState(true);
+  const [isShowDisabled, setIsShowDisabled] = useState(true);
 
   // effects
   useEffect(() => {
@@ -76,10 +78,18 @@ const App = () => {
           isSelectRow,
           (newVal: boolean) => setIsSelectRow(newVal || initVal),
         ]}
-        // show available seats
+        // toggle display types of seats
         useShowAvailable={(initVal: boolean) => [
           isShowAvailable,
           (newVal: boolean) => setIsShowAvailable(newVal || initVal),
+        ]}
+        useShowOrdered={(initVal: boolean) => [
+          isShowOrdered,
+          (newVal: boolean) => setIsShowOrdered(newVal || initVal),
+        ]}
+        useShowDisabled={(initVal: boolean) => [
+          isShowDisabled,
+          (newVal: boolean) => setIsShowDisabled(newVal || initVal),
         ]}
         minimap={
           <MainMap
@@ -114,6 +124,18 @@ const App = () => {
         onClick={() => setIsShowAvailable((prev) => !prev)}
       >
         Toggle Available
+      </button>
+      <button
+        style={{ cursor: "pointer" }}
+        onClick={() => setIsShowOrdered((prev) => !prev)}
+      >
+        Toggle Ordered
+      </button>
+      <button
+        style={{ cursor: "pointer" }}
+        onClick={() => setIsShowDisabled((prev) => !prev)}
+      >
+        Toggle Disabled
       </button>
     </div>
   );
@@ -150,8 +172,8 @@ export default App;
  * 8.    [ADMIN] Handle sections hover and clicked ✅
  *
  * 5.    [ADMIN] Toggle Available seats ✅
- * 6.    [ADMIN] Toggle Ordered seats
- * 7.    [ADMIN] Toggle Disabled seats
+ * 6.    [ADMIN] Toggle Ordered seats ✅
+ * 7.    [ADMIN] Toggle Disabled seats ✅
  * 9.    [USERS] [MOBILE] Post messages
  *
  * 10.   [USERS] Auto scale to fit and center Chosen Section ✅
