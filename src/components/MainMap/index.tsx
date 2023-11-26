@@ -73,6 +73,7 @@ type MainMapProps = {
   useSelectAll?: (arg0: boolean) => [boolean, (arg0: boolean) => void];
   prevStageInfos?: Record<string, number>;
   useClearAll?: (arg0: boolean) => [boolean, (arg0: boolean) => void];
+  useSelectRow?: (arg0: boolean) => [boolean, (arg0: boolean) => void];
 };
 
 const MainMap = forwardRef(
@@ -103,6 +104,7 @@ const MainMap = forwardRef(
       useSelectAll = () => [false, () => {}],
       prevStageInfos = {},
       useClearAll = () => [false, () => {}],
+      useSelectRow = () => [false, () => {}],
     }: MainMapProps,
     mainMapRef
   ) => {
@@ -128,10 +130,11 @@ const MainMap = forwardRef(
     const [hasReset, setHasReset] = useState(false);
     const [hasResetSection, setHasResetSection] = useState(false);
 
-    // [ADMIN] select all related
+    // [ADMIN] selection related
     const allSeatsReachedRef = useRef<boolean>(false);
     const [isSelectAll, setIsSelectAll] = useSelectAll(false);
     const [isClearAll, setIsClearAll] = useClearAll(false);
+    const [isSelectRow, setIsSelectRow] = useSelectRow(false);
 
     // memos
     // init konva needed shapes
@@ -818,7 +821,7 @@ const MainMap = forwardRef(
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [hasReset]);
 
-    // [START] [ADMIN] select all
+    // [START] [ADMIN] selection
     useEffect(() => {
       const stage = stageRef.current;
       if (stage && Object.keys(prevStageInfos).length && changedStage) {
@@ -832,7 +835,7 @@ const MainMap = forwardRef(
       }
       // DO NOT REMOVE THE WARNING SUPPRESS
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isSelectAll, isClearAll, prevStageInfos]);
+    }, [isSelectAll, isClearAll, isSelectRow, prevStageInfos]);
     useImperativeHandle(mainMapRef, () => ({
       getStageInfo: () => {
         const stage = stageRef.current;
@@ -848,24 +851,42 @@ const MainMap = forwardRef(
         }
       },
     }));
+    // handle select all data
     useEffect(() => {
       if (isSelectAll && allSeats.length > 0) {
-        const withTicketTypes = allSeats.filter(
+        let selections = [];
+        // filter if section has ticket type
+        selections = allSeats.filter(
           (seat: ChosenSeat) => !!seat.section.ticketType
         );
-        chosenSeatsRef.current = [...withTicketTypes];
-        _calculateViewPort();
-      }
-    }, [_calculateViewPort, allSeats, isSelectAll]);
-    // [END] [ADMIN] select all
+        // filter if seat is available or status === 1
+        // filter disabled seats for admin
+        selections = selections.filter(
+          (seat: ChosenSeat) =>
+            seat.status === 1 || (role === "admin" && seat.status === 2)
+        );
 
-    // [START] [ADMIN] clear all
+        chosenSeatsRef.current = [...selections];
+        _calculateViewPort();
+        setIsClearAll(false);
+        setIsSelectRow(false);
+      }
+    }, [
+      _calculateViewPort,
+      allSeats,
+      isSelectAll,
+      role,
+      setIsClearAll,
+      setIsSelectRow,
+    ]);
+    // handle clear all data
     useEffect(() => {
       if (isClearAll && allSeats.length > 0) {
         chosenSeatsRef.current = [];
         _calculateViewPort();
         setIsSelectAll(false);
         setIsClearAll(false);
+        setIsSelectRow(false);
       }
     }, [
       _calculateViewPort,
@@ -873,8 +894,26 @@ const MainMap = forwardRef(
       isClearAll,
       setIsClearAll,
       setIsSelectAll,
+      setIsSelectRow,
     ]);
-    // [END] [ADMIN] clear all
+    // handle select row data
+    useEffect(() => {
+      if (isSelectRow && allSeats.length > 0) {
+        chosenSeatsRef.current = [];
+        _calculateViewPort();
+        setIsSelectRow(false);
+        setIsSelectAll(false);
+        setIsClearAll(false);
+      }
+    }, [
+      _calculateViewPort,
+      allSeats.length,
+      isSelectRow,
+      setIsClearAll,
+      setIsSelectAll,
+      setIsSelectRow,
+    ]);
+    // [END] [ADMIN] selection
 
     // if not hydrated and no sections
     if (!mounted && sections?.length === 0) return <div>No data.</div>;
@@ -896,6 +935,7 @@ const MainMap = forwardRef(
           ...styles,
         }}
       >
+        {/* tool buttons */}
         <Buttons
           {...{
             role,
@@ -915,6 +955,7 @@ const MainMap = forwardRef(
             setShowMinimap,
           }}
         />
+        {/* render minimap jsx */}
         {!isMinimap && showMinimap && <>{minimap}</>}
         <Stage
           ref={stageRef}

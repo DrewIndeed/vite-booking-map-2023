@@ -20,6 +20,7 @@ const App = () => {
   // states
   const [isSelectAll, setIsSelectAll] = useState(false);
   const [isClearAll, setIsClearAll] = useState(false);
+  const [isSelectRow, setIsSelectRow] = useState(false);
 
   // effects
   useEffect(() => {
@@ -57,16 +58,22 @@ const App = () => {
         // [SPECIFIC SECTION]
         // chosenSection={data?.chosenSection}
         // [ADMIN]
+        // previous info of stage when selection happened
+        prevStageInfos={mainMapRef?.current?.getStageInfo()} // MUST
         // select all
         useSelectAll={(initVal: boolean) => [
           isSelectAll,
           (newVal: boolean) => setIsSelectAll(newVal || initVal),
         ]}
-        prevStageInfos={mainMapRef?.current?.getStageInfo()}
         // clear all
         useClearAll={(initVal: boolean) => [
           isClearAll,
           (newVal: boolean) => setIsClearAll(newVal || initVal),
+        ]}
+        // select row
+        useSelectRow={(initVal: boolean) => [
+          isSelectRow,
+          (newVal: boolean) => setIsSelectRow(newVal || initVal),
         ]}
         minimap={
           <MainMap
@@ -89,6 +96,12 @@ const App = () => {
       </button>
       <button style={{ cursor: "pointer" }} onClick={() => setIsClearAll(true)}>
         Clear All
+      </button>
+      <button
+        style={{ cursor: "pointer" }}
+        onClick={() => setIsSelectRow(true)}
+      >
+        Select Row
       </button>
     </div>
   );
