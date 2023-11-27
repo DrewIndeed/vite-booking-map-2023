@@ -13,6 +13,7 @@ type Props = {
   role: "web" | "admin" | "mobile";
   tooltip: Record<string, ToolTip>;
   zoomSpeed: number;
+  zoomByFactorOffset: number;
   isMinimap: boolean;
   handleReset: () => void;
   handleResetCallback: () => void;
@@ -24,6 +25,7 @@ const Buttons = ({
   role,
   tooltip,
   zoomSpeed,
+  zoomByFactorOffset,
   isMinimap,
   handleReset,
   handleResetCallback,
@@ -54,10 +56,10 @@ const Buttons = ({
             onClick={() => {
               switch (key) {
                 case "plus":
-                  handleZoomByFactor(zoomSpeed * 1.2);
+                  handleZoomByFactor(zoomSpeed * zoomByFactorOffset);
                   break;
                 case "minus":
-                  handleZoomByFactor(1 / (zoomSpeed * 1.2));
+                  handleZoomByFactor(1 / (zoomSpeed * zoomByFactorOffset));
                   break;
                 default:
                   handleReset();

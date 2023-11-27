@@ -1,6 +1,6 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
-import { getAdminShowing, getMap, getSections } from "@lib/fetching";
+import { getAdminShowing, getSections } from "@lib/fetching";
 import { useData } from "@store/useData";
 import MainMap from "./MainMap";
 
@@ -18,26 +18,24 @@ const App = () => {
   const mainMapRef = useRef<any>();
 
   // states
-  // const [isSelectAll, setIsSelectAll] = useState(false);
-  // const [isClearAll, setIsClearAll] = useState(false);
-  // const [isSelectRow, setIsSelectRow] = useState(false);
-  // const [isShowAvailable, setIsShowAvailable] = useState(true);
-  // const [isShowOrdered, setIsShowOrdered] = useState(true);
-  // const [isShowDisabled, setIsShowDisabled] = useState(true);
+  const [isSelectAll, setIsSelectAll] = useState(false);
+  const [isClearAll, setIsClearAll] = useState(false);
+  const [isSelectRow, setIsSelectRow] = useState(false);
+  const [isShowAvailable, setIsShowAvailable] = useState(true);
+  const [isShowOrdered, setIsShowOrdered] = useState(true);
+  const [isShowDisabled, setIsShowDisabled] = useState(true);
 
   // effects
   useEffect(() => {
     (async () => {
-      const mapData = await getMap(2);
       const adminShowData = await getAdminShowing(2);
       const sectionData = await getSections(2, 168);
       const demoData = {
         adminSections: adminShowData?.data?.result?.seatMap?.sections,
         chosenSection: sectionData?.data?.result,
-        viewbox: mapData?.data?.result?.viewbox,
+        viewbox: adminShowData?.data?.result?.seatMap?.viewbox,
         capacity: getCapacity(adminShowData?.data?.result?.seatMap?.sections),
         allSeats: getAllSeats(adminShowData?.data?.result?.seatMap?.sections),
-        // sections: mapData?.data?.result?.sections,
       };
       // console.log({ demoData });
       saveData(demoData);
@@ -48,64 +46,68 @@ const App = () => {
     <div style={{ position: "relative" }}>
       <MainMap
         ref={mainMapRef} // MUST FOR ADMIN
-        role="mobile" // SHOULD
-        width={375} // 725, 375 // MUST
-        height={635} // 675, 635 // MUST
+        role="admin" // SHOULD
+        width={1300} // 725, 375 // MUST
+        height={1000} // 675, 635 // MUST
         sections={data?.adminSections} // MUST
         sectionsViewbox={data?.viewbox} // MUST
         zoomSpeed={1.1}
+        renderSeatScale={0.75}
         // [METHODS]
-        onSelectSeat={(data) => console.log({ data })}
+        onSelectSeat={(dataSeat) => console.log({ dataSeat })}
+        onSelectAll={(dataAll) => console.log({ dataAll })}
+        onSelectRow={(dataRow, rows) => console.log({ dataRow, rows })}
+        onClearAll={() => console.log("Cleared!")}
         onSelectSection={(sectionData) => console.log({ sectionData })}
         onDiffSection={() => console.log("Changed section!")}
         onPostMessage={(postMsg) => console.log({ postMsg })}
         // [SPECIFIC SECTION]
-        chosenSection={data?.chosenSection}
+        // chosenSection={data?.chosenSection}
         // [ADMIN]
         // previous info of stage when selection happened
-        // prevStageInfos={mainMapRef?.current?.getStageInfo()} // MUST
-        // // select all
-        // useSelectAll={(initVal: boolean) => [
-        //   isSelectAll,
-        //   (newVal: boolean) => setIsSelectAll(newVal || initVal),
-        // ]}
-        // // clear all
-        // useClearAll={(initVal: boolean) => [
-        //   isClearAll,
-        //   (newVal: boolean) => setIsClearAll(newVal || initVal),
-        // ]}
-        // // select row
-        // useSelectRow={(initVal: boolean) => [
-        //   isSelectRow,
-        //   (newVal: boolean) => setIsSelectRow(newVal || initVal),
-        // ]}
-        // // toggle display types of seats
-        // useShowAvailable={(initVal: boolean) => [
-        //   isShowAvailable,
-        //   (newVal: boolean) => setIsShowAvailable(newVal || initVal),
-        // ]}
-        // useShowOrdered={(initVal: boolean) => [
-        //   isShowOrdered,
-        //   (newVal: boolean) => setIsShowOrdered(newVal || initVal),
-        // ]}
-        // useShowDisabled={(initVal: boolean) => [
-        //   isShowDisabled,
-        //   (newVal: boolean) => setIsShowDisabled(newVal || initVal),
-        // ]}
+        prevStageInfos={mainMapRef?.current?.getStageInfo()} // MUST
+        // select all
+        useSelectAll={(initVal: boolean) => [
+          isSelectAll,
+          (newVal: boolean) => setIsSelectAll(newVal || initVal),
+        ]}
+        // clear all
+        useClearAll={(initVal: boolean) => [
+          isClearAll,
+          (newVal: boolean) => setIsClearAll(newVal || initVal),
+        ]}
+        // select row
+        useSelectRow={(initVal: boolean) => [
+          isSelectRow,
+          (newVal: boolean) => setIsSelectRow(newVal || initVal),
+        ]}
+        // toggle display types of seats
+        useShowAvailable={(initVal: boolean) => [
+          isShowAvailable,
+          (newVal: boolean) => setIsShowAvailable(newVal || initVal),
+        ]}
+        useShowOrdered={(initVal: boolean) => [
+          isShowOrdered,
+          (newVal: boolean) => setIsShowOrdered(newVal || initVal),
+        ]}
+        useShowDisabled={(initVal: boolean) => [
+          isShowDisabled,
+          (newVal: boolean) => setIsShowDisabled(newVal || initVal),
+        ]}
         minimap={
           <MainMap
             isMinimap // MUST FOR MINIMAP
-            role="mobile" // SHOULD
+            role="admin" // SHOULD
             width={100} // MUST
             height={165} // MUST
             sections={data?.adminSections} // MUST
             sectionsViewbox={data?.viewbox} // MUST
             // [SPECIFIC SECTION]
-            chosenSection={data?.chosenSection}
+            // chosenSection={data?.chosenSection}
           />
         }
       />
-      {/* <>
+      <>
         <button
           style={{ cursor: "pointer" }}
           onClick={() => setIsSelectAll(true)}
@@ -142,7 +144,7 @@ const App = () => {
         >
           Toggle Disabled
         </button>
-      </> */}
+      </>
     </div>
   );
 };
@@ -187,4 +189,6 @@ export default App;
  * 12.   [USERS] Section click event to grab section data ✅
  * 13.   [USERS] Denoubce reset chosen section auto reset ✅
  * 14.   [ADMIN] minimap visibility ✅
+ * 15.   [ADMIN] add on onCleatAll ✅
+ * 16.   [COMMON] add options to change RENDER_SEAT_SCALE ✅
  */

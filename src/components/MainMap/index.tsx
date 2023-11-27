@@ -54,6 +54,9 @@ type MainMapProps = {
 
   role?: "web" | "admin" | "mobile";
   zoomSpeed?: number;
+  renderSeatScale?: number;
+  debounceWheelMs?: number;
+  zoomByFactorOffset?: number;
   draggable?: boolean;
   isMinimap?: boolean;
   fallbackColor?: "#fff";
@@ -71,6 +74,9 @@ type MainMapProps = {
     data: string;
   }) => void;
   onDiffSection?: () => void;
+  onSelectAll?: (arg0: ChosenSeat[]) => void;
+  onSelectRow?: (arg0: ChosenSeat[], arg1: number[]) => void;
+  onClearAll?: () => void;
 
   // admin
   useSelectAll?: (arg0: boolean) => [boolean, (arg0: boolean) => void];
@@ -92,13 +98,16 @@ const MainMap = forwardRef(
 
       role = "web",
       zoomSpeed = ZOOM_SPEED,
+      renderSeatScale = RENDER_SEAT_SCALE,
+      debounceWheelMs = 100,
+      zoomByFactorOffset = 1.35,
       draggable = true,
       isMinimap = false,
       fallbackColor = "#fff",
 
       minimap = null,
       chosenSection = null,
-      tooltip = {}, // plus, handleReset, minus, eye
+      tooltip = {}, // plus, reset, minus, eye
       styles = {},
 
       // methods
@@ -106,6 +115,9 @@ const MainMap = forwardRef(
       onSelectSection = () => {},
       onDiffSection = () => {},
       onPostMessage = () => {},
+      onSelectAll = () => {},
+      onSelectRow = () => {},
+      onClearAll = () => {},
 
       // admin
       useSelectAll = () => [false, () => {}],
@@ -270,7 +282,7 @@ const MainMap = forwardRef(
           return;
         seatsLayer.destroyChildren(); // clear current seats
 
-        if (newScale && newScale > (role !== "mobile" ? RENDER_SEAT_SCALE : 1))
+        if (newScale && newScale > (role !== "mobile" ? renderSeatScale : 1))
           return; // ignore on this scale value
         if (!seatsLayer.clearBeforeDraw()) seatsLayer.clearBeforeDraw(true);
 
@@ -326,6 +338,7 @@ const MainMap = forwardRef(
       [
         role,
         chosenSection,
+        renderSeatScale,
         isSelectAll,
         isShowAvailable,
         isShowOrdered,
@@ -710,7 +723,10 @@ const MainMap = forwardRef(
         stage.position(newPos);
         stage.clearCache();
         if (!changedStage) setChangedStage(true);
-        const dbCalViewPort = debounce(() => _calculateViewPort(), 50);
+        const dbCalViewPort = debounce(
+          () => _calculateViewPort(),
+          debounceWheelMs
+        );
         dbCalViewPort();
       }
     };
@@ -897,6 +913,7 @@ const MainMap = forwardRef(
         _calculateViewPort();
         setIsClearAll(false);
         setIsSelectRow(false);
+        onSelectAll(chosenSeatsRef.current);
         if (!isShowAvailable) setIsShowAvailable(true);
         if (!isShowOrdered) setIsShowOrdered(true);
         if (!isShowDisabled) setIsShowDisabled(true);
@@ -908,6 +925,7 @@ const MainMap = forwardRef(
       isShowAvailable,
       isShowDisabled,
       isShowOrdered,
+      onSelectAll,
       role,
       setIsClearAll,
       setIsSelectRow,
@@ -923,11 +941,13 @@ const MainMap = forwardRef(
         setIsSelectAll(false);
         setIsClearAll(false);
         setIsSelectRow(false);
+        onClearAll();
       }
     }, [
       _calculateViewPort,
       allSeats,
       isClearAll,
+      onClearAll,
       setIsClearAll,
       setIsSelectAll,
       setIsSelectRow,
@@ -951,6 +971,7 @@ const MainMap = forwardRef(
         setIsSelectRow(false);
         setIsSelectAll(false);
         setIsClearAll(false);
+        onSelectRow(chosenSeatsRef.current, allSelectedRows);
         if (!isShowAvailable) setIsShowAvailable(true);
         if (!isShowOrdered) setIsShowOrdered(true);
         if (!isShowDisabled) setIsShowDisabled(true);
@@ -962,6 +983,7 @@ const MainMap = forwardRef(
       isShowAvailable,
       isShowDisabled,
       isShowOrdered,
+      onSelectRow,
       role,
       setIsClearAll,
       setIsSelectAll,
@@ -1002,6 +1024,7 @@ const MainMap = forwardRef(
             role,
             tooltip,
             zoomSpeed,
+            zoomByFactorOffset,
             isMinimap,
             handleReset,
             handleResetCallback: () => {
