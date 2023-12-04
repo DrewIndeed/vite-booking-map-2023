@@ -160,7 +160,7 @@ export const renderSectionRows = (section: any, others: any[]) => {
       const notAllowed =
         role !== "admin"
           ? ![1, 3, 6].includes(seat.status)
-          : [4, 5].includes(seat.status);
+          : [5].includes(seat.status);
       const isAdmin = role === "admin";
       const noEvent = !section.ticketType || notAllowed;
       const isPrevSelected = seat.status === 3 && role !== "admin";
@@ -188,7 +188,10 @@ export const renderSectionRows = (section: any, others: any[]) => {
         const shouldAdjustVal =
           (existed ||
             isPrevSelected ||
-            (isAdmin && isSelectAll && !allSeatsReachedRef.current)) &&
+            (isAdmin &&
+              isSelectAll &&
+              !allSeatsReachedRef.current &&
+              seat.status !== 4)) &&
           hasTicketType;
         // handle colors
         if (notAllowed) {

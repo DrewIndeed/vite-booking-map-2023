@@ -79,8 +79,8 @@ type MainMapProps = {
   onClearAll?: () => void;
 
   // admin
-  useSelectAll?: (arg0: boolean) => [boolean, (arg0: boolean) => void];
   prevStageInfos?: Record<string, number>;
+  useSelectAll?: (arg0: boolean) => [boolean, (arg0: boolean) => void];
   useClearAll?: (arg0: boolean) => [boolean, (arg0: boolean) => void];
   useSelectRow?: (arg0: boolean) => [boolean, (arg0: boolean) => void];
   useShowAvailable?: (arg0: boolean) => [boolean, (arg0: boolean) => void];
@@ -120,8 +120,8 @@ const MainMap = forwardRef(
       onClearAll = () => {},
 
       // admin
-      useSelectAll = () => [false, () => {}],
       prevStageInfos = {},
+      useSelectAll = () => [false, () => {}],
       useClearAll = () => [false, () => {}],
       useSelectRow = () => [false, () => {}],
       useShowAvailable = () => [false, () => {}],
