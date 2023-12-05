@@ -1,7 +1,8 @@
 import { clsx, type ClassValue } from "clsx";
 import { ALL_SEAT_STATUS } from "./constants";
 
-export const debounce = (func: () => void, delay: number) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const debounce = (func: any, delay: number) => {
   let timeoutId: NodeJS.Timeout;
   const debounced = (...args: []) => {
     clearTimeout(timeoutId);
@@ -12,7 +13,8 @@ export const debounce = (func: () => void, delay: number) => {
   return debounced;
 };
 
-export const throttle = (func: () => void, delay: number) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const throttle = (func: any, delay: number) => {
   let timeoutId: NodeJS.Timeout;
   let lastExecutedTime = 0;
   const throttled = (...args: []) => {

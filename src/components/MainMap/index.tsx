@@ -39,7 +39,6 @@ import {
   renderSectionRows,
 } from "./methods";
 
-const os = getOS();
 const maxDynamic: number[] = [1];
 
 type ToolTip = {
@@ -69,6 +68,7 @@ type MainMapProps = {
   // methods
   onSelectSeat?: (arg0: ChosenSeat[]) => void;
   onSelectSection?: (arg0: Section) => void;
+  onClearSection?: () => void;
   onPostMessage?: (arg0: {
     type: "onSelectSection" | "onSelectSeat";
     data: string;
@@ -113,6 +113,7 @@ const MainMap = forwardRef(
       // methods
       onSelectSeat = () => {},
       onSelectSection = () => {},
+      onClearSection = () => {},
       onDiffSection = () => {},
       onPostMessage = () => {},
       onSelectAll = () => {},
@@ -151,6 +152,7 @@ const MainMap = forwardRef(
     const [changedStage, setChangedStage] = useState(false);
     const [hasReset, setHasReset] = useState(false);
     const [hasResetSection, setHasResetSection] = useState(false);
+    const [isTouchDragging, setIsTouchDragging] = useState(false);
 
     // [ADMIN] selection related
     const allSeatsReachedRef = useRef<boolean>(false);
@@ -213,6 +215,7 @@ const MainMap = forwardRef(
     const _renderSeatClicked = useCallback(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (section: Section, row: Row, seat: Seat, ...rest: any) => {
+        if (isTouchDragging) return;
         const [circleElement, isAdmin] = rest;
         const checkExisted = chosenSeatsRef.current.some(
           (chosen: ChosenSeat) => chosen.id === seat.id
@@ -262,7 +265,7 @@ const MainMap = forwardRef(
       },
       // DO NOT ADD setIsSelectAll
       // eslint-disable-next-line react-hooks/exhaustive-deps
-      [isSelectAll, onSelectSeat]
+      [isSelectAll, onSelectSeat, isTouchDragging]
     );
     // [COMMON] [IMPORTANT] render seats
     const _renderSectionSeats = useCallback(
@@ -324,7 +327,10 @@ const MainMap = forwardRef(
           { x1, x2, y1, y2 },
           { seatGroup, seatCircle, seatText },
           { stageRef, seatsLayerRef, chosenSeatsRef, allSeatsReachedRef },
-          { _updateChosenSeats, _renderSeatClicked },
+          {
+            _updateChosenSeats,
+            _renderSeatClicked,
+          },
         ];
         if (!chosenSection?.id) {
           sections?.forEach((section: Section) => {
@@ -615,7 +621,13 @@ const MainMap = forwardRef(
         if (container) container.style.cursor = "";
       };
       const { elements, ticketType, isStage, id: renderId } = section;
-      const _commonClick = () => {
+      const _commonClick = debounce((e: EventType<MouseEvent | TouchEvent>) => {
+        if (
+          isTouchDragging ||
+          (role === "mobile" && e.type === "click") ||
+          (role !== "mobile" && e.type === "tap")
+        )
+          return;
         if (!section.isStage && !chosenSection?.id) {
           onSelectSection(section);
           if (role === "mobile") {
@@ -625,7 +637,7 @@ const MainMap = forwardRef(
             });
           }
         }
-      };
+      }, 100);
 
       return (
         <Group
@@ -637,7 +649,7 @@ const MainMap = forwardRef(
           onMouseEnter={_onMouseEnter}
           onMouseLeave={_onMouseLeave}
           onClick={_commonClick}
-          onTouchEnd={_commonClick}
+          onTap={_commonClick}
           perfectDrawEnabled={false}
         >
           {elements?.map(
@@ -692,6 +704,7 @@ const MainMap = forwardRef(
       if (isMinimap) return;
       const stage = stageRef.current;
       if (stage) {
+        const os = getOS();
         // get current scale
         const oldScale = stage.scaleX();
 
@@ -737,6 +750,8 @@ const MainMap = forwardRef(
         // Prevent the window from being moved around
         e.evt.preventDefault();
         e.evt.stopPropagation();
+
+        setIsTouchDragging(true);
 
         const touch1 = e.evt.touches[0];
         const touch2 = e.evt.touches[1];
@@ -994,9 +1009,35 @@ const MainMap = forwardRef(
     ]);
     useEffect(() => {
       _calculateViewPort();
+      // DO NOT REMOVE THE WARNING SUPPRESS
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isShowAvailable, isShowOrdered, isShowDisabled]);
     // [END] [ADMIN] selection
+
+    // if a section is selected or deselected changed sesat map display statically
+    useEffect(() => {
+      if (chosenSection && chosenSection.isReservingSeat && role !== "admin") {
+        // console.log({ chosenSection });
+        handleReset();
+        const resetCallback = () => {
+          setHasReset(false);
+          if (chosenSection?.id) {
+            setHasResetSection(false);
+            handleResetSection();
+          }
+        };
+        resetCallback();
+      } else {
+        if (seatsLayerRef.current) {
+          handleReset();
+          seatsLayerRef.current.destroyChildren();
+          seatsLayerRef.current.clearBeforeDraw(true);
+          onClearSection();
+        }
+      }
+      // DO NOT REMOVE THE WARNING SUPPRESS
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [chosenSection]);
 
     // if not hydrated and no sections
     if (!mounted && sections?.length === 0) return <div>No data.</div>;
@@ -1054,8 +1095,14 @@ const MainMap = forwardRef(
           onWheel={onWheel}
           onTouchStart={onTouchStart}
           onTouchMove={onTouchMove}
-          onTouchEnd={() => _calculateViewPort()}
-          onDragEnd={() => _calculateViewPort()}
+          onTouchEnd={() => {
+            if (isTouchDragging) setIsTouchDragging(false);
+            _calculateViewPort();
+          }}
+          onDragEnd={() => {
+            if (isTouchDragging) setIsTouchDragging(false);
+            _calculateViewPort();
+          }}
         >
           {/* get view port layer */}
           {!isMinimap && (
