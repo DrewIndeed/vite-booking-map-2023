@@ -49,17 +49,18 @@ type MainMapProps = {
   width: number;
   height: number;
   sections: Section[];
+  role?: "web" | "admin" | "mobile";
   sectionsViewbox: string;
 
-  role?: "web" | "admin" | "mobile";
   zoomSpeed?: number;
   renderSeatScale?: number;
   debounceWheelMs?: number;
   zoomByFactorOffset?: number;
+  initialResetY?: number;
+
   draggable?: boolean;
   isMinimap?: boolean;
   fallbackColor?: "#fff";
-
   minimap?: ReactNode;
   chosenSection?: ChosenSection | null;
   tooltip?: Record<string, ToolTip>;
@@ -95,16 +96,17 @@ const MainMap = forwardRef(
       height = 500, // MUST
       sections = [], // MUST
       sectionsViewbox = "0 0 0 0", // MUST
+      role = "web", // SHOULD
 
-      role = "web",
       zoomSpeed = ZOOM_SPEED,
       renderSeatScale = RENDER_SEAT_SCALE,
       debounceWheelMs = 100,
       zoomByFactorOffset = 1.35,
+      initialResetY = 50,
+
       draggable = true,
       isMinimap = false,
       fallbackColor = "#fff",
-
       minimap = null,
       chosenSection = null,
       tooltip = {}, // plus, reset, minus, eye
@@ -172,11 +174,11 @@ const MainMap = forwardRef(
     const seatCircle = useMemo(
       () =>
         new Shapes.Circle({
-          radius: role !== "mobile" ? 4 : 4.6,
+          // radius: role !== "mobile" ? 3.7 : 4.6,
           strokeWidth: 0.6,
           perfectDrawEnabled: false,
         }),
-      [role]
+      []
     );
     const seatText = useMemo(
       () =>
@@ -383,7 +385,7 @@ const MainMap = forwardRef(
       const viewLayer = viewLayerRef.current;
       if (!stage || !viewLayer || !chosenSection?.id) return;
 
-      // get chosen section Group corners from bakcground path
+      // get chosen section Group corners from background path
       const sectionCorners = allSectionsRef.current[
         chosenSection?.id
       ].children[0].dataArray
@@ -445,8 +447,9 @@ const MainMap = forwardRef(
       const wrapLineRect = wrapLine.getClientRect({
         relativeTo: stage,
       });
-      const SCALE_PER_FRAME = 1.5;
+      const SCALE_PER_FRAME = 1.25; // change if needed
       const PADDING_TOPLEFT = 6; // min = 1
+      const isHorizontal = wrapLineRect.width > wrapLineRect.height;
       stage.position({
         x:
           -wrapLineRect.x * stage.scaleX() +
@@ -456,6 +459,7 @@ const MainMap = forwardRef(
           viewLayer?.height() / (PADDING_TOPLEFT * 2),
       });
 
+      // OPEN THIS IF AND ONLY IF THERE IS CHOSEN SECTION BUGs
       // const allCornersPoints = [
       //   ...allSectionsRef.current[chosenSection?.id].children[0].dataArray.map(
       //     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -464,6 +468,7 @@ const MainMap = forwardRef(
       // ];
       // layerRef.current?.add(wrapLine);
       // allCornersPoints.forEach((point) => {
+      //   console.log({ point });
       //   return layerRef.current?.add(
       //     new Shapes.Circle({
       //       x: point[0],
@@ -474,26 +479,56 @@ const MainMap = forwardRef(
       //   );
       // });
 
+      // check if the section is SIGNIFICANTLY SMALL
+      // console.log({
+      //   wrapLineRect,
+      //   stage: stage.getClientRect(),
+      //   test: stage.getClientRect().width / wrapLineRect.width,
+      //   test2: stage.getClientRect().height / wrapLineRect.height,
+      // });
+      const widthRatioToStage =
+        stage.getClientRect().width / wrapLineRect.width;
+      const heightRatioToStage =
+        stage.getClientRect().height / wrapLineRect.height;
+      const isSignificantSmall =
+        widthRatioToStage >= (role === "mobile" ? 5 : 7.5) ||
+        heightRatioToStage >= (role === "mobile" ? 5 : 7.5);
+
       // calculate the number of auto iteration frames for scale to fit and center
       let count = 0;
       let beginScale = stage.scaleX();
       let percent = Math.round(
         (beginScale / (maxDynamic[maxDynamic.length - 1] * initScale)) * 100
       );
-      while (percent < 25) {
+
+      // calculate count value to auto zoom
+      const countStop = isHorizontal ? 12.5 : 20;
+      const _applyScalePerFrame = () => {
         beginScale *= SCALE_PER_FRAME;
         percent = Math.round(
           (beginScale / (maxDynamic[maxDynamic.length - 1] * initScale)) * 100
         );
         count++;
-      }
+      };
+      while (percent < countStop) _applyScalePerFrame();
+      // console.log({ count });
+      // this is to make sure that small sections are scale to frame at least once
+      if (count <= 1) while (count < 4) _applyScalePerFrame();
 
       // apply dynamic count to scale to fit and center chosen section
       for (let i = 1; i <= count; i++) {
         setTimeout(() => {
+          const targetScale =
+            role !== "mobile"
+              ? stage.scaleX() *
+                (isSignificantSmall ? 1.15 : isHorizontal ? 1.02 : 1.015) *
+                SCALE_PER_FRAME
+              : stage.scaleX() *
+                (isSignificantSmall ? 1.2 : isHorizontal ? 1.2 : 1.08) *
+                SCALE_PER_FRAME;
           stage.scale({
-            x: stage.scaleX() * SCALE_PER_FRAME,
-            y: stage.scaleX() * SCALE_PER_FRAME,
+            x: targetScale,
+            y: targetScale,
           });
 
           const partialWidth = viewLayer?.width() / 2;
@@ -509,15 +544,18 @@ const MainMap = forwardRef(
               partialHeight -
               (wrapLineRect.height * stage.scaleX()) / 2,
           });
-        }, 50 * i); // 10: change this if need
+        }, 50 * i); // 50: change this if need
       }
 
       // redraw seats and update reset section status
       setTimeout(() => {
         _calculateViewPort();
-        setHasResetSection(true);
       }, 50 * (count + 1.5));
-    }, [_calculateViewPort, chosenSection?.id, initScale]);
+
+      setTimeout(() => {
+        setHasResetSection(true);
+      }, 50 * (count + 1.5) * 1.5);
+    }, [_calculateViewPort, chosenSection?.id, initScale, role]);
     // [COMMON] handle handle reset
     const handleReset = useCallback(() => {
       const stage = stageRef.current;
@@ -529,18 +567,37 @@ const MainMap = forwardRef(
         // all sections group dimensions
         const sectionsRect = getViewBoxRect(sectionsViewbox);
 
-        // calculate new scale
+        // check if the target seat map is a LARGE one
+        // TODO: 500 is subjective to indicate that stage must have significant dimensions
+        const isLarge =
+          stageW > 500 &&
+          stageH > 500 &&
+          (sectionsRect.width >= stageW || sectionsRect.height >= stageH);
+
+        // [VERY IMPORTANT] calculate new scale
         const newWidth = Math.min(stageW, sectionsRect.width);
+        const newWidth2 = (stageW + sectionsRect.width) / 2;
         const newScale = newWidth / sectionsRect.width;
+        const newScale2 = newWidth2 / sectionsRect.width;
+        // console.log({
+        //   newScale,
+        //   newScale2,
+        //   scaleVer: 1 / newScale,
+        //   scaleVer2: 1 / newScale2,
+        // });
+        const finalNewScale =
+          newScale === 1 ? newScale2 * 0.8 : newScale * (isLarge ? 0.79 : 1);
 
         // stage center point
         const stageCenterX = Math.floor(stageW / 2);
         const stageCenterY = Math.floor(stageH / 2);
 
         // all sections group center point
-        const sectionsCenterX = Math.floor((sectionsRect.width / 2) * newScale);
+        const sectionsCenterX = Math.floor(
+          (sectionsRect.width / 2) * finalNewScale
+        );
         const sectionsCenterY = Math.floor(
-          (sectionsRect.height / 2) * newScale
+          (sectionsRect.height / 2) * finalNewScale
         );
 
         // offsets between 2 centers
@@ -549,20 +606,24 @@ const MainMap = forwardRef(
 
         // reflect changes on stage
         if (!Number.isNaN(offsetX) && !Number.isNaN(offsetX)) {
-          stage.position({ x: offsetX, y: offsetY });
-          stage.scale({ x: newScale, y: newScale });
+          stage.position({
+            x: offsetX,
+            y: offsetY - (isMinimap ? 0 : initialResetY),
+          });
+          stage.scale({ x: finalNewScale, y: finalNewScale });
         }
-        if (newScale && 1 / newScale > 1) {
-          if (1 / newScale > maxDynamic[maxDynamic.length - 1]) {
-            // console.log({ scaleInverse: 1 / newScale, maxDynamic });
-            maxDynamic.push(1 / newScale);
+        if (finalNewScale && 1 / finalNewScale > 1) {
+          if (1 / finalNewScale > maxDynamic[maxDynamic.length - 1]) {
+            // console.log({ scaleInverse: 1 / finalNewScale, maxDynamic });
+            maxDynamic.push(1 / finalNewScale);
           }
-          setInitScale(newScale);
+          setInitScale(finalNewScale);
         }
 
         setHasReset(true);
         _calculateViewPort();
       }
+      // DO NOT REMOVE
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [sectionsViewbox]);
 
@@ -950,14 +1011,14 @@ const MainMap = forwardRef(
     ]);
     // handle clear all data
     useEffect(() => {
-      if (isClearAll && allSeats.length && chosenSeatsRef.current.length) {
-        chosenSeatsRef.current = [];
+      if (isClearAll && allSeats.length) {
         _calculateViewPort();
         setIsSelectAll(false);
         setIsClearAll(false);
         setIsSelectRow(false);
         onClearAll();
       }
+      if (chosenSeatsRef.current) chosenSeatsRef.current = [];
     }, [
       _calculateViewPort,
       allSeats,
@@ -1014,7 +1075,7 @@ const MainMap = forwardRef(
     }, [isShowAvailable, isShowOrdered, isShowDisabled]);
     // [END] [ADMIN] selection
 
-    // if a section is selected or deselected changed sesat map display statically
+    // if a section is selected or deselected changed seat map display statically
     useEffect(() => {
       if (chosenSection && chosenSection.isReservingSeat && role !== "admin") {
         // console.log({ chosenSection });

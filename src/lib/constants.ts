@@ -21,7 +21,7 @@ export const BUTTONS = {
   eyeClose: { key: "eyeClose", icon: EyeCloseIcon, defaultContent: "Ẩn/Hiện" },
 };
 
-export const ZOOM_SPEED = 1.15;
+export const ZOOM_SPEED = 0.8;
 export const RENDER_SEAT_SCALE = 1.4;
 export const RENDER_NUM_SCALE = 0.4;
 export const SEAT_COLORS = {

@@ -24,8 +24,8 @@ const App = () => {
   // effects
   useEffect(() => {
     (async () => {
-      const mapData = await getMap(2);
-      const adminShowData = await getAdminShowing(2);
+      const mapData = await getMap(59133953855904);
+      const adminShowData = await getAdminShowing(59133953855904);
       const demoData = {
         adminSections: adminShowData?.data?.result?.seatMap?.sections,
         viewbox: adminShowData?.data?.result?.seatMap?.viewbox,
@@ -33,7 +33,7 @@ const App = () => {
         allSeats: getAllSeats(adminShowData?.data?.result?.seatMap?.sections),
         sections: mapData?.data?.result?.sections,
       };
-      console.log({ demoData });
+      // console.log({ demoData });
       saveData(demoData);
     })();
   }, [saveData]);
@@ -41,7 +41,7 @@ const App = () => {
   const onSelectSection = useCallback(
     async (selectedSection: Section) => {
       console.log({ selectedSection });
-      const sectionData = await getSections(2, selectedSection.id);
+      const sectionData = await getSections(59133953855904, selectedSection.id);
       setChosenSectionData(sectionData?.data?.result);
       saveData({ ...data, chosenSection: sectionData?.data?.result });
     },
@@ -53,12 +53,12 @@ const App = () => {
       <MainMap
         ref={mainMapRef} // MUST FOR ADMIN
         role="web" // SHOULD
-        width={375} // 725, 375 // MUST
-        height={600} // 675, 635 // MUST
+        width={1300} // 1300, 725, 375 // MUST
+        height={976} // 976, 675, 635 // MUST
         sections={data?.sections} // MUST
         sectionsViewbox={data?.viewbox} // MUST
-        zoomSpeed={1.1}
-        renderSeatScale={0.75}
+        zoomSpeed={0.8}
+        renderSeatScale={0.75} // 0.75 for web, >= 1 for mobile
         // [METHODS]
         onSelectSection={onSelectSection}
         onSelectSeat={(dataSeat) => console.log({ dataSeat })}
@@ -96,6 +96,8 @@ export default App;
   544 -> 137, 138, 140
   837 -> 185, 186, 187
   940 -> 210, 206, 205, 208
+  87744746078981 -> can pick
+  59133953855904 -> can pick
 */
 
 /*
@@ -105,4 +107,12 @@ export default App;
   Assume 4: if seat map is zooming to see seats, how to show minimap now?
   Assume 5: if select all if not zoom on, user will know that all seats are selected
   Assume 6: if hide Available Seats, when Select All or Select Row hit, show Available Seats again
+*/
+
+/*
+- [ALL] Special cases for curved sections
+- [ADMIN] able to choose HOLDING seats but cannot interact
+- [ADMIN] count down on both sides is not consistent
+- [ADMIN] open in new tab for Order Details when clicked
+- [ALL] documentation
 */
